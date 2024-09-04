@@ -27,3 +27,4 @@ __pycache__/
 !**/
 
 # Add any other specific files or directories you want to ignore*.xcuserstate
+xcuserdata/
