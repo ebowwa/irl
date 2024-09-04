@@ -1,4 +1,20 @@
+# Ignore environment files
 .env
-pyenv
+
+# Ignore Python virtual environment
+pyenv/
+venv/
+*.pyc
+__pycache__/
+
+# Ignore macOS system files
 .DS_Store
 **/.DS_Store
+
+# Ignore Swift build artifacts
+*.swiftmodule
+*.swiftdoc
+*.swiftinterface
+*.swiftsourceinfo
+
+# Add any other Swift-related files you want to ignore
