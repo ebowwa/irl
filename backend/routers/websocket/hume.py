@@ -1,20 +1,32 @@
+# TODO: SHIT, untested, likely needs complete overhaul
+import os
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import base64
 import json
 import websockets
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-HUME_API_KEY = "your_api_key"  # Replace with your actual Hume API key
+HUME_API_KEY = os.getenv("HUME_API_KEY") or 'your_api_key'
 HUME_WS_URL = "wss://api.hume.ai/v0/stream/models"
 
 @router.websocket("/ws/hume")
 async def hume_websocket(websocket: WebSocket):
     await websocket.accept()
     logger.info("Client WebSocket connection accepted")
+
+    if not HUME_API_KEY:
+        logger.error("HUME_API_KEY not found in environment variables")
+        await websocket.send_text(json.dumps({"error": "HUME_API_KEY not configured"}))
+        await websocket.close()
+        return
 
     try:
         async with websockets.connect(
