@@ -7,7 +7,7 @@
 import Foundation
 
 struct Constants {
-    static let baseDomain = "9fd4-73-15-186-2.ngrok-free.app"
+    static let baseDomain = "id.ngrok-free.app" // cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python index.py && ngrok http 8000
     
     struct API {
         static let baseURL = "https://\(Constants.baseDomain)"
