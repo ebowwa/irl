@@ -1,5 +1,4 @@
-backend/backend/.env
-backend/pyenv
+.env
+pyenv
 .DS_Store
-.DS_Store
-.DS_Store
+**/.DS_Store
