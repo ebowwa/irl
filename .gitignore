@@ -4,8 +4,6 @@
 # Ignore Python virtual environment
 venv/
 env/
-*.pyc
-__pycache__/
 
 # Ignore macOS system files
 .DS_Store
@@ -18,12 +16,14 @@ __pycache__/
 *.swiftsourceinfo
 
 # Ignore Python cache and compiled files
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.so
 
-# Keep Python source files
-!*.py
+# Explicitly include all Python files and directories
+!**/*.py
+!**/
 
 # Add any other specific files or directories you want to ignore
