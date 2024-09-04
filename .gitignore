@@ -2,8 +2,8 @@
 .env
 
 # Ignore Python virtual environment
-pyenv/
 venv/
+env/
 *.pyc
 __pycache__/
 
@@ -17,4 +17,13 @@ __pycache__/
 *.swiftinterface
 *.swiftsourceinfo
 
-# Add any other Swift-related files you want to ignore
+# Ignore Python cache and compiled files
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Keep Python source files
+!*.py
+
+# Add any other specific files or directories you want to ignore
