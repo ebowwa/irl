@@ -1,8 +1,8 @@
 # File: main.py
 
 from fastapi import FastAPI
-from websocket.routers import ping, whisper_tts, hume
-from websocket.routers.LLM.claude import router as claude_router
+from routers.websocket import ping, whisper_tts, hume
+from routers.post.LLM.claude import router as claude_router
 
 app = FastAPI()
 
