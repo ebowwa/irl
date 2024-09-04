@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+wsproto
+websockets
+uvicorn[standard]
+fal-client
+python-dotenv
+python-multipart
+anthropic
