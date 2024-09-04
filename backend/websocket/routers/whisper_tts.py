@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Set FAL_KEY from environment variable
-fal_client.api_key = os.getenv('FAL_KEY') or 'f5f80c6a-697d-46a7-8cee-8e5d05f15a9d:172043f08b6caef297b5e0a4fab45938'
+fal_client.api_key = os.getenv('FAL_KEY') or 'your_api_key'
 
 class TaskEnum(str, Enum):
     transcribe = "transcribe"
