@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-HUME_API_KEY = "5pWMCZa4nJ9cKjVK4VwtfBbb3fK4SgUKGfHja2IxQubbWzpU"  # Replace with your actual Hume API key
+HUME_API_KEY = "your_api_key"  # Replace with your actual Hume API key
 HUME_WS_URL = "wss://api.hume.ai/v0/stream/models"
 
 @router.websocket("/ws/hume")
