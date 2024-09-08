@@ -26,7 +26,7 @@ __pycache__/
 # Explicitly include all Python files and directories
 !**/*.py
 !**/
-
+venv/
 # Add any other specific files or directories you want to ignore*.xcuserstate
 xcuserdata/
 
