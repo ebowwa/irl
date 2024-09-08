@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		7637EBB42C85188D00BAF0EC /* Transcribe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBB32C85188D00BAF0EC /* Transcribe.swift */; };
 		7637EBB72C8521AD00BAF0EC /* HumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBB62C8521AD00BAF0EC /* HumeView.swift */; };
-		7637EBB92C86436E00BAF0EC /* FalWhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBB82C86436E00BAF0EC /* FalWhisperService.swift */; };
 		7637EBBB2C865A3600BAF0EC /* ServerHealthWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBBA2C865A3600BAF0EC /* ServerHealthWidget.swift */; };
 		7637EBBD2C865EFB00BAF0EC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBBC2C865EFB00BAF0EC /* Constants.swift */; };
 		7637EBBF2C8660C400BAF0EC /* ServerHealth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBBE2C8660C400BAF0EC /* ServerHealth.swift */; };
@@ -48,13 +47,17 @@
 		76E1AB0E2C8CD3B2006BDC0B /* AudioFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB0D2C8CD3B2006BDC0B /* AudioFileManager.swift */; };
 		76E1AB142C8CE2CB006BDC0B /* RecordingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB132C8CE2CB006BDC0B /* RecordingsList.swift */; };
 		76E1AB162C8CF15B006BDC0B /* SFSpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB152C8CF15B006BDC0B /* SFSpeechRecognizer.swift */; };
-		76E1AB182C8E43BC006BDC0B /* Index.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB172C8E43BC006BDC0B /* Index.swift */; };
+		76E1AB1B2C8E4728006BDC0B /* AudioStateIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB1A2C8E4728006BDC0B /* AudioStateIndex.swift */; };
+		76E1AB202C8E4A86006BDC0B /* WebsocketHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB1F2C8E4A86006BDC0B /* WebsocketHandler.swift */; };
+		76E1AB222C8E4A99006BDC0B /* FileUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB212C8E4A99006BDC0B /* FileUploader.swift */; };
+		76E1AB242C8E4AB3006BDC0B /* WhisperModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB232C8E4AB3006BDC0B /* WhisperModels.swift */; };
+		76E1AB262C8E4AC6006BDC0B /* WhisperEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB252C8E4AC6006BDC0B /* WhisperEnums.swift */; };
+		76E1AB282C8E4B1C006BDC0B /* WhisperServiceIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB272C8E4B1C006BDC0B /* WhisperServiceIndex.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		7637EBB32C85188D00BAF0EC /* Transcribe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transcribe.swift; sourceTree = "<group>"; };
 		7637EBB62C8521AD00BAF0EC /* HumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumeView.swift; sourceTree = "<group>"; };
-		7637EBB82C86436E00BAF0EC /* FalWhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalWhisperService.swift; sourceTree = "<group>"; };
 		7637EBBA2C865A3600BAF0EC /* ServerHealthWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerHealthWidget.swift; sourceTree = "<group>"; };
 		7637EBBC2C865EFB00BAF0EC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		7637EBBE2C8660C400BAF0EC /* ServerHealth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerHealth.swift; sourceTree = "<group>"; };
@@ -95,7 +98,12 @@
 		76E1AB0D2C8CD3B2006BDC0B /* AudioFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileManager.swift; sourceTree = "<group>"; };
 		76E1AB132C8CE2CB006BDC0B /* RecordingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsList.swift; sourceTree = "<group>"; };
 		76E1AB152C8CF15B006BDC0B /* SFSpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSpeechRecognizer.swift; sourceTree = "<group>"; };
-		76E1AB172C8E43BC006BDC0B /* Index.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Index.swift; sourceTree = "<group>"; };
+		76E1AB1A2C8E4728006BDC0B /* AudioStateIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStateIndex.swift; sourceTree = "<group>"; };
+		76E1AB1F2C8E4A86006BDC0B /* WebsocketHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsocketHandler.swift; sourceTree = "<group>"; };
+		76E1AB212C8E4A99006BDC0B /* FileUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploader.swift; sourceTree = "<group>"; };
+		76E1AB232C8E4AB3006BDC0B /* WhisperModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperModels.swift; sourceTree = "<group>"; };
+		76E1AB252C8E4AC6006BDC0B /* WhisperEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperEnums.swift; sourceTree = "<group>"; };
+		76E1AB272C8E4B1C006BDC0B /* WhisperServiceIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperServiceIndex.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,7 +274,7 @@
 		768B60672C82E5A000C5AB3A /* HTTP */ = {
 			isa = PBXGroup;
 			children = (
-				7637EBB82C86436E00BAF0EC /* FalWhisperService.swift */,
+				76E1AB1C2C8E4A56006BDC0B /* Whisper */,
 			);
 			path = HTTP;
 			sourceTree = "<group>";
@@ -337,7 +345,7 @@
 				76E1AB072C8CC2F1006BDC0B /* AudioRecordingModel.swift */,
 				76E1AB092C8CC3C8006BDC0B /* WebSocketManagerProtocol.swift */,
 				76E1AB0D2C8CD3B2006BDC0B /* AudioFileManager.swift */,
-				76E1AB172C8E43BC006BDC0B /* Index.swift */,
+				76E1AB1A2C8E4728006BDC0B /* AudioStateIndex.swift */,
 			);
 			path = AudioState;
 			sourceTree = "<group>";
@@ -360,6 +368,18 @@
 				76E1AB132C8CE2CB006BDC0B /* RecordingsList.swift */,
 			);
 			path = Recordings;
+			sourceTree = "<group>";
+		};
+		76E1AB1C2C8E4A56006BDC0B /* Whisper */ = {
+			isa = PBXGroup;
+			children = (
+				76E1AB272C8E4B1C006BDC0B /* WhisperServiceIndex.swift */,
+				76E1AB1F2C8E4A86006BDC0B /* WebsocketHandler.swift */,
+				76E1AB212C8E4A99006BDC0B /* FileUploader.swift */,
+				76E1AB232C8E4AB3006BDC0B /* WhisperModels.swift */,
+				76E1AB252C8E4AC6006BDC0B /* WhisperEnums.swift */,
+			);
+			path = Whisper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -442,10 +462,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7637EBB92C86436E00BAF0EC /* FalWhisperService.swift in Sources */,
 				765E98C82C812ACA00A6726B /* SettingsView.swift in Sources */,
 				7637EBBF2C8660C400BAF0EC /* ServerHealth.swift in Sources */,
 				765E98B82C811FC500A6726B /* ContentView.swift in Sources */,
+				76E1AB242C8E4AB3006BDC0B /* WhisperModels.swift in Sources */,
 				7637EBE42C8A45CB00BAF0EC /* ChatView.swift in Sources */,
 				765E98DF2C813E6D00A6726B /* TabsView.swift in Sources */,
 				76E1AAED2C8BEA5C006BDC0B /* LiveView.swift in Sources */,
@@ -463,19 +483,23 @@
 				765E98D82C8138EE00A6726B /* DashboardView.swift in Sources */,
 				765E98DC2C81391900A6726B /* ProfileVIew.swift in Sources */,
 				7637EBBB2C865A3600BAF0EC /* ServerHealthWidget.swift in Sources */,
+				76E1AB282C8E4B1C006BDC0B /* WhisperServiceIndex.swift in Sources */,
 				76E1AB012C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift in Sources */,
 				7637EBB42C85188D00BAF0EC /* Transcribe.swift in Sources */,
+				76E1AB222C8E4A99006BDC0B /* FileUploader.swift in Sources */,
 				76E1AB162C8CF15B006BDC0B /* SFSpeechRecognizer.swift in Sources */,
 				765E98B62C811FC500A6726B /* irlApp.swift in Sources */,
 				768B60592C81BB1200C5AB3A /* SpeechAnalysisService.swift in Sources */,
 				76E1AB142C8CE2CB006BDC0B /* RecordingsList.swift in Sources */,
+				76E1AB1B2C8E4728006BDC0B /* AudioStateIndex.swift in Sources */,
 				7637EBEA2C8BA4EE00BAF0EC /* MemoryModule.swift in Sources */,
+				76E1AB202C8E4A86006BDC0B /* WebsocketHandler.swift in Sources */,
 				76E1AB082C8CC2F1006BDC0B /* AudioRecordingModel.swift in Sources */,
 				765E98CE2C812F4C00A6726B /* AppearanceSettingsView.swift in Sources */,
 				7637EBE82C8BA02900BAF0EC /* SimpleLocalTranscription.swift in Sources */,
-				76E1AB182C8E43BC006BDC0B /* Index.swift in Sources */,
 				765E98DA2C81390400A6726B /* SearchView.swift in Sources */,
 				7637EBF12C8BA6F700BAF0EC /* APIClient.swift in Sources */,
+				76E1AB262C8E4AC6006BDC0B /* WhisperEnums.swift in Sources */,
 				76E1AAEA2C8BB223006BDC0B /* ClaudeConstants.swift in Sources */,
 				76E1AB0E2C8CD3B2006BDC0B /* AudioFileManager.swift in Sources */,
 			);

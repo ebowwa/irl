@@ -1,7 +1,7 @@
 //
 //  GlobalState.swift
 //  irl
-//
+// TODO: user management, remove the placeholders still contemplating firebase v supabase and co
 //  Created by Elijah Arbee on 8/29/24.
 //
 import SwiftUI
