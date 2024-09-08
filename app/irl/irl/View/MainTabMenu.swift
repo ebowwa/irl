@@ -15,6 +15,8 @@ struct TabItem: Identifiable {
 
 struct MainTabMenu: View {
     @Binding var selectedTab: Int
+    @StateObject private var audioRecorderViewModel = AudioRecorderViewModel()
+    @State private var showAllRecordings = false
     
     let accentColor: Color
     let inactiveColor: Color
@@ -23,7 +25,7 @@ struct MainTabMenu: View {
     let tabs: [TabItem] = [
         TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform"),
         TabItem(title: "Home", icon: "house", selectedIcon: "house.fill"),
-        TabItem(title: "Search", icon: "magnifyingglass", selectedIcon: "magnifyingglass"),
+        TabItem(title: "Chats", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill"),
         TabItem(title: "Bubbles", icon: "square.grid.2x2", selectedIcon: "square.grid.2x2.fill"),
         TabItem(title: "Settings", icon: "gear", selectedIcon: "gear")
     ]
@@ -38,8 +40,7 @@ struct MainTabMenu: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationView {
-                SpeechDemo()
-                // HumeView() // Placeholder for TranscriptView
+                AllRecordingsListView(viewModel: audioRecorderViewModel, showAllRecordings: $showAllRecordings)
             }
             .tabItem {
                 customTabItem(for: tabs[0], isSelected: selectedTab == 0)
@@ -55,8 +56,7 @@ struct MainTabMenu: View {
             .tag(1)
 
             NavigationView {
-                ClaudeView()
-                // SearchView()
+                ChatView()
             }
             .tabItem {
                 customTabItem(for: tabs[2], isSelected: selectedTab == 2)
@@ -64,7 +64,7 @@ struct MainTabMenu: View {
             .tag(2)
 
             NavigationView {
-                TabsView()
+                TabsView() // renamed bubbles
             }
             .tabItem {
                 customTabItem(for: tabs[3], isSelected: selectedTab == 3)
@@ -72,7 +72,7 @@ struct MainTabMenu: View {
             .tag(3)
 
             NavigationView {
-                SettingsView()
+                SettingsView() // to be moved to the home - more minimalistic design of main view
             }
             .tabItem {
                 customTabItem(for: tabs[4], isSelected: selectedTab == 4)
@@ -99,6 +99,6 @@ struct MainTabMenu: View {
 }
 
 // Note: This view depends on:
-// - SearchView, TabsView, and SettingsView for other tab content
+// - ChatView, TabsView, and SettingsView for other tab content
 // - AppState.swift for the shared app state (not shown in this file)
 // - Models.swift for Theme and Language enums (used in AppState, not shown in this file)

@@ -3,71 +3,12 @@
 //
 //  Created by Elijah Arbee on 8/29/24.
 //
-// AudioState.swift
 import Foundation
 import AVFoundation
 import Combine
 import Speech
 
-struct AudioRecording: Identifiable {
-    let id: UUID
-    let url: URL
-    let creationDate: Date
-    let fileSize: Int64
-    var isSpeechLikely: Bool?
-}
-
-class WebSocketManager: WebSocketManagerProtocol {
-    private var webSocketTask: URLSessionWebSocketTask?
-    private let receivedDataSubject = PassthroughSubject<Data, Never>()
-
-    var receivedDataPublisher: AnyPublisher<Data, Never> {
-        receivedDataSubject.eraseToAnyPublisher()
-    }
-
-    init(url: URL) {
-        setupWebSocket(url: url)
-    }
-
-    private func setupWebSocket(url: URL) {
-        let session = URLSession(configuration: .default)
-        webSocketTask = session.webSocketTask(with: url)
-        webSocketTask?.resume()
-
-        receiveMessage()
-    }
-
-    func sendAudioData(_ data: Data) {
-        webSocketTask?.send(.data(data)) { error in
-            if let error = error {
-                print("Error sending audio data: \(error)")
-            }
-        }
-    }
-
-    private func receiveMessage() {
-        webSocketTask?.receive { [weak self] result in
-            switch result {
-            case .success(let message):
-                switch message {
-                case .string(let text):
-                    if let data = text.data(using: .utf8) {
-                        self?.receivedDataSubject.send(data)
-                    }
-                case .data(let data):
-                    self?.receivedDataSubject.send(data)
-                @unknown default:
-                    break
-                }
-                self?.receiveMessage()
-            case .failure(let error):
-                print("Error receiving message: \(error)")
-            }
-        }
-    }
-}
-
-class AudioState: NSObject, ObservableObject {
+class AudioState: NSObject, AudioStateProtocol {
     static let shared = AudioState()
 
     @Published var isRecording = false
@@ -106,6 +47,8 @@ class AudioState: NSObject, ObservableObject {
         self.webSocketManager = manager
     }
 
+    // MARK: - Audio Session Setup
+
     private func setupAudioSession() {
         do {
             recordingSession = AVAudioSession.sharedInstance()
@@ -115,6 +58,8 @@ class AudioState: NSObject, ObservableObject {
             errorMessage = "Failed to set up audio session: \(error.localizedDescription)"
         }
     }
+
+    // MARK: - Recording Controls
 
     func toggleRecording() {
         if isRecording {
@@ -148,6 +93,8 @@ class AudioState: NSObject, ObservableObject {
         isPlaybackAvailable = true
     }
 
+    // MARK: - Live Streaming
+
     private func startLiveStreaming() {
         audioEngine = AVAudioEngine()
         guard let audioEngine = audioEngine else {
@@ -174,8 +121,23 @@ class AudioState: NSObject, ObservableObject {
         }
     }
 
+    private func processMicrophoneBuffer(buffer: AVAudioPCMBuffer, time: AVAudioTime) {
+        guard let channelData = buffer.floatChannelData else { return }
+        let frames = buffer.frameLength
+
+        var data = Data(capacity: Int(frames) * MemoryLayout<Float>.size)
+        for i in 0..<Int(frames) {
+            var sample = channelData[0][i]
+            data.append(Data(bytes: &sample, count: MemoryLayout<Float>.size))
+        }
+
+        webSocketManager?.sendAudioData(data)
+    }
+
+    // MARK: - File Recording
+
     private func startFileRecording() {
-        let audioFilename = getDocumentsDirectory().appendingPathComponent("recording_\(Date().timeIntervalSince1970).m4a")
+        let audioFilename = AudioFileManager.shared.getDocumentsDirectory().appendingPathComponent("recording_\(Date().timeIntervalSince1970).m4a")
 
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -199,25 +161,15 @@ class AudioState: NSObject, ObservableObject {
         }
     }
 
-    private func processMicrophoneBuffer(buffer: AVAudioPCMBuffer, time: AVAudioTime) {
-        guard let channelData = buffer.floatChannelData else { return }
-        let frames = buffer.frameLength
-
-        var data = Data(capacity: Int(frames) * MemoryLayout<Float>.size)
-        for i in 0..<Int(frames) {
-            var sample = channelData[0][i]
-            data.append(Data(bytes: &sample, count: MemoryLayout<Float>.size))
-        }
-
-        webSocketManager?.sendAudioData(data)
-    }
-
+    // MARK: - Recording Timer
+    
     private func startRecordingTimer() {
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self else { return }
-            self.recordingTime += 0.1
-            self.recordingProgress = min(self.recordingTime / 60.0, 1.0) // Assume max recording time of 60 seconds
-            self.updateAudioLevels()
+            DispatchQueue.main.async {
+                self.recordingTime += 0.1
+                self.updateAudioLevels()
+            }
         }
     }
 
@@ -233,53 +185,64 @@ class AudioState: NSObject, ObservableObject {
         audioLevelSubject.send(averagePower)
     }
 
-    private func getDocumentsDirectory() -> URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
+    // MARK: - File Management
 
     private func updateCurrentRecording() {
         guard let url = audioRecorder?.url else { return }
-        let attributes = try? FileManager.default.attributesOfItem(atPath: url.path)
-        let creationDate = attributes?[.creationDate] as? Date ?? Date()
-        let fileSize = attributes?[.size] as? Int64 ?? 0
+        let fileManager = AudioFileManager.shared
+        let recordings = fileManager.updateLocalRecordings()
+        currentRecording = recordings.first { $0.url == url }
         
-        determineSpeechLikelihood(for: url) { isSpeechLikely in
-            DispatchQueue.main.async {
-                self.currentRecording = AudioRecording(id: UUID(), url: url, creationDate: creationDate, fileSize: fileSize, isSpeechLikely: isSpeechLikely)
-                self.updateLocalRecordings()
+        if let recording = currentRecording {
+            determineSpeechLikelihood(for: recording.url) { isSpeechLikely in
+                DispatchQueue.main.async {
+                    self.currentRecording?.isSpeechLikely = isSpeechLikely
+                    self.updateLocalRecordings()
+                }
             }
         }
     }
 
     func updateLocalRecordings() {
-        do {
-            let documentsURL = getDocumentsDirectory()
-            let fileURLs = try FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.creationDateKey, .fileSizeKey], options: .skipsHiddenFiles)
-
-            localRecordings = fileURLs.compactMap { url -> AudioRecording? in
-                guard url.pathExtension == "m4a" else { return nil }
-                let attributes = try? FileManager.default.attributesOfItem(atPath: url.path)
-                let creationDate = attributes?[.creationDate] as? Date ?? Date()
-                let fileSize = attributes?[.size] as? Int64 ?? 0
-                
-                if let existingRecording = localRecordings.first(where: { $0.url == url }) {
-                    return AudioRecording(id: UUID(), url: url, creationDate: creationDate, fileSize: fileSize, isSpeechLikely: existingRecording.isSpeechLikely)
-                } else {
-                    return AudioRecording(id: UUID(), url: url, creationDate: creationDate, fileSize: fileSize, isSpeechLikely: nil)
-                }
-            }.sorted(by: { $0.creationDate > $1.creationDate })
-
-            for (index, recording) in localRecordings.enumerated() where recording.isSpeechLikely == nil {
-                determineSpeechLikelihood(for: recording.url) { isSpeechLikely in
+        let updatedRecordings = AudioFileManager.shared.updateLocalRecordings()
+        
+        for recording in updatedRecordings {
+            if recording.isSpeechLikely == nil {
+                determineSpeechLikelihood(for: recording.url) { [weak self] isSpeechLikely in
                     DispatchQueue.main.async {
-                        self.localRecordings[index].isSpeechLikely = isSpeechLikely
+                        guard let self = self else { return }
+                        if let index = self.localRecordings.firstIndex(where: { $0.url == recording.url }) {
+                            self.localRecordings[index].isSpeechLikely = isSpeechLikely
+                        }
                     }
                 }
             }
+        }
+        
+        self.localRecordings = updatedRecordings
+    }
+    
+    func fetchRecordings() {
+        updateLocalRecordings()
+    }
+
+    func deleteRecording(_ recording: AudioRecording) {
+        do {
+            try AudioFileManager.shared.deleteRecording(recording)
+            updateLocalRecordings()
+
+            if currentRecording?.url == recording.url {
+                currentRecording = nil
+                isPlaybackAvailable = false
+            }
+
+            errorMessage = nil
         } catch {
-            errorMessage = "Error fetching local recordings: \(error.localizedDescription)"
+            errorMessage = "Error deleting recording: \(error.localizedDescription)"
         }
     }
+
+    // MARK: - Speech Recognition
 
     private func determineSpeechLikelihood(for url: URL, completion: @escaping (Bool) -> Void) {
         let request = SFSpeechURLRecognitionRequest(url: url)
@@ -293,6 +256,8 @@ class AudioState: NSObject, ObservableObject {
             completion(isSpeechLikely)
         }
     }
+
+    // MARK: - Playback Controls
 
     func togglePlayback() {
         if isPlaying {
@@ -324,35 +289,18 @@ class AudioState: NSObject, ObservableObject {
         isPlaying = false
     }
 
-    func deleteRecording(_ recording: AudioRecording) {
-        do {
-            try FileManager.default.removeItem(at: recording.url)
-            updateLocalRecordings()
-
-            if currentRecording?.url == recording.url {
-                currentRecording = nil
-                isPlaybackAvailable = false
-            }
-
-            errorMessage = nil
-        } catch {
-            errorMessage = "Error deleting recording: \(error.localizedDescription)"
-        }
-    }
+    // MARK: - Formatting Helpers
 
     var formattedRecordingTime: String {
-        let minutes = Int(recordingTime) / 60
-        let seconds = Int(recordingTime) % 60
-        return String(format: "%02d:%02d", minutes, seconds)
+        AudioFileManager.shared.formattedDuration(recordingTime)
     }
 
     func formattedFileSize(bytes: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useKB, .useMB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: bytes)
+        AudioFileManager.shared.formattedFileSize(bytes: bytes)
     }
 }
+
+// MARK: - AVAudioPlayerDelegate
 
 extension AudioState: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
@@ -361,8 +309,4 @@ extension AudioState: AVAudioPlayerDelegate {
             errorMessage = "Playback finished with an error"
         }
     }
-}
-
-protocol WebSocketManagerProtocol {
-    func sendAudioData(_ data: Data)
 }

@@ -4,9 +4,8 @@
 //  It also manages a queue of audio files ready for analysis and provides an on/off widget for user control.
 //
 //  Created by Elijah Arbee on 8/30/24.
-// TODO: correct analysis result, currently will determine, but often will need a full page refresh to change state and if no speech is deteched it will still say analyzing not no speech detected
+// TODO: correct analysis result, currently will determine, but often will need a full page refresh to change state and if no speech is detected it will still say analyzing not no speech detected
 //
-
 import Foundation
 import Speech
 
@@ -18,62 +17,96 @@ class SpeechAnalysisService: NSObject, ObservableObject, SFSpeechRecognitionTask
     @Published var analysisProbabilities: [URL: Double] = [:]
     @Published var isAnalyzing: Bool = false
     @Published var errorMessage: String?
+    @Published var authorizationStatus: SFSpeechRecognizerAuthorizationStatus = .notDetermined
 
-    private let speechRecognizer: SFSpeechRecognizer?
+    private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionTask: SFSpeechRecognitionTask?
-    private var customLanguageModel: SFCustomLanguageModelData?
     private var currentRecordingURL: URL?
     private let analysisQueue = DispatchQueue(label: "com.yourapp.speechAnalysis", qos: .userInitiated)
 
     private override init() {
-        self.speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
         super.init()
-        self.speechRecognizer?.delegate = self
-        setupCustomLanguageModel()
+        setupSpeechRecognizer()
     }
 
-    // Setup custom language model for enhanced speech recognition
-    private func setupCustomLanguageModel() {
-        customLanguageModel = SFCustomLanguageModelData(
-            locale: Locale(identifier: "en-US"),
-            identifier: "com.yourapp.speechmodel",
-            version: "1.0"
-        )
+    private func setupSpeechRecognizer() {
+        self.speechRecognizer = SFSpeechRecognizer()
+        self.speechRecognizer?.delegate = self
+        checkSpeechRecognitionPermission()
+    }
 
-        let generator = SFCustomLanguageModelData.TemplatePhraseCountGenerator()
-        generator.define(className: "greeting", values: ["hello", "hi", "hey", "good morning", "good afternoon", "good evening"])
-        generator.define(className: "name", values: ["Alice", "Bob", "Charlie", "David", "Emma", "Frank", "Grace", "Henry"])
+    // Setup language model for speech recognition
+    private func setupLanguageModel() {
+        if let locale = speechRecognizer?.locale {
+            print("Speech recognizer initialized with locale: \(locale.identifier)")
+        } else {
+            print("Speech recognizer locale not available")
+        }
+    }
 
-        generator.insert(template: "<greeting> <name>", count: 100)
-        generator.insert(template: "How are you, <name>?", count: 50)
-        generator.insert(template: "It's nice to meet you, <name>", count: 50)
+    // Method to change language
+    func changeLanguage(to identifier: String) {
+        guard let newRecognizer = SFSpeechRecognizer(locale: Locale(identifier: identifier)) else {
+            print("Failed to create speech recognizer for locale: \(identifier)")
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.speechRecognizer?.delegate = nil  // Remove delegate from old recognizer
+            self.speechRecognizer = newRecognizer
+            self.speechRecognizer?.delegate = self
+            print("Changed speech recognizer to locale: \(identifier)")
+            self.setupLanguageModel()  // Reinitialize the language model
+        }
+    }
 
-        customLanguageModel?.insert(phraseCountGenerator: generator)
+    // Check and request speech recognition permission
+    func checkSpeechRecognitionPermission() {
+        SFSpeechRecognizer.requestAuthorization { status in
+            DispatchQueue.main.async {
+                self.authorizationStatus = status
+                switch status {
+                case .authorized:
+                    print("Speech recognition authorized")
+                    self.setupLanguageModel()
+                case .denied:
+                    self.errorMessage = "Speech recognition permission denied"
+                case .restricted:
+                    self.errorMessage = "Speech recognition is restricted on this device"
+                case .notDetermined:
+                    self.errorMessage = "Speech recognition permission not determined"
+                @unknown default:
+                    self.errorMessage = "Unknown speech recognition authorization status"
+                }
+            }
+        }
     }
 
     // Analyze a single audio recording
-
     func analyzeRecording(_ recording: AudioRecording) async {
-        isAnalyzing = true
-        errorMessage = nil
-        currentRecordingURL = recording.url
+        guard authorizationStatus == .authorized else {
+            await MainActor.run {
+                errorMessage = "Speech recognition is not authorized"
+                isAnalyzing = false
+            }
+            return
+        }
+
+        await MainActor.run {
+            isAnalyzing = true
+            errorMessage = nil
+            currentRecordingURL = recording.url
+        }
 
         guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
-            errorMessage = "Speech recognition is not available"
-            isAnalyzing = false
+            await MainActor.run {
+                errorMessage = "Speech recognition is not available"
+                isAnalyzing = false
+            }
             return
         }
 
         let request = SFSpeechURLRecognitionRequest(url: recording.url)
-        // Attempt to use custom language model, though not directly supported by SFSpeechURLRecognitionRequest
-        if let customLanguageModel = customLanguageModel {
-            do {
-                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("customModel.bin")
-                try await customLanguageModel.export(to: tempURL)
-            } catch {
-                errorMessage = "Failed to create custom language model: \(error.localizedDescription)"
-            }
-        }
 
         do {
             let result: SFSpeechRecognitionResult = try await withCheckedThrowingContinuation { continuation in
@@ -85,10 +118,12 @@ class SpeechAnalysisService: NSObject, ObservableObject, SFSpeechRecognitionTask
                     }
                 }
             }
-            processResult(result)
+            await processResult(result)
         } catch {
-            errorMessage = "Speech recognition failed: \(error.localizedDescription)"
-            isAnalyzing = false
+            await MainActor.run {
+                errorMessage = "Speech recognition failed: \(error.localizedDescription)"
+                isAnalyzing = false
+            }
         }
     }
 
@@ -100,7 +135,7 @@ class SpeechAnalysisService: NSObject, ObservableObject, SFSpeechRecognitionTask
     }
 
     // Process the result of a speech recognition task
-    private func processResult(_ result: SFSpeechRecognitionResult) {
+    private func processResult(_ result: SFSpeechRecognitionResult) async {
         let wordCount = result.bestTranscription.segments.reduce(into: 0) { $0 += $1.substring.split(separator: " ").count }
         let durationInSeconds = result.bestTranscription.segments.last?.duration ?? 0
 
@@ -110,8 +145,8 @@ class SpeechAnalysisService: NSObject, ObservableObject, SFSpeechRecognitionTask
         // Calculate percentage, capping at 100%
         let percentage = min((Double(wordCount) / expectedWordCount) * 100, 100)
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self, let currentURL = self.currentRecordingURL else { return }
+        await MainActor.run {
+            guard let currentURL = self.currentRecordingURL else { return }
             self.analysisProbabilities[currentURL] = percentage
             self.isAnalyzing = false
         }

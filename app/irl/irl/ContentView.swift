@@ -1,10 +1,5 @@
-//
-//  ContentView.swift
-//  irl
-//
-//  Created by Elijah Arbee on 8/29/24.
-//
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     @StateObject private var globalState = GlobalState()
@@ -12,7 +7,6 @@ struct ContentView: View {
     @AppStorage("isRecordingEnabled") private var isRecordingEnabled = true
     @State private var selectedTab = 0
 
-    // App-wide customizable properties
     let accentColor: Color = Color("AccentColor")
     let inactiveColor: Color = .gray
     let backgroundColor: Color = Color("BackgroundColor")
@@ -26,13 +20,32 @@ struct ContentView: View {
         )
         .environmentObject(globalState)
         .environmentObject(audioState)
-        .onAppear {
-            if isRecordingEnabled {
-                audioState.startRecording()
-            }
+        .onAppear(perform: setupAudioSession)
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            handleAppBackgrounding()
         }
-        .onDisappear {
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
+            handleAppTermination()
+        }
+    }
+
+    private func setupAudioSession() {
+        if isRecordingEnabled && !audioState.isRecording {
+            audioState.startRecording()
+        }
+    }
+
+    private func handleAppBackgrounding() {
+        // Ensure recording continues in the background if enabled
+        if isRecordingEnabled && !audioState.isRecording {
+            audioState.startRecording()
+        }
+    }
+
+    private func handleAppTermination() {
+        // Stop recording and perform any necessary cleanup
+        if audioState.isRecording {
             audioState.stopRecording()
         }
     }
-} 
+}

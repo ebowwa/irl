@@ -4,19 +4,29 @@
 //
 //  Created by Elijah Arbee on 8/29/24.
 //
-/** TODO:
-- correct state management
-- establish privacy policy
-- add ble button: connect, check, check battery, test ble device
-**/
 import SwiftUI
-
 
 struct SettingsView: View {
     @EnvironmentObject var appState: GlobalState
     @AppStorage("isPushNotificationsEnabled") private var isPushNotificationsEnabled = false
     @AppStorage("isEmailNotificationsEnabled") private var isEmailNotificationsEnabled = false
     @StateObject private var serverHealthManager = ServerHealthManager()
+    @State private var isAdvancedExpanded = false
+    @State private var isSelfHostExpanded = false
+    @State private var newApiKeyName = ""
+    @State private var newApiKeyValue = ""
+    @State private var customAPIKeys: [String: String] = [:]
+    
+    // Binding for baseDomain
+    @State private var baseDomain = Constants.baseDomain
+    
+    // State properties for API keys
+    @State private var openAIKey = Constants.APIKeys.openAI
+    @State private var humeAIKey = Constants.APIKeys.humeAI
+    @State private var anthropicAIKey = Constants.APIKeys.anthropicAI
+    @State private var gcpKey = Constants.APIKeys.gcp
+    @State private var falAPIKey = Constants.APIKeys.falAPI
+    @State private var deepgramKey = Constants.APIKeys.deepgram
 
     var body: some View {
         Form {
@@ -43,9 +53,55 @@ struct SettingsView: View {
                 }
             }
 
-            Section(header: Text("Server Health")) {
-                NavigationLink(destination: ServerHealthSettingsView(serverHealthManager: serverHealthManager)) {
-                    Text("Server Health Settings")
+            Section(header: Text("Advanced")) {
+                DisclosureGroup("Developer", isExpanded: $isAdvancedExpanded) {
+                    NavigationLink(destination: ServerHealthSettingsView(serverHealthManager: serverHealthManager)) {
+                        Text("Server Health Settings")
+                    }
+                    
+                    DisclosureGroup("Backend Configuration", isExpanded: $isSelfHostExpanded) {
+                        TextField("Base Domain", text: $baseDomain)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .onChange(of: baseDomain) { newValue in
+                                Constants.baseDomain = newValue
+                            }
+                        
+                        Group {
+                            APIKeyField(title: "OpenAI", key: $openAIKey)
+                                .onChange(of: openAIKey) { Constants.APIKeys.openAI = $0 }
+                            APIKeyField(title: "Hume AI", key: $humeAIKey)
+                                .onChange(of: humeAIKey) { Constants.APIKeys.humeAI = $0 }
+                            APIKeyField(title: "Anthropic AI", key: $anthropicAIKey)
+                                .onChange(of: anthropicAIKey) { Constants.APIKeys.anthropicAI = $0 }
+                            APIKeyField(title: "GCP", key: $gcpKey)
+                                .onChange(of: gcpKey) { Constants.APIKeys.gcp = $0 }
+                            APIKeyField(title: "FAL API", key: $falAPIKey)
+                                .onChange(of: falAPIKey) { Constants.APIKeys.falAPI = $0 }
+                            APIKeyField(title: "Deepgram", key: $deepgramKey)
+                                .onChange(of: deepgramKey) { Constants.APIKeys.deepgram = $0 }
+                        }
+                        
+                        ForEach(customAPIKeys.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                            APIKeyField(title: key, key: Binding(
+                                get: { self.customAPIKeys[key] ?? "" },
+                                set: { self.customAPIKeys[key] = $0 }
+                            ))
+                        }
+                        
+                        HStack {
+                            TextField("New API Name", text: $newApiKeyName)
+                            SecureField("New API Key", text: $newApiKeyValue)
+                            Button(action: {
+                                if !newApiKeyName.isEmpty {
+                                    customAPIKeys[newApiKeyName] = newApiKeyValue
+                                    newApiKeyName = ""
+                                    newApiKeyValue = ""
+                                }
+                            }) {
+                                Image(systemName: "plus.circle.fill")
+                            }
+                        }
+                    }
                 }
             }
 
@@ -58,6 +114,20 @@ struct SettingsView: View {
             }
         }
         .navigationBarTitle("Settings", displayMode: .inline)
+    }
+}
+
+struct APIKeyField: View {
+    let title: String
+    @Binding var key: String
+    
+    var body: some View {
+        HStack {
+            Text(title)
+            Spacer()
+            SecureField("API Key", text: $key)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
     }
 }
 
@@ -122,8 +192,6 @@ struct SettingsView_Previews: PreviewProvider {
 }
 #endif
 
-
-
 /**
  
  LIKE PRIVACY SHOULD HAVE AI SECTION
@@ -136,3 +204,9 @@ struct SettingsView_Previews: PreviewProvider {
   - coach/mentor
   - other's {build this :) custom plugins - to keep private or share with the community}
  */
+
+/** TODO:
+- correct state management
+- establish privacy policy
+- add ble button: connect, check, check battery, test ble device
+**/

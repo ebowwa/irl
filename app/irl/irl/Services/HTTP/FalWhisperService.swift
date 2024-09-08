@@ -115,8 +115,8 @@ struct WhisperInput: Codable {
     let audio_url: String
     let task: TaskEnum
     let language: LanguageEnum
-    let chunk_level: ChunkLevelEnum = .segment
-    let version: VersionEnum = .v3
+    var chunk_level: ChunkLevelEnum = .segment
+    var version: VersionEnum = .v3
 }
 
 struct WhisperOutput: Codable {
@@ -125,7 +125,7 @@ struct WhisperOutput: Codable {
 }
 
 struct WhisperChunk: Codable, Identifiable {
-    let id = UUID()
+    var id = UUID()
     let timestamp: [Float]
     let text: String
 }
