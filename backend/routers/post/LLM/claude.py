@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Initialize Anthropic client
-anthropic = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY") or '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')
-async_anthropic = AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY") or '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')
+anthropic = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY") or 'your_api_key')
+async_anthropic = AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY") or 'your_API_Key')
 
 class Message(BaseModel):
     role: str
