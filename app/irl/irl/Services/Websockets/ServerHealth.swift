@@ -16,6 +16,7 @@ class ServerHealthManager: ObservableObject {
     @Published var testConnectionURL: String
 
     private var webSocketTask: URLSessionWebSocketTask?
+    private var isCancelled = false
 
     init(webSocketPath: String = Constants.API.Paths.webSocketPing,
          testConnectionPath: String = Constants.API.Paths.testConnection) {
@@ -39,6 +40,7 @@ class ServerHealthManager: ObservableObject {
 
         let urlSession = URLSession(configuration: .default)
         webSocketTask = urlSession.webSocketTask(with: url)
+        isCancelled = false
 
         webSocketTask?.resume()
 
@@ -52,46 +54,54 @@ class ServerHealthManager: ObservableObject {
     }
 
     func sendPing() {
+        guard !isCancelled else { return }
+        
         let message = URLSessionWebSocketTask.Message.string("PING")
         webSocketTask?.send(message) { [weak self] error in
+            guard let self = self, !self.isCancelled else { return }
+            
             DispatchQueue.main.async {
                 if let error = error {
-                    self?.appendToLog("Error sending ping: \(error.localizedDescription)")
+                    self.appendToLog("Error sending ping: \(error.localizedDescription)")
                 } else {
-                    self?.appendToLog("Sent Ping")
+                    self.appendToLog("Sent Ping")
                 }
             }
         }
     }
 
     private func receiveMessage() {
+        guard !isCancelled else { return }
+        
         webSocketTask?.receive { [weak self] result in
+            guard let self = self, !self.isCancelled else { return }
+            
             switch result {
             case .failure(let error):
                 DispatchQueue.main.async {
-                    self?.appendToLog("Error receiving message: \(error.localizedDescription)")
-                    self?.isConnected = false
+                    self.appendToLog("Error receiving message: \(error.localizedDescription)")
+                    self.isConnected = false
                 }
             case .success(let message):
                 switch message {
                 case .string(let text):
                     DispatchQueue.main.async {
                         if text == "PONG" {
-                            self?.lastPongReceived = Date().description
-                            self?.appendToLog("Received Pong")
+                            self.lastPongReceived = Date().description
+                            self.appendToLog("Received Pong")
                         } else {
-                            self?.appendToLog("Received text: \(text)")
+                            self.appendToLog("Received text: \(text)")
                         }
                     }
                 case .data(let data):
                     DispatchQueue.main.async {
-                        self?.appendToLog("Received data: \(data.count) bytes")
+                        self.appendToLog("Received data: \(data.count) bytes")
                     }
                 @unknown default:
                     break
                 }
 
-                self?.receiveMessage()
+                self.receiveMessage()
             }
         }
     }
@@ -126,5 +136,14 @@ class ServerHealthManager: ObservableObject {
             print(message)
         }
     }
+    
+    func disconnect() {
+        isCancelled = true
+        webSocketTask?.cancel(with: .goingAway, reason: nil)
+        webSocketTask = nil
+        DispatchQueue.main.async {
+            self.isConnected = false
+            self.appendToLog("WebSocket disconnected")
+        }
+    }
 }
-

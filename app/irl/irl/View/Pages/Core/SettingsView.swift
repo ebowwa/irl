@@ -133,6 +133,7 @@ struct APIKeyField: View {
 
 struct ServerHealthSettingsView: View {
     @ObservedObject var serverHealthManager: ServerHealthManager
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         Form {
@@ -146,11 +147,14 @@ struct ServerHealthSettingsView: View {
 
             Section {
                 Button(action: {
-                    serverHealthManager.connect()
+                    if serverHealthManager.isConnected {
+                        serverHealthManager.disconnect()
+                    } else {
+                        serverHealthManager.connect()
+                    }
                 }) {
-                    Text(serverHealthManager.isConnected ? "Connected" : "Connect")
+                    Text(serverHealthManager.isConnected ? "Disconnect" : "Connect")
                 }
-                .disabled(serverHealthManager.isConnected)
 
                 Button(action: {
                     serverHealthManager.sendPing()
@@ -178,6 +182,11 @@ struct ServerHealthSettingsView: View {
             }
         }
         .navigationTitle("Server Health Settings")
+        .onDisappear {
+            if serverHealthManager.isConnected {
+                serverHealthManager.disconnect()
+            }
+        }
     }
 }
 
