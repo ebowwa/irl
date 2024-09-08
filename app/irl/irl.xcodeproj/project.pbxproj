@@ -40,7 +40,6 @@
 		76E1AAEA2C8BB223006BDC0B /* ClaudeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */; };
 		76E1AAED2C8BEA5C006BDC0B /* LiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AAEC2C8BEA5C006BDC0B /* LiveView.swift */; };
 		76E1AAF72C8C35DC006BDC0B /* GLTFKit2 in Frameworks */ = {isa = PBXBuildFile; productRef = 76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */; };
-		76E1AAF92C8C36CB006BDC0B /* scene.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 76E1AAF82C8C36CB006BDC0B /* scene.gltf */; };
 		76E1AB012C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */; };
 		76E1AB082C8CC2F1006BDC0B /* AudioRecordingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB072C8CC2F1006BDC0B /* AudioRecordingModel.swift */; };
 		76E1AB0A2C8CC3C8006BDC0B /* WebSocketManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB092C8CC3C8006BDC0B /* WebSocketManagerProtocol.swift */; };
@@ -91,7 +90,6 @@
 		76C597102C818C0900AD2F55 /* GlobalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalState.swift; sourceTree = "<group>"; };
 		76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeConstants.swift; sourceTree = "<group>"; };
 		76E1AAEC2C8BEA5C006BDC0B /* LiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveView.swift; sourceTree = "<group>"; };
-		76E1AAF82C8C36CB006BDC0B /* scene.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = scene.gltf; path = ../../../../../../Downloads/human_x_artificial_intelligence/scene.gltf; sourceTree = "<group>"; };
 		76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderDebugMenuView.swift; sourceTree = "<group>"; };
 		76E1AB072C8CC2F1006BDC0B /* AudioRecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingModel.swift; sourceTree = "<group>"; };
 		76E1AB092C8CC3C8006BDC0B /* WebSocketManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManagerProtocol.swift; sourceTree = "<group>"; };
@@ -196,7 +194,6 @@
 		765E98C42C812A7F00A6726B /* View */ = {
 			isa = PBXGroup;
 			children = (
-				768B60662C82E57900C5AB3A /* Widgets */,
 				768B60612C8288F100C5AB3A /* Components */,
 				765E98DD2C813DB800A6726B /* Pages */,
 				765E98D52C81386800A6726B /* MainTabMenu.swift */,
@@ -218,7 +215,6 @@
 		765E98D42C8137A900A6726B /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				76E1AAF22C8C341C006BDC0B /* threed-assets */,
 				768B60652C82E37300C5AB3A /* Demo */,
 				768B60642C82E35500C5AB3A /* State */,
 				76C597122C81ABFC00AD2F55 /* Models */,
@@ -233,6 +229,7 @@
 				7637EBDE2C8A288F00BAF0EC /* Chat */,
 				768B606B2C82EB5C00C5AB3A /* Core */,
 				76E1AAEC2C8BEA5C006BDC0B /* LiveView.swift */,
+				765E98DE2C813E6D00A6726B /* TabsView.swift */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -263,22 +260,6 @@
 			path = Demo;
 			sourceTree = "<group>";
 		};
-		768B60662C82E57900C5AB3A /* Widgets */ = {
-			isa = PBXGroup;
-			children = (
-				765E98D32C81368300A6726B /* SettingsWidgets */,
-			);
-			path = Widgets;
-			sourceTree = "<group>";
-		};
-		768B60672C82E5A000C5AB3A /* HTTP */ = {
-			isa = PBXGroup;
-			children = (
-				76E1AB1C2C8E4A56006BDC0B /* Whisper */,
-			);
-			path = HTTP;
-			sourceTree = "<group>";
-		};
 		768B60692C82EABA00C5AB3A /* Analysis */ = {
 			isa = PBXGroup;
 			children = (
@@ -291,8 +272,8 @@
 		768B606B2C82EB5C00C5AB3A /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				76E1AB2A2C8E52D9006BDC0B /* Settings */,
 				7637EBC62C88125D00BAF0EC /* generalapp */,
-				765E98DE2C813E6D00A6726B /* TabsView.swift */,
 				765E98C72C812ACA00A6726B /* SettingsView.swift */,
 			);
 			path = Core;
@@ -301,9 +282,8 @@
 		76C597082C8188B600AD2F55 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				76E1AB292C8E5274006BDC0B /* Websockets */,
 				768B60692C82EABA00C5AB3A /* Analysis */,
-				768B60672C82E5A000C5AB3A /* HTTP */,
-				7637EBBE2C8660C400BAF0EC /* ServerHealth.swift */,
 			);
 			name = Services;
 			path = irl/Services;
@@ -329,14 +309,6 @@
 			children = (
 			);
 			path = Plugins;
-			sourceTree = "<group>";
-		};
-		76E1AAF22C8C341C006BDC0B /* threed-assets */ = {
-			isa = PBXGroup;
-			children = (
-				76E1AAF82C8C36CB006BDC0B /* scene.gltf */,
-			);
-			path = "threed-assets";
 			sourceTree = "<group>";
 		};
 		76E1AB042C8CC025006BDC0B /* AudioState */ = {
@@ -380,6 +352,23 @@
 				76E1AB252C8E4AC6006BDC0B /* WhisperEnums.swift */,
 			);
 			path = Whisper;
+			sourceTree = "<group>";
+		};
+		76E1AB292C8E5274006BDC0B /* Websockets */ = {
+			isa = PBXGroup;
+			children = (
+				7637EBBE2C8660C400BAF0EC /* ServerHealth.swift */,
+				76E1AB1C2C8E4A56006BDC0B /* Whisper */,
+			);
+			path = Websockets;
+			sourceTree = "<group>";
+		};
+		76E1AB2A2C8E52D9006BDC0B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				765E98D32C81368300A6726B /* SettingsWidgets */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -451,7 +440,6 @@
 				765E98BE2C811FC700A6726B /* Preview Assets.xcassets in Resources */,
 				765E98BA2C811FC700A6726B /* Assets.xcassets in Resources */,
 				765E98FC2C814F8A00A6726B /* SampleAudioAnalysis.plist in Resources */,
-				76E1AAF92C8C36CB006BDC0B /* scene.gltf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
