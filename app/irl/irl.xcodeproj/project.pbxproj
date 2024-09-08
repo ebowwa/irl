@@ -33,7 +33,6 @@
 		765E98DA2C81390400A6726B /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98D92C81390400A6726B /* SearchView.swift */; };
 		765E98DC2C81391900A6726B /* ProfileVIew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98DB2C81391900A6726B /* ProfileVIew.swift */; };
 		765E98DF2C813E6D00A6726B /* TabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98DE2C813E6D00A6726B /* TabsView.swift */; };
-		765E98EE2C81442E00A6726B /* AudioState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98ED2C81442D00A6726B /* AudioState.swift */; };
 		765E98FC2C814F8A00A6726B /* SampleAudioAnalysis.plist in Resources */ = {isa = PBXBuildFile; fileRef = 765E98FB2C814F8A00A6726B /* SampleAudioAnalysis.plist */; };
 		768B60592C81BB1200C5AB3A /* SpeechAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768B60582C81BB1200C5AB3A /* SpeechAnalysisService.swift */; };
 		768B60602C8274CB00C5AB3A /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 768B605F2C8274CB00C5AB3A /* Starscream */; };
@@ -49,6 +48,7 @@
 		76E1AB0E2C8CD3B2006BDC0B /* AudioFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB0D2C8CD3B2006BDC0B /* AudioFileManager.swift */; };
 		76E1AB142C8CE2CB006BDC0B /* RecordingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB132C8CE2CB006BDC0B /* RecordingsList.swift */; };
 		76E1AB162C8CF15B006BDC0B /* SFSpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB152C8CF15B006BDC0B /* SFSpeechRecognizer.swift */; };
+		76E1AB182C8E43BC006BDC0B /* Index.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB172C8E43BC006BDC0B /* Index.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,7 +80,6 @@
 		765E98D92C81390400A6726B /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		765E98DB2C81391900A6726B /* ProfileVIew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileVIew.swift; sourceTree = "<group>"; };
 		765E98DE2C813E6D00A6726B /* TabsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabsView.swift; sourceTree = "<group>"; };
-		765E98ED2C81442D00A6726B /* AudioState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioState.swift; sourceTree = "<group>"; };
 		765E98FB2C814F8A00A6726B /* SampleAudioAnalysis.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = SampleAudioAnalysis.plist; sourceTree = "<group>"; };
 		768B60582C81BB1200C5AB3A /* SpeechAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechAnalysisService.swift; sourceTree = "<group>"; };
 		768B60622C82890700C5AB3A /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
@@ -96,6 +95,7 @@
 		76E1AB0D2C8CD3B2006BDC0B /* AudioFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileManager.swift; sourceTree = "<group>"; };
 		76E1AB132C8CE2CB006BDC0B /* RecordingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsList.swift; sourceTree = "<group>"; };
 		76E1AB152C8CF15B006BDC0B /* SFSpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSpeechRecognizer.swift; sourceTree = "<group>"; };
+		76E1AB172C8E43BC006BDC0B /* Index.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Index.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,7 +241,6 @@
 			isa = PBXGroup;
 			children = (
 				76C597102C818C0900AD2F55 /* GlobalState.swift */,
-				765E98ED2C81442D00A6726B /* AudioState.swift */,
 				76E1AB042C8CC025006BDC0B /* AudioState */,
 				768B60812C83B16500C5AB3A /* TODO.md */,
 			);
@@ -338,6 +337,7 @@
 				76E1AB072C8CC2F1006BDC0B /* AudioRecordingModel.swift */,
 				76E1AB092C8CC3C8006BDC0B /* WebSocketManagerProtocol.swift */,
 				76E1AB0D2C8CD3B2006BDC0B /* AudioFileManager.swift */,
+				76E1AB172C8E43BC006BDC0B /* Index.swift */,
 			);
 			path = AudioState;
 			sourceTree = "<group>";
@@ -465,7 +465,6 @@
 				7637EBBB2C865A3600BAF0EC /* ServerHealthWidget.swift in Sources */,
 				76E1AB012C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift in Sources */,
 				7637EBB42C85188D00BAF0EC /* Transcribe.swift in Sources */,
-				765E98EE2C81442E00A6726B /* AudioState.swift in Sources */,
 				76E1AB162C8CF15B006BDC0B /* SFSpeechRecognizer.swift in Sources */,
 				765E98B62C811FC500A6726B /* irlApp.swift in Sources */,
 				768B60592C81BB1200C5AB3A /* SpeechAnalysisService.swift in Sources */,
@@ -474,6 +473,7 @@
 				76E1AB082C8CC2F1006BDC0B /* AudioRecordingModel.swift in Sources */,
 				765E98CE2C812F4C00A6726B /* AppearanceSettingsView.swift in Sources */,
 				7637EBE82C8BA02900BAF0EC /* SimpleLocalTranscription.swift in Sources */,
+				76E1AB182C8E43BC006BDC0B /* Index.swift in Sources */,
 				765E98DA2C81390400A6726B /* SearchView.swift in Sources */,
 				7637EBF12C8BA6F700BAF0EC /* APIClient.swift in Sources */,
 				76E1AAEA2C8BB223006BDC0B /* ClaudeConstants.swift in Sources */,
