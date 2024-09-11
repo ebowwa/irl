@@ -8,6 +8,7 @@ import Foundation
 import Combine
 import SwiftUI
 
+
 struct ClaudeMessage: Codable {
     let role: String
     let content: String
@@ -66,6 +67,8 @@ class ClaudeViewModel: ObservableObject {
         didSet { UserDefaults.standard.set(systemPrompt, forKey: "systemPrompt") }
     }
     
+    @Published private(set) var currentConfiguration: Configuration?
+    
     static let availableModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229"]
     
     private let apiClient: ClaudeAPIClient
@@ -86,7 +89,13 @@ class ClaudeViewModel: ObservableObject {
         isLoading = true
         error = nil
         response = "" // Clear previous response
-        apiClient.sendMessage(message, maxTokens: maxTokens, model: model, temperature: temperature, systemPrompt: systemPrompt)
+        
+        let modelToUse = currentConfiguration?.parameters.model ?? model
+        let maxTokensToUse = currentConfiguration?.parameters.maxTokens ?? maxTokens
+        let temperatureToUse = currentConfiguration?.parameters.temperature ?? temperature
+        let systemPromptToUse = currentConfiguration?.parameters.systemPrompt ?? systemPrompt
+        
+        apiClient.sendMessage(message, maxTokens: maxTokensToUse, model: modelToUse, temperature: temperatureToUse, systemPrompt: systemPromptToUse)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 self?.isLoading = false
@@ -97,5 +106,23 @@ class ClaudeViewModel: ObservableObject {
                 self?.response = response.content
             }
             .store(in: &cancellables)
+    }
+    
+    func setConfiguration(_ configuration: Configuration) {
+        currentConfiguration = configuration
+        // Update the current settings to match the configuration
+        model = configuration.parameters.model
+        maxTokens = configuration.parameters.maxTokens
+        temperature = configuration.parameters.temperature
+        systemPrompt = configuration.parameters.systemPrompt
+    }
+    
+    func clearConfiguration() {
+        currentConfiguration = nil
+        // Reset to default values or load from UserDefaults as needed
+        model = UserDefaults.standard.string(forKey: "selectedModel") ?? ClaudeConstants.DefaultParams.model
+        maxTokens = UserDefaults.standard.integer(forKey: "maxTokens")
+        temperature = UserDefaults.standard.double(forKey: "temperature")
+        systemPrompt = UserDefaults.standard.string(forKey: "systemPrompt") ?? ""
     }
 }

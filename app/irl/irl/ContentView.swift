@@ -1,3 +1,6 @@
+// ContentView.swift
+// TODO: if no server websocket not connected, etc - THEN save for later; add to queue batch for when possible
+// want a testing mode - willing do do test backend
 import SwiftUI
 import Combine
 
@@ -27,6 +30,7 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
             handleAppTermination()
         }
+        .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
     }
 
     private func setupAudioSession() {

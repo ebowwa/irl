@@ -40,7 +40,7 @@ struct MainTabMenu: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationView {
-                AllRecordingsListView(viewModel: audioRecorderViewModel, showAllRecordings: $showAllRecordings)
+                // AllRecordingsListView(viewModel: audioRecorderViewModel, showAllRecordings: $showAllRecordings)
             }
             .tabItem {
                 customTabItem(for: tabs[0], isSelected: selectedTab == 0)
@@ -48,7 +48,8 @@ struct MainTabMenu: View {
             .tag(0)
 
             NavigationView {
-                TranscribeView()
+                    ChatView()
+                // AudioStreamView()
             }
             .tabItem {
                 customTabItem(for: tabs[1], isSelected: selectedTab == 1)
@@ -56,7 +57,8 @@ struct MainTabMenu: View {
             .tag(1)
 
             NavigationView {
-                ChatView()
+                EmotionAnalysisDashboard()
+                // ChatView()
             }
             .tabItem {
                 customTabItem(for: tabs[2], isSelected: selectedTab == 2)

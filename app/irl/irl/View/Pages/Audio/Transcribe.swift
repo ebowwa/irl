@@ -11,9 +11,11 @@ import AVFoundation
 struct TranscribeView: View {
     @StateObject private var whisperService = WhisperService()
     @State private var task: TaskEnum = .transcribe
-    @State private var language: LanguageEnum = .en
+    @State private var language: AppLanguage?
     @State private var isShowingFilePicker = false
     @State private var audioFileURL: URL?
+
+    let languageManager = LanguageManager.shared
 
     var body: some View {
         VStack {
@@ -29,8 +31,8 @@ struct TranscribeView: View {
             .padding()
 
             Picker("Language", selection: $language) {
-                ForEach(LanguageEnum.allCases, id: \.self) { language in
-                    Text(language.rawValue).tag(language)
+                ForEach(languageManager.getWhisperSupportedLanguages(), id: \.self) { language in
+                    Text(language.name).tag(Optional(language))
                 }
             }
             .padding()
@@ -67,8 +69,8 @@ struct TranscribeView: View {
             DocumentPicker(fileURL: $audioFileURL)
         }
         .onChange(of: audioFileURL) { newValue in
-            if let url = newValue {
-                whisperService.uploadFile(url: url, task: task, language: language)
+            if let url = newValue, let selectedLanguage = language {
+                whisperService.uploadFile(url: url, task: task, language: selectedLanguage)
                     .receive(on: DispatchQueue.main)
                     .sink(receiveCompletion: { completion in
                         switch completion {
@@ -81,8 +83,12 @@ struct TranscribeView: View {
                     .store(in: &whisperService.cancellables)
             }
         }
+        .onAppear {
+            language = languageManager.language(forCode: "en")
+        }
     }
 }
+
 
 struct DocumentPicker: UIViewControllerRepresentable {
     @Binding var fileURL: URL?

@@ -1,34 +1,57 @@
 //
 //  GlobalState.swift
 //  irl
+// TODO refactor to contentview
 // TODO: user management, remove the placeholders still contemplating firebase v supabase and co
 //  Created by Elijah Arbee on 8/29/24.
 //
 import SwiftUI
+import Foundation
 
 class GlobalState: ObservableObject {
     @Published var user: User?
     @Published var notifications: [Notification] = []
     @AppStorage("currentTheme") var currentTheme: Theme = .light
-    @AppStorage("selectedLanguage") var selectedLanguage: Language = .english
+    @AppStorage("selectedLanguageCode") var selectedLanguageCode: String = "en"
 
-    init() {
+    var selectedLanguage: AppLanguage {
+        get {
+            LanguageManager.shared.language(forCode: selectedLanguageCode) ?? AppLanguage(code: "en", name: "English", service: ["falwhisperSep2024", "anthropic-claude-3"])
+        }
+        set {
+            selectedLanguageCode = newValue.code
+        }
+    }
+
+    private let userService: UserService
+    private let notificationService: NotificationService
+
+    init(userService: UserService = UserService(), notificationService: NotificationService = NotificationService()) {
+        self.userService = userService
+        self.notificationService = notificationService
         loadUser()
         fetchNotifications()
     }
 
     func loadUser() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.user = User(id: UUID(), name: "John Doe", email: "john@example.com")
+        userService.loadUser { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.user = user
+            case .failure(let error):
+                print("Failed to load user: \(error)")
+            }
         }
     }
 
     func fetchNotifications() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.notifications = [
-                Notification(id: UUID(), title: "New message", body: "You have a new message from Jane"),
-                Notification(id: UUID(), title: "Reminder", body: "Team meeting at 3 PM")
-            ]
+        notificationService.fetchNotifications { [weak self] result in
+            switch result {
+            case .success(let notifications):
+                self?.notifications = notifications
+            case .failure(let error):
+                print("Failed to fetch notifications: \(error)")
+            }
         }
     }
 

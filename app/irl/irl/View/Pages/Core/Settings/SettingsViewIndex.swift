@@ -1,8 +1,8 @@
 //
-//  SettingsView.swift
+//  SettingsViewIndex.swift
 //  irl
-//
-//  Created by Elijah Arbee on 8/29/24.
+//  TODO: allow DELETE USER ADDED API KEYS
+//  Created by Elijah Arbee on 9/9/24.
 //
 import SwiftUI
 
@@ -35,9 +35,12 @@ struct SettingsView: View {
             }
 
             Section(header: Text("Language")) {
-                Picker("Language", selection: $appState.selectedLanguage) {
-                    ForEach(Language.allCases, id: \.self) { language in
-                        Text(language.rawValue.capitalized).tag(language)
+                NavigationLink(destination: LanguageSettingsView(selectedLanguage: $appState.selectedLanguage)) {
+                    HStack {
+                        Text("Language")
+                        Spacer()
+                        Text(appState.selectedLanguage.name)
+                            .foregroundColor(.gray)
                     }
                 }
             }
@@ -55,7 +58,7 @@ struct SettingsView: View {
 
             Section(header: Text("Advanced")) {
                 DisclosureGroup("Developer", isExpanded: $isAdvancedExpanded) {
-                    NavigationLink(destination: ServerHealthSettingsView(serverHealthManager: serverHealthManager)) {
+                    NavigationLink(destination: ServerHealthWidget(serverHealthManager: serverHealthManager)) {
                         Text("Server Health Settings")
                     }
                     
@@ -111,6 +114,17 @@ struct SettingsView: View {
                     Spacer()
                     Text("0.0.1")
                 }
+                HStack {
+                    Text("Created by")
+                    Spacer()
+                    Text("ebowwa")
+                        .foregroundColor(.blue)
+                        .onTapGesture {
+                            if let url = URL(string: "https://ebowwa.xyz") {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                }
             }
         }
         .navigationBarTitle("Settings", displayMode: .inline)
@@ -127,65 +141,6 @@ struct APIKeyField: View {
             Spacer()
             SecureField("API Key", text: $key)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-        }
-    }
-}
-
-struct ServerHealthSettingsView: View {
-    @ObservedObject var serverHealthManager: ServerHealthManager
-    @Environment(\.presentationMode) var presentationMode
-
-    var body: some View {
-        Form {
-            Section(header: Text("WebSocket URL")) {
-                TextField("Enter WebSocket URL", text: $serverHealthManager.webSocketURL)
-            }
-
-            Section(header: Text("Test Connection URL")) {
-                TextField("Enter Test Connection URL", text: $serverHealthManager.testConnectionURL)
-            }
-
-            Section {
-                Button(action: {
-                    if serverHealthManager.isConnected {
-                        serverHealthManager.disconnect()
-                    } else {
-                        serverHealthManager.connect()
-                    }
-                }) {
-                    Text(serverHealthManager.isConnected ? "Disconnect" : "Connect")
-                }
-
-                Button(action: {
-                    serverHealthManager.sendPing()
-                }) {
-                    Text("Send Ping")
-                }
-                .disabled(!serverHealthManager.isConnected)
-
-                Button(action: {
-                    serverHealthManager.testConnection()
-                }) {
-                    Text("Test Connection")
-                }
-            }
-
-            Section(header: Text("Status")) {
-                Text("Last Pong Received: \(serverHealthManager.lastPongReceived)")
-            }
-
-            Section(header: Text("Log")) {
-                ScrollView {
-                    Text(serverHealthManager.log)
-                }
-                .frame(height: 200)
-            }
-        }
-        .navigationTitle("Server Health Settings")
-        .onDisappear {
-            if serverHealthManager.isConnected {
-                serverHealthManager.disconnect()
-            }
         }
     }
 }

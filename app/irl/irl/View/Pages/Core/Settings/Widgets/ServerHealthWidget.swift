@@ -1,8 +1,3 @@
-// ServerHealthWidget.swift
-// irl
-//
-// Created by Elijah Arbee on 9/2/24.
-
 import SwiftUI
 
 struct ServerHealthWidget: View {
@@ -33,8 +28,7 @@ struct ServerHealthWidget: View {
             
             Button(action: {
                 if serverHealthManager.isConnected {
-                    // TODO: Implement disconnect functionality
-                    print("Disconnect action needed")
+                    serverHealthManager.disconnect()
                 } else {
                     serverHealthManager.connect()
                 }

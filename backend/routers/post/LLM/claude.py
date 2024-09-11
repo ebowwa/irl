@@ -3,10 +3,10 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional
-import os
 from anthropic import Anthropic, AsyncAnthropic
 import logging
 import json
+from .env_config import ANTHROPIC_API_KEY
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Initialize Anthropic client
-anthropic = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY") or 'your_api_key')
-async_anthropic = AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY") or 'your_API_Key')
+anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
+async_anthropic = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 
 class Message(BaseModel):
     role: str
@@ -27,7 +27,7 @@ class CreateMessageRequest(BaseModel):
     messages: List[Message]
     model: str
     stream: Optional[bool] = False
-    system: Optional[str] = None  # Add this line to include the system prompt
+    system: Optional[str] = None 
 
 @router.post("/messages")
 async def create_message(request: CreateMessageRequest):
@@ -48,12 +48,20 @@ async def create_message(request: CreateMessageRequest):
             # - content: str (generated message content)
             # - usage: dict (token usage information)
             logger.info("Non-streaming response requested")
-            message = anthropic.messages.create(
-                max_tokens=request.max_tokens,
-                messages=[m.dict() for m in request.messages],
-                model=request.model,
-                system=request.system,
-            )
+            
+            # Create a dictionary of parameters
+            params = {
+                "max_tokens": request.max_tokens,
+                "messages": [m.dict() for m in request.messages],
+                "model": request.model,
+            }
+            
+            # Add system parameter only if it's provided and not None
+            if request.system is not None:
+                params["system"] = request.system
+
+            message = anthropic.messages.create(**params)
+            
             response = {
                 "content": message.content[0].text if message.content else "",
                 "usage": {

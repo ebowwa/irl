@@ -21,10 +21,3 @@ struct Notification: Identifiable {
 enum Theme: String {
     case light, dark
 }
-
-enum Language: String, CaseIterable {
-    case english = "en"
-    case spanish = "es"
-    case french = "fr"
-    case defaut = "auto-detect" // default displayed
-}
