@@ -45,6 +45,7 @@
 		7673E23F2C9172D700A0F4B0 /* EmotionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7673E23E2C9172D700A0F4B0 /* EmotionParser.swift */; };
 		7673E2412C9172EA00A0F4B0 /* EmotionAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7673E2402C9172EA00A0F4B0 /* EmotionAnalyzer.swift */; };
 		7673E2452C91765500A0F4B0 /* EmotionPredictionDemo.json in Resources */ = {isa = PBXBuildFile; fileRef = 7673E2442C91765500A0F4B0 /* EmotionPredictionDemo.json */; };
+		7673E2472C91883E00A0F4B0 /* SQLiteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7673E2462C91883E00A0F4B0 /* SQLiteManager.swift */; };
 		768B60592C81BB1200C5AB3A /* SpeechAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768B60582C81BB1200C5AB3A /* SpeechAnalysisService.swift */; };
 		768B60602C8274CB00C5AB3A /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 768B605F2C8274CB00C5AB3A /* Starscream */; };
 		768B60632C82890700C5AB3A /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768B60622C82890700C5AB3A /* Card.swift */; };
@@ -122,6 +123,7 @@
 		7673E23E2C9172D700A0F4B0 /* EmotionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionParser.swift; sourceTree = "<group>"; };
 		7673E2402C9172EA00A0F4B0 /* EmotionAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionAnalyzer.swift; sourceTree = "<group>"; };
 		7673E2442C91765500A0F4B0 /* EmotionPredictionDemo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = EmotionPredictionDemo.json; sourceTree = "<group>"; };
+		7673E2462C91883E00A0F4B0 /* SQLiteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteManager.swift; sourceTree = "<group>"; };
 		768B60582C81BB1200C5AB3A /* SpeechAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechAnalysisService.swift; sourceTree = "<group>"; };
 		768B60622C82890700C5AB3A /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		768B60712C8304CE00C5AB3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 				76E1AB2F2C8F6C60006BDC0B /* ChatParametersModal.swift */,
 				76E1AB3C2C8F6DCC006BDC0B /* ConfigurationAndStorage.swift */,
 				76E1AB422C8F767D006BDC0B /* ChatParametersViewModel.swift */,
+				7673E2462C91883E00A0F4B0 /* SQLiteManager.swift */,
 			);
 			path = Plugins;
 			sourceTree = "<group>";
@@ -592,6 +595,7 @@
 				76E1AB352C8F6CAD006BDC0B /* APISettingsView.swift in Sources */,
 				76E1AB3D2C8F6DCC006BDC0B /* ConfigurationAndStorage.swift in Sources */,
 				765E98DC2C81391900A6726B /* ProfileVIew.swift in Sources */,
+				7673E2472C91883E00A0F4B0 /* SQLiteManager.swift in Sources */,
 				76E1AB5C2C8F96EB006BDC0B /* NotificationView.swift in Sources */,
 				7637EBBB2C865A3600BAF0EC /* ServerHealthWidget.swift in Sources */,
 				76E1AB282C8E4B1C006BDC0B /* WhisperServiceIndex.swift in Sources */,

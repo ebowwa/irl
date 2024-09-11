@@ -1,7 +1,7 @@
 //
 //  SaveConfigurationView.swift
 //  irl
-// TODO: handle zero changes from the default as not needing a save so dont ask nor do
+// TODO: handle zero changes from the default as not needing a save so dont ask nor do; integrate sql, this will allow also to edit these same configurations and more
 //  Created by Elijah Arbee on 9/9/24.
 //
 import SwiftUI

@@ -60,7 +60,6 @@ struct ChatParametersModal: View {
             }
 
             private func saveConfiguration(isDraft: Bool) {
-        
                 let config = Configuration(
                     title: configTitle,
                     description: configDescription,

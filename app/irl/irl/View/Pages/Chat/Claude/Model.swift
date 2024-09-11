@@ -53,7 +53,6 @@ class ClaudeViewModel: ObservableObject {
     @Published var response: String = ""
     @Published var isLoading: Bool = false
     @Published var error: String?
-    
     @Published var model: String {
         didSet { UserDefaults.standard.set(model, forKey: "selectedModel") }
     }
@@ -66,35 +65,32 @@ class ClaudeViewModel: ObservableObject {
     @Published var systemPrompt: String {
         didSet { UserDefaults.standard.set(systemPrompt, forKey: "systemPrompt") }
     }
-    
     @Published private(set) var currentConfiguration: Configuration?
-    
+
     static let availableModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229"]
-    
     private let apiClient: ClaudeAPIClient
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(apiClient: ClaudeAPIClient) {
         self.apiClient = apiClient
         self.model = UserDefaults.standard.string(forKey: "selectedModel") ?? ClaudeConstants.DefaultParams.model
         self.maxTokens = UserDefaults.standard.integer(forKey: "maxTokens")
         self.temperature = UserDefaults.standard.double(forKey: "temperature")
         self.systemPrompt = UserDefaults.standard.string(forKey: "systemPrompt") ?? ""
-        
         if self.maxTokens == 0 { self.maxTokens = ClaudeConstants.DefaultParams.maxTokens }
         if self.temperature == 0 { self.temperature = 0.7 } // Default temperature
     }
-    
+
     func sendMessage(_ message: String) {
         isLoading = true
         error = nil
         response = "" // Clear previous response
-        
+
         let modelToUse = currentConfiguration?.parameters.model ?? model
         let maxTokensToUse = currentConfiguration?.parameters.maxTokens ?? maxTokens
         let temperatureToUse = currentConfiguration?.parameters.temperature ?? temperature
         let systemPromptToUse = currentConfiguration?.parameters.systemPrompt ?? systemPrompt
-        
+
         apiClient.sendMessage(message, maxTokens: maxTokensToUse, model: modelToUse, temperature: temperatureToUse, systemPrompt: systemPromptToUse)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
@@ -107,7 +103,7 @@ class ClaudeViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     func setConfiguration(_ configuration: Configuration) {
         currentConfiguration = configuration
         // Update the current settings to match the configuration
@@ -116,7 +112,7 @@ class ClaudeViewModel: ObservableObject {
         temperature = configuration.parameters.temperature
         systemPrompt = configuration.parameters.systemPrompt
     }
-    
+
     func clearConfiguration() {
         currentConfiguration = nil
         // Reset to default values or load from UserDefaults as needed
