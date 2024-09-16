@@ -1,13 +1,14 @@
 // ContentView.swift
 // TODO: if no server websocket not connected, etc - THEN save for later; add to queue batch for when possible
 // want a testing mode - willing do do test backend
+// ContentView.swift
 import SwiftUI
 import Combine
 
 struct ContentView: View {
     @StateObject private var globalState = GlobalState()
     @StateObject private var audioState = AudioState.shared
-    @AppStorage("isRecordingEnabled") private var isRecordingEnabled = true
+    @AppStorage("isRecordingEnabled") private var isRecordingEnabled = false
     @State private var selectedTab = 0
 
     let accentColor: Color = Color("AccentColor")
@@ -34,20 +35,35 @@ struct ContentView: View {
     }
 
     private func setupAudioSession() {
-        if isRecordingEnabled && !audioState.isRecording {
-            audioState.startRecording()
+        // Only start recording if it's enabled and not already recording
+        if isRecordingEnabled {
+            if !audioState.isRecording {
+                audioState.startRecording()
+            }
+        } else {
+            // Stop recording if it is disabled and currently recording
+            if audioState.isRecording {
+                audioState.stopRecording()
+            }
         }
     }
 
     private func handleAppBackgrounding() {
-        // Ensure recording continues in the background if enabled
-        if isRecordingEnabled && !audioState.isRecording {
-            audioState.startRecording()
+        // Only continue recording if it's enabled
+        if isRecordingEnabled {
+            if !audioState.isRecording {
+                audioState.startRecording()
+            }
+        } else {
+            // Ensure recording is stopped when the app moves to the background
+            if audioState.isRecording {
+                audioState.stopRecording()
+            }
         }
     }
 
     private func handleAppTermination() {
-        // Stop recording and perform any necessary cleanup
+        // Always stop recording when the app terminates
         if audioState.isRecording {
             audioState.stopRecording()
         }

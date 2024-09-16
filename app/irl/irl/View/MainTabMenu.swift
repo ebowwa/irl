@@ -13,10 +13,13 @@ struct TabItem: Identifiable {
     let selectedIcon: String
 }
 
+import SwiftUI
+
 struct MainTabMenu: View {
     @Binding var selectedTab: Int
     @StateObject private var audioRecorderViewModel = AudioRecorderViewModel()
     @State private var showAllRecordings = false
+    @State private var showSettings = false // State to control the visibility of settings within Home view
     
     let accentColor: Color
     let inactiveColor: Color
@@ -25,9 +28,7 @@ struct MainTabMenu: View {
     let tabs: [TabItem] = [
         TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform"),
         TabItem(title: "Home", icon: "house", selectedIcon: "house.fill"),
-        TabItem(title: "Chats", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill"),
-        TabItem(title: "Bubbles", icon: "square.grid.2x2", selectedIcon: "square.grid.2x2.fill"),
-        TabItem(title: "Settings", icon: "gear", selectedIcon: "gear")
+        TabItem(title: "Chats", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill")
     ]
     
     init(selectedTab: Binding<Int>, accentColor: Color, inactiveColor: Color, backgroundColor: Color) {
@@ -41,7 +42,6 @@ struct MainTabMenu: View {
         TabView(selection: $selectedTab) {
             NavigationView {
                 EmotionAnalysisDashboard()
-                // AllRecordingsListView(viewModel: audioRecorderViewModel, showAllRecordings: $showAllRecordings)
             }
             .tabItem {
                 customTabItem(for: tabs[0], isSelected: selectedTab == 0)
@@ -49,8 +49,7 @@ struct MainTabMenu: View {
             .tag(0)
 
             NavigationView {
-                    // ChatView()
-                // AudioStreamView()
+                HomeView(showSettings: $showSettings) // Pass the binding for showing settings
             }
             .tabItem {
                 customTabItem(for: tabs[1], isSelected: selectedTab == 1)
@@ -58,29 +57,12 @@ struct MainTabMenu: View {
             .tag(1)
 
             NavigationView {
-                    ChatView()
-                // ChatView()
+                ChatView()
             }
             .tabItem {
                 customTabItem(for: tabs[2], isSelected: selectedTab == 2)
             }
             .tag(2)
-
-            NavigationView {
-                TabsView() // renamed bubbles
-            }
-            .tabItem {
-                customTabItem(for: tabs[3], isSelected: selectedTab == 3)
-            }
-            .tag(3)
-
-            NavigationView {
-                SettingsView() // to be moved to the home - more minimalistic design of main view
-            }
-            .tabItem {
-                customTabItem(for: tabs[4], isSelected: selectedTab == 4)
-            }
-            .tag(4)
         }
         .accentColor(accentColor)
         .onAppear {
@@ -100,6 +82,7 @@ struct MainTabMenu: View {
         UITabBar.appearance().unselectedItemTintColor = UIColor(inactiveColor)
     }
 }
+
 
 // Note: This view depends on:
 // - ChatView, TabsView, and SettingsView for other tab content
