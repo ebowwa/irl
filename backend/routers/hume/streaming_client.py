@@ -1,3 +1,4 @@
+# backend/examples/hume/streaming_client.py
 import asyncio
 import websockets
 import json
@@ -62,22 +63,22 @@ class HumeStreamingClient:
         except Exception as e:
             print(f"Error sending data: {e}")
 
-async def main():
-    client = HumeStreamingClient()
-    connected = await client.connect()
+# async def main():
+    # client = HumeStreamingClient()
+    # connected = await client.connect()
     
-    if connected:
+    # if connected:
         # Start receiving messages in the background
-        receive_task = asyncio.create_task(client.receive_messages())
+        # receive_task = asyncio.create_task(client.receive_messages())
         
         # Send data
-        await client.send_data("/Users/ebowwa/Downloads/nice-enthusiastic-male-dan-barracuda-1-00-02.mp3")
+        # await client.send_data("/Users/ebowwa/Downloads/nice-enthusiastic-male-dan-barracuda-1-00-02.mp3")
         
         # Keep the connection open
-        await asyncio.gather(receive_task)
-    else:
-        print("Failed to connect. Exiting.")
+        # await asyncio.gather(receive_task)
+    # else:
+        # print("Failed to connect. Exiting.")
 
 # Run the async main function
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+    # asyncio.run(main())

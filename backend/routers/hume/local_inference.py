@@ -1,3 +1,4 @@
+# backend/examples/hume/local_inference.py
 import requests
 import json
 import os
@@ -67,13 +68,13 @@ def start_inference_job(file_path=None, url=None):
 
 # Usage 
 # https://uppbeat.io/browse/sfx/voice-clips
-file_path = '/Users/ebowwa/Downloads/nice-enthusiastic-male-dan-barracuda-1-00-02.mp3'  # Replace with your local file path
+# file_path = '/Users/ebowwa/Downloads/nice-enthusiastic-male-dan-barracuda-1-00-02.mp3'  # Replace with your local file path
 # url = 'https://example.com/your-media-file.mp4'  # Uncomment and use this for URL instead of file_path
 
-job_id = start_inference_job(file_path=file_path)
+# job_id = start_inference_job(file_path=file_path)
 # job_id = start_inference_job(url=url)  # Uncomment and use this for URL instead of file_path
 
-if job_id:
-    print(f"You can use this job_id to check the status and retrieve results later: {job_id}")
-else:
-    print("Failed to start the job. Please check your inputs and try again.")
+# if job_id:
+    #print(f"You can use this job_id to check the status and retrieve results later: {job_id}")
+# else:
+    #print("Failed to start the job. Please check your inputs and try again.")

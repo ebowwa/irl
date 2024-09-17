@@ -1,3 +1,4 @@
+# backend/examples/hume/get_job_prediction.py
 import requests
 import dotenv
 import json
@@ -59,11 +60,11 @@ def print_predictions(predictions):
 
 
 # Usage - will get abruptly cut off if only printing to console
-job_id = os.getenv('EXAMPLE_HUME_JOB_ID') 
-predictions = get_job_predictions(job_id)
+# job_id = os.getenv('EXAMPLE_HUME_JOB_ID') 
+# predictions = get_job_predictions(job_id)
 
 
-if predictions:
-    print_predictions(predictions)
-else:
-    print("Failed to retrieve predictions.")
+# if predictions:
+    #print_predictions(predictions)
+# else:
+    # print("Failed to retrieve predictions.")

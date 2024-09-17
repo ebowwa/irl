@@ -1,3 +1,4 @@
+# backend/examples/hume/check_job_status.py
 import requests
 import os
 from dotenv import load_dotenv
@@ -41,10 +42,10 @@ def check_job_status(job_id):
         return None
 
 # Usage
-job_id = os.getenv('EXAMPLE_HUME_JOB_ID')
-if not job_id:
-    print("Error: EXAMPLE_HUME_JOB_ID environment variable is not set.")
-else:
-    status = check_job_status(job_id)
-    if status is None:
-        print("Failed to retrieve job status. Please check your API key and job ID.")
+# job_id = os.getenv('EXAMPLE_HUME_JOB_ID')
+# if not job_id:
+    # print("Error: EXAMPLE_HUME_JOB_ID environment variable is not set.")
+# else:
+    # status = check_job_status(job_id)
+    # if status is None:
+        # print("Failed to retrieve job status. Please check your API key and job ID.")
