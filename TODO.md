@@ -12,3 +12,5 @@
     - emotional prosody: 
     - inferences: 
     - tasks: y/n agents
+
++ exa search

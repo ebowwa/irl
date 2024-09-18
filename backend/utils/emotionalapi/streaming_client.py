@@ -1,4 +1,6 @@
 # backend/examples/hume/streaming_client.py
+# Tested to work but todo to integrating 
+
 import asyncio
 import websockets
 import json

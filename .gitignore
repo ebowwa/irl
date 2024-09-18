@@ -1818,4 +1818,7 @@ backend/venv/lib/python3.9/site-packages/yaml/resolver.py
 backend/venv/lib/python3.9/site-packages/yaml/scanner.py
 backend/venv/lib/python3.9/site-packages/yaml/serializer.py
 backend/venv/lib/python3.9/site-packages/yaml/tokens.py
-backend/routers/post/LLM/env_config.py
+backend/routers/post/llm-inference/env_config.py
+backend/routers/post/llm_inference/env_config.py
+backend/irl-cult-firebase-adminsdk-q5hlz-a0df624fd5.json
+backend/routers/post/llm_inference/claude/env_config.py
