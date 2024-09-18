@@ -217,6 +217,16 @@
 			path = Embeddings;
 			sourceTree = "<group>";
 		};
+		764E15CE2C9B54E1007049C9 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				768B60692C82EABA00C5AB3A /* Analysis */,
+				76E1AB4A2C8F84A7006BDC0B /* Permissions */,
+				76E1AB532C8F8E32006BDC0B /* Language */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		765E98A92C811FC500A6726B = {
 			isa = PBXGroup;
 			children = (
@@ -236,6 +246,7 @@
 		765E98B42C811FC500A6726B /* irl */ = {
 			isa = PBXGroup;
 			children = (
+				764E15CE2C9B54E1007049C9 /* Utils */,
 				768B60712C8304CE00C5AB3A /* Info.plist */,
 				76C597082C8188B600AD2F55 /* Services */,
 				765E98D42C8137A900A6726B /* Data */,
@@ -276,8 +287,6 @@
 			isa = PBXGroup;
 			children = (
 				7673E2232C916BCD00A0F4B0 /* EmotionsList.json */,
-				76E1AB532C8F8E32006BDC0B /* Language */,
-				76E1AB4A2C8F84A7006BDC0B /* Permissions */,
 				768B60652C82E37300C5AB3A /* Demo */,
 				768B60642C82E35500C5AB3A /* State */,
 			);
@@ -377,7 +386,6 @@
 				76E1AB1C2C8E4A56006BDC0B /* Whisper */,
 				7637EBED2C8BA66300BAF0EC /* Claude */,
 				764E15C92C9B4516007049C9 /* Embeddings */,
-				768B60692C82EABA00C5AB3A /* Analysis */,
 			);
 			name = Services;
 			path = irl/Services;

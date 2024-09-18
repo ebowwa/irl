@@ -34,6 +34,7 @@ class LanguageManager {
     }
     
     private func loadLanguages() {
+        // `languages.json` in same directory
         guard let url = Bundle.main.url(forResource: "languages", withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
             print("Failed to load languages.json")
