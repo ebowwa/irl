@@ -16,32 +16,29 @@ class ChatParametersViewModel: ObservableObject, Codable {
     @Published var specificNeeds: String = ""
     @Published var apiEndpoint: String = ""
     @Published var jsonSchema: String = ""
-    
     @Published var model: String
     @Published var maxTokens: Int
     @Published var temperature: Double
     @Published var systemPrompt: String
-    
     @Published var imageGenerationEnabled: Bool = false
     @Published var speechGenerationEnabled: Bool = false
     @Published var videoGenerationEnabled: Bool = false
-    
     @Published var useAIAlignment: Bool = false
-    
+
     enum CodingKeys: String, CodingKey {
         case personality, skills, learningObjectives, intendedBehaviors, specificNeeds, apiEndpoint, jsonSchema
         case model, maxTokens, temperature, systemPrompt
         case imageGenerationEnabled, speechGenerationEnabled, videoGenerationEnabled
         case useAIAlignment
     }
-    
+
     init(claudeViewModel: ClaudeViewModel) {
         self.model = claudeViewModel.model
         self.maxTokens = claudeViewModel.maxTokens
         self.temperature = claudeViewModel.temperature
         self.systemPrompt = claudeViewModel.systemPrompt
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         personality = try container.decode(String.self, forKey: .personality)
@@ -60,7 +57,7 @@ class ChatParametersViewModel: ObservableObject, Codable {
         videoGenerationEnabled = try container.decode(Bool.self, forKey: .videoGenerationEnabled)
         useAIAlignment = try container.decode(Bool.self, forKey: .useAIAlignment)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(personality, forKey: .personality)
@@ -79,7 +76,7 @@ class ChatParametersViewModel: ObservableObject, Codable {
         try container.encode(videoGenerationEnabled, forKey: .videoGenerationEnabled)
         try container.encode(useAIAlignment, forKey: .useAIAlignment)
     }
-    
+
     func applyToClaudeViewModel(_ claudeViewModel: ClaudeViewModel) {
         claudeViewModel.model = self.model
         claudeViewModel.maxTokens = self.maxTokens

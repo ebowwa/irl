@@ -31,7 +31,6 @@ struct LocalStorage {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(config) {
             UserDefaults.standard.set(encoded, forKey: "savedConfig_\(config.id.uuidString)")
-            
             var savedIds = UserDefaults.standard.stringArray(forKey: "savedConfigIds") ?? []
             if !savedIds.contains(config.id.uuidString) {
                 savedIds.append(config.id.uuidString)
@@ -39,7 +38,7 @@ struct LocalStorage {
             }
         }
     }
-    
+
     static func loadConfiguration(withId id: UUID) -> Configuration? {
         if let savedConfig = UserDefaults.standard.object(forKey: "savedConfig_\(id.uuidString)") as? Data {
             let decoder = JSONDecoder()
@@ -49,12 +48,12 @@ struct LocalStorage {
         }
         return nil
     }
-    
+
     static func getAllConfigurations() -> [Configuration] {
         let savedIds = UserDefaults.standard.stringArray(forKey: "savedConfigIds") ?? []
         return savedIds.compactMap { UUID(uuidString: $0) }.compactMap { loadConfiguration(withId: $0) }
     }
-    
+
     static func deleteConfiguration(withId id: UUID) {
         UserDefaults.standard.removeObject(forKey: "savedConfig_\(id.uuidString)")
         var savedIds = UserDefaults.standard.stringArray(forKey: "savedConfigIds") ?? []

@@ -8,7 +8,6 @@ import Foundation
 import Combine
 import SwiftUI
 
-
 struct ClaudeMessage: Codable {
     let role: String
     let content: String
@@ -22,7 +21,6 @@ struct ClaudeContentItem: Codable {
 struct ClaudeUsage: Codable {
     let inputTokens: Int
     let outputTokens: Int
-    
     enum CodingKeys: String, CodingKey {
         case inputTokens = "input_tokens"
         case outputTokens = "output_tokens"
@@ -41,7 +39,6 @@ struct ClaudeRequest: Codable {
     let stream: Bool
     let temperature: Double
     let systemPrompt: String?
-    
     enum CodingKeys: String, CodingKey {
         case maxTokens = "max_tokens"
         case messages, model, stream, temperature
