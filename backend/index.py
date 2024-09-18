@@ -2,8 +2,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers.websocket import ping, whisper_tts
-from backend.routers.post.llm_inference.claude import router as claude_router
+from routers.post.llm_inference.claude import router as claude_router
 from routers.humeclient import router as hume_router
+from routers.post.embeddings.index import router as embeddings_router  # New import
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -20,22 +21,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Internal: Ping Route for Status Checks
+# Internal: Ping Route for Status Checks ** this is a websocket ** 
 app.include_router(ping.router)
 
-# Whisper TTS Router
+# Whisper TTS Router ** this is a websocket ** 
 app.include_router(whisper_tts.router)
 
-# Claude/OpenAI/Gemini LLM Router
+# Claude/OpenAI/Gemini LLM Router ** this is a post ** 
 app.include_router(claude_router, prefix="/api/v1")
 
-# Hume AI Router
+# Hume AI Router ** this is a post, but websocket is available ** 
 app.include_router(hume_router, prefix="/api/v1/hume")
+
+# Embeddings Router ** this is a post **
+app.include_router(embeddings_router, prefix="/embeddings")
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
 
 """
 DETAILED NOTES ON PREVIOUS VERSIONS AND ISSUES:
