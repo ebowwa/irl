@@ -57,7 +57,8 @@ struct MainTabMenu: View {
             .tag(1)
 
             NavigationView {
-                ChatView()
+                BasicEmbeddingsView()
+                //ChatView()
             }
             .tabItem {
                 customTabItem(for: tabs[2], isSelected: selectedTab == 2)

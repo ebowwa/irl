@@ -5,6 +5,7 @@ from openai import OpenAI
 import os
 import numpy as np
 from dotenv import load_dotenv
+import tiktoken
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -36,11 +37,19 @@ def normalize_l2(x):
     norm = np.linalg.norm(x)
     return x / norm if norm != 0 else x
 
+# Function to estimate token count
+def estimate_tokens(text, model):
+    """
+    Estimate the number of tokens in the input text for the given model.
+    """
+    encoding = tiktoken.encoding_for_model(model)
+    return len(encoding.encode(text))
+
 # Function to generate embeddings
 def generate_embedding(model, input_text, normalize):
     """
     Generate embeddings using the specified model.
-    Returns the embedding of the input text as a list of floats.
+    Returns the embedding of the input text and metadata.
     """
     try:
         response = client.embeddings.create(
@@ -51,7 +60,20 @@ def generate_embedding(model, input_text, normalize):
         embedding = response.data[0].embedding
         if normalize:
             embedding = normalize_l2(embedding).tolist()
-        return embedding
+        
+        # Estimate token count
+        token_count = estimate_tokens(input_text, model)
+        
+        # Calculate additional metadata
+        metadata = {
+            "model": model,
+            "dimensions": len(embedding),
+            "token_count": token_count,
+            "input_char_count": len(input_text),
+            "normalized": normalize
+        }
+        
+        return embedding, metadata
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -62,11 +84,10 @@ async def create_small_embedding(input_data: EmbeddingInput):
     Generate embedding for the given input text using the text-embedding-3-small model.
     """
     model = MODELS["small"]
-    embedding = generate_embedding(model, input_data.input_text, input_data.normalize)
+    embedding, metadata = generate_embedding(model, input_data.input_text, input_data.normalize)
     return {
-        "model": model,
         "embedding": embedding,
-        "dimensions": len(embedding)
+        "metadata": metadata
     }
 
 # Route to generate embeddings for input text using text-embedding-3-large
@@ -76,11 +97,8 @@ async def create_large_embedding(input_data: EmbeddingInput):
     Generate embedding for the given input text using the text-embedding-3-large model.
     """
     model = MODELS["large"]
-    embedding = generate_embedding(model, input_data.input_text, input_data.normalize)
+    embedding, metadata = generate_embedding(model, input_data.input_text, input_data.normalize)
     return {
-        "model": model,
         "embedding": embedding,
-        "dimensions": len(embedding)
+        "metadata": metadata
     }
-
-# Remove the if __name__ == "__main__" block from here

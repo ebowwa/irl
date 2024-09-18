@@ -1,7 +1,7 @@
 //
 //  AppLanguage.swift
 //  irl
-//
+// TODO: ADD HUME LANGUAGE SUPPORT
 //  Created by Elijah Arbee on 9/9/24.
 //
 import Foundation

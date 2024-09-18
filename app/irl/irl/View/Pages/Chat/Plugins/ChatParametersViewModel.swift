@@ -85,7 +85,7 @@ class ChatParametersViewModel: ObservableObject, Codable {
         claudeViewModel.maxTokens = self.maxTokens
         claudeViewModel.temperature = self.temperature
         claudeViewModel.systemPrompt = self.systemPrompt
-        // Apply other properties as needed
+        // are we missing any other properties?
     }
 }
 

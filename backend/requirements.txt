@@ -1,15 +1,17 @@
 python-dotenv
 python-multipart
 uvicorn[standard]
-websockets
-fastapi
-uvicorn
+websockets 
+fastapi 
+uvicorn 
 wsproto
-numpy
-aioredis
+numpy 
 
-openai
-anthropic
-fal-client
+# aioredis @removed for now
 
-firebase-admin
+openai 
+anthropic 
+fal-client # ai inference provider over image models
+tiktoken # counts tokens
+
+# firebase-admin @removed for now

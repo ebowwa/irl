@@ -8,7 +8,7 @@ import Foundation
 
 struct Constants {
     // DO NOT INCLUDE https
-    @UserDefault(key: "baseDomain", defaultValue: "bf45-2600-387-f-7718-00-3.ngrok-free.app")
+    @UserDefault(key: "baseDomain", defaultValue: "703d-50-247-127-70.ngrok-free.app")
     static var baseDomain: String
     
     // RUN backend: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python index.py && ngrok http 8000
