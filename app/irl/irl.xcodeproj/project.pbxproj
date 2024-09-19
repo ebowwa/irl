@@ -23,7 +23,7 @@
 		764E15CD2C9B4550007049C9 /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15CC2C9B4550007049C9 /* EmbeddingService.swift */; };
 		764E15D22C9B8FC1007049C9 /* ChatParametersModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D12C9B8FC1007049C9 /* ChatParametersModal.swift */; };
 		764E15D42C9B9254007049C9 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D32C9B9254007049C9 /* MessageView.swift */; };
-		764E15D62C9B9319007049C9 /* ClaudeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D52C9B9319007049C9 /* ClaudeViewModel.swift */; };
+		764E15D82C9C00F3007049C9 /* ClaudeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D72C9C00F3007049C9 /* ClaudeTypes.swift */; };
 		765E98B62C811FC500A6726B /* irlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98B52C811FC500A6726B /* irlApp.swift */; };
 		765E98B82C811FC500A6726B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98B72C811FC500A6726B /* ContentView.swift */; };
 		765E98BA2C811FC700A6726B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 765E98B92C811FC700A6726B /* Assets.xcassets */; };
@@ -103,7 +103,7 @@
 		764E15CC2C9B4550007049C9 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
 		764E15D12C9B8FC1007049C9 /* ChatParametersModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatParametersModal.swift; sourceTree = "<group>"; };
 		764E15D32C9B9254007049C9 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
-		764E15D52C9B9319007049C9 /* ClaudeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeViewModel.swift; sourceTree = "<group>"; };
+		764E15D72C9C00F3007049C9 /* ClaudeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeTypes.swift; sourceTree = "<group>"; };
 		765E98B22C811FC500A6726B /* irl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = irl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		765E98B52C811FC500A6726B /* irlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = irlApp.swift; sourceTree = "<group>"; };
 		765E98B72C811FC500A6726B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -208,7 +208,7 @@
 				7637EBEE2C8BA6DA00BAF0EC /* Model.swift */,
 				7637EBF02C8BA6F700BAF0EC /* APIClient.swift */,
 				76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */,
-				764E15D52C9B9319007049C9 /* ClaudeViewModel.swift */,
+				764E15D72C9C00F3007049C9 /* ClaudeTypes.swift */,
 			);
 			path = Claude;
 			sourceTree = "<group>";
@@ -633,7 +633,6 @@
 				765E98D82C8138EE00A6726B /* DashboardView.swift in Sources */,
 				76E1AB352C8F6CAD006BDC0B /* APISettingsView.swift in Sources */,
 				76E1AB3D2C8F6DCC006BDC0B /* ConfigurationAndStorage.swift in Sources */,
-				764E15D62C9B9319007049C9 /* ClaudeViewModel.swift in Sources */,
 				765E98DC2C81391900A6726B /* ProfileVIew.swift in Sources */,
 				764E15D22C9B8FC1007049C9 /* ChatParametersModal.swift in Sources */,
 				764E15C12C982D82007049C9 /* HomeView.swift in Sources */,
@@ -656,6 +655,7 @@
 				76E1AB3B2C8F6DA5006BDC0B /* SaveConfigurationView.swift in Sources */,
 				76E1AB1B2C8E4728006BDC0B /* AudioStateIndex.swift in Sources */,
 				7637EBEA2C8BA4EE00BAF0EC /* MemoryModule.swift in Sources */,
+				764E15D82C9C00F3007049C9 /* ClaudeTypes.swift in Sources */,
 				764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */,
 				76E1AB202C8E4A86006BDC0B /* WebsocketHandler.swift in Sources */,
 				76E1AB082C8CC2F1006BDC0B /* AudioRecordingModel.swift in Sources */,

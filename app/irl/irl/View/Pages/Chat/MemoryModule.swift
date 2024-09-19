@@ -1,7 +1,7 @@
 //
 //  MemoryModule.swift
 //  irl
-// TODO: MAKE Knowledge graph
+// TODO: Integrate Knowledge Graph
 //  Created by Elijah Arbee on 9/6/24.
 //
 import SwiftUI
@@ -24,22 +24,50 @@ enum MemoryType: String, Codable, CaseIterable {
     case inference
 }
 
+// MARK: - Knowledge Graph Models
+
+struct KnowledgeNode: Identifiable {
+    let id: UUID
+    let name: String
+    var memoryIds: [UUID] // Relation to memories
+    var relationships: [KnowledgeRelation]
+}
+
+struct KnowledgeRelation {
+    let sourceId: UUID
+    let targetId: UUID
+    let relationType: RelationType
+}
+
+enum RelationType: String {
+    case cause
+    case effect
+    case dependency
+    case reference
+}
+
 // MARK: - View Model
 
 class MemoryViewModel: ObservableObject {
     @Published var memories: [Memory] = []
     @Published var embeddingsSearchQuery: String = ""
     @Published var searchResults: [Memory] = []
+    @Published var knowledgeGraph: [KnowledgeNode] = [] // Store nodes
     
     private let memoryManager: MemoryManager
     
     init() {
         self.memoryManager = MemoryManager()
         loadMemories()
+        loadKnowledgeGraph()
     }
     
     func loadMemories() {
         memories = memoryManager.fetchAllMemories()
+    }
+    
+    func loadKnowledgeGraph() {
+        knowledgeGraph = memoryManager.fetchKnowledgeGraph()
     }
     
     func addMemory(content: String, type: MemoryType) {
@@ -60,6 +88,17 @@ class MemoryViewModel: ObservableObject {
     func searchEmbeddings() {
         searchResults = memoryManager.searchMemories(query: embeddingsSearchQuery)
     }
+    
+    func addNodeToGraph(name: String, relatedMemoryIds: [UUID], relationships: [KnowledgeRelation]) {
+        let newNode = KnowledgeNode(id: UUID(), name: name, memoryIds: relatedMemoryIds, relationships: relationships)
+        knowledgeGraph.append(newNode)
+        memoryManager.saveKnowledgeNode(newNode)
+    }
+    
+    func addRelationship(sourceId: UUID, targetId: UUID, type: RelationType) {
+        let relation = KnowledgeRelation(sourceId: sourceId, targetId: targetId, relationType: type)
+        memoryManager.addKnowledgeRelation(relation)
+    }
 }
 
 // MARK: - Views
@@ -68,6 +107,9 @@ struct MemorySettingsView: View {
     @StateObject private var viewModel = MemoryViewModel()
     @State private var newMemoryContent: String = ""
     @State private var selectedMemoryType: MemoryType = .chat
+    @State private var newNodeName: String = ""
+    @State private var relatedMemoryIds: [UUID] = []
+    @State private var relationType: RelationType = .reference
     
     var body: some View {
         Form {
@@ -118,6 +160,22 @@ struct MemorySettingsView: View {
                             Text(result.type.rawValue.capitalized)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            }
+            
+            Section(header: Text("Knowledge Graph")) {
+                TextField("New Node Name", text: $newNodeName)
+                Button("Add Node") {
+                    viewModel.addNodeToGraph(name: newNodeName, relatedMemoryIds: relatedMemoryIds, relationships: [])
+                    newNodeName = ""
+                }
+                List {
+                    ForEach(viewModel.knowledgeGraph) { node in
+                        VStack(alignment: .leading) {
+                            Text(node.name)
+                                .font(.body)
                         }
                     }
                 }
@@ -205,6 +263,22 @@ class MemoryManager {
             print("Failed to fetch memories: \(error)")
             return []
         }
+    }
+    
+    func fetchKnowledgeGraph() -> [KnowledgeNode] {
+        // Fetch knowledge graph data from CoreData or any storage
+        // This function needs to be implemented based on your storage strategy.
+        return []
+    }
+    
+    func saveKnowledgeNode(_ node: KnowledgeNode) {
+        // Save the node to the storage (CoreData, etc.)
+        // Implementation is needed based on your strategy.
+    }
+    
+    func addKnowledgeRelation(_ relation: KnowledgeRelation) {
+        // Save relationship to storage
+        // This function needs to be implemented as per the storage strategy
     }
     
     func deleteMemory(_ memory: Memory) {

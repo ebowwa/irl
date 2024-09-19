@@ -1,4 +1,6 @@
 # File: backend/index.py
+
+# i have all these router functions that i intend to call with my app, im not sure that i want to log anything as provacy is important and all data will mostly be stored on client, but maybe i need to so this is my question!   
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers.websocket import ping, whisper_tts
