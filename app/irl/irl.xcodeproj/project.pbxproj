@@ -21,6 +21,9 @@
 		764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */; };
 		764E15CB2C9B452C007049C9 /* EmbeddingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */; };
 		764E15CD2C9B4550007049C9 /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15CC2C9B4550007049C9 /* EmbeddingService.swift */; };
+		764E15D22C9B8FC1007049C9 /* ChatParametersModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D12C9B8FC1007049C9 /* ChatParametersModal.swift */; };
+		764E15D42C9B9254007049C9 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D32C9B9254007049C9 /* MessageView.swift */; };
+		764E15D62C9B9319007049C9 /* ClaudeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D52C9B9319007049C9 /* ClaudeViewModel.swift */; };
 		765E98B62C811FC500A6726B /* irlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98B52C811FC500A6726B /* irlApp.swift */; };
 		765E98B82C811FC500A6726B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E98B72C811FC500A6726B /* ContentView.swift */; };
 		765E98BA2C811FC700A6726B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 765E98B92C811FC700A6726B /* Assets.xcassets */; };
@@ -67,7 +70,6 @@
 		76E1AB242C8E4AB3006BDC0B /* WhisperModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB232C8E4AB3006BDC0B /* WhisperModels.swift */; };
 		76E1AB262C8E4AC6006BDC0B /* WhisperEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB252C8E4AC6006BDC0B /* WhisperEnums.swift */; };
 		76E1AB282C8E4B1C006BDC0B /* WhisperServiceIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB272C8E4B1C006BDC0B /* WhisperServiceIndex.swift */; };
-		76E1AB302C8F6C60006BDC0B /* ChatParametersModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB2F2C8F6C60006BDC0B /* ChatParametersModal.swift */; };
 		76E1AB352C8F6CAD006BDC0B /* APISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB342C8F6CAD006BDC0B /* APISettingsView.swift */; };
 		76E1AB372C8F6CD3006BDC0B /* AIAlignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB362C8F6CD3006BDC0B /* AIAlignmentView.swift */; };
 		76E1AB392C8F6CE7006BDC0B /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB382C8F6CE7006BDC0B /* ToolsView.swift */; };
@@ -99,6 +101,9 @@
 		764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingsView.swift; sourceTree = "<group>"; };
 		764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingTypes.swift; sourceTree = "<group>"; };
 		764E15CC2C9B4550007049C9 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
+		764E15D12C9B8FC1007049C9 /* ChatParametersModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatParametersModal.swift; sourceTree = "<group>"; };
+		764E15D32C9B9254007049C9 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
+		764E15D52C9B9319007049C9 /* ClaudeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeViewModel.swift; sourceTree = "<group>"; };
 		765E98B22C811FC500A6726B /* irl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = irl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		765E98B52C811FC500A6726B /* irlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = irlApp.swift; sourceTree = "<group>"; };
 		765E98B72C811FC500A6726B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -148,7 +153,6 @@
 		76E1AB232C8E4AB3006BDC0B /* WhisperModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperModels.swift; sourceTree = "<group>"; };
 		76E1AB252C8E4AC6006BDC0B /* WhisperEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperEnums.swift; sourceTree = "<group>"; };
 		76E1AB272C8E4B1C006BDC0B /* WhisperServiceIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperServiceIndex.swift; sourceTree = "<group>"; };
-		76E1AB2F2C8F6C60006BDC0B /* ChatParametersModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatParametersModal.swift; sourceTree = "<group>"; };
 		76E1AB342C8F6CAD006BDC0B /* APISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APISettingsView.swift; sourceTree = "<group>"; };
 		76E1AB362C8F6CD3006BDC0B /* AIAlignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAlignmentView.swift; sourceTree = "<group>"; };
 		76E1AB382C8F6CE7006BDC0B /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
@@ -204,6 +208,7 @@
 				7637EBEE2C8BA6DA00BAF0EC /* Model.swift */,
 				7637EBF02C8BA6F700BAF0EC /* APIClient.swift */,
 				76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */,
+				764E15D52C9B9319007049C9 /* ClaudeViewModel.swift */,
 			);
 			path = Claude;
 			sourceTree = "<group>";
@@ -225,6 +230,24 @@
 				76E1AB532C8F8E32006BDC0B /* Language */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		764E15CF2C9B5E3A007049C9 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				76E1AB632C8FAF6F006BDC0B /* AudioStreamView.swift */,
+				764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+		764E15D02C9B6141007049C9 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				76E1AB382C8F6CE7006BDC0B /* ToolsView.swift */,
+				76E1AB342C8F6CAD006BDC0B /* APISettingsView.swift */,
+			);
+			path = Tools;
 			sourceTree = "<group>";
 		};
 		765E98A92C811FC500A6726B = {
@@ -276,9 +299,7 @@
 				768B60612C8288F100C5AB3A /* Components */,
 				765E98DD2C813DB800A6726B /* Pages */,
 				765E98D52C81386800A6726B /* MainTabMenu.swift */,
-				76E1AB632C8FAF6F006BDC0B /* AudioStreamView.swift */,
 				764E15C02C982D82007049C9 /* HomeView.swift */,
-				764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -296,6 +317,7 @@
 		765E98DD2C813DB800A6726B /* Pages */ = {
 			isa = PBXGroup;
 			children = (
+				764E15CF2C9B5E3A007049C9 /* Demo */,
 				7673E2202C91585400A0F4B0 /* Emotional */,
 				76E1AB0F2C8CE009006BDC0B /* Audio */,
 				7637EBDE2C8A288F00BAF0EC /* Chat */,
@@ -395,7 +417,6 @@
 			isa = PBXGroup;
 			children = (
 				76E1AB492C8F77B4006BDC0B /* Views */,
-				76E1AB2F2C8F6C60006BDC0B /* ChatParametersModal.swift */,
 				76E1AB3C2C8F6DCC006BDC0B /* ConfigurationAndStorage.swift */,
 				76E1AB422C8F767D006BDC0B /* ChatParametersViewModel.swift */,
 			);
@@ -476,11 +497,12 @@
 		76E1AB492C8F77B4006BDC0B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				76E1AB382C8F6CE7006BDC0B /* ToolsView.swift */,
-				76E1AB342C8F6CAD006BDC0B /* APISettingsView.swift */,
+				764E15D02C9B6141007049C9 /* Tools */,
 				76E1AB3A2C8F6DA5006BDC0B /* SaveConfigurationView.swift */,
 				76E1AB442C8F7717006BDC0B /* AdvancedSettingsView.swift */,
 				76E1AB362C8F6CD3006BDC0B /* AIAlignmentView.swift */,
+				764E15D12C9B8FC1007049C9 /* ChatParametersModal.swift */,
+				764E15D32C9B9254007049C9 /* MessageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -600,7 +622,6 @@
 				7637EBBD2C865EFB00BAF0EC /* Constants.swift in Sources */,
 				768B60632C82890700C5AB3A /* Card.swift in Sources */,
 				765E98CA2C812D6C00A6726B /* PrivacySettingsView.swift in Sources */,
-				76E1AB302C8F6C60006BDC0B /* ChatParametersModal.swift in Sources */,
 				7637EBB72C8521AD00BAF0EC /* HumeView.swift in Sources */,
 				764E15CD2C9B4550007049C9 /* EmbeddingService.swift in Sources */,
 				7673E2362C916E3900A0F4B0 /* EmotionBarView.swift in Sources */,
@@ -612,7 +633,9 @@
 				765E98D82C8138EE00A6726B /* DashboardView.swift in Sources */,
 				76E1AB352C8F6CAD006BDC0B /* APISettingsView.swift in Sources */,
 				76E1AB3D2C8F6DCC006BDC0B /* ConfigurationAndStorage.swift in Sources */,
+				764E15D62C9B9319007049C9 /* ClaudeViewModel.swift in Sources */,
 				765E98DC2C81391900A6726B /* ProfileVIew.swift in Sources */,
+				764E15D22C9B8FC1007049C9 /* ChatParametersModal.swift in Sources */,
 				764E15C12C982D82007049C9 /* HomeView.swift in Sources */,
 				76E1AB5C2C8F96EB006BDC0B /* NotificationView.swift in Sources */,
 				7637EBBB2C865A3600BAF0EC /* ServerHealthWidget.swift in Sources */,
@@ -641,6 +664,7 @@
 				7637EBE82C8BA02900BAF0EC /* SimpleLocalTranscription.swift in Sources */,
 				765E98DA2C81390400A6726B /* SearchView.swift in Sources */,
 				76E1AB452C8F7717006BDC0B /* AdvancedSettingsView.swift in Sources */,
+				764E15D42C9B9254007049C9 /* MessageView.swift in Sources */,
 				7673E2342C916E0900A0F4B0 /* EmotionChartView.swift in Sources */,
 				7637EBF12C8BA6F700BAF0EC /* APIClient.swift in Sources */,
 				76E1AB3F2C8F722A006BDC0B /* SettingsViewIndex.swift in Sources */,

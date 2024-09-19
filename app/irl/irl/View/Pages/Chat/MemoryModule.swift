@@ -1,7 +1,7 @@
 //
 //  MemoryModule.swift
 //  irl
-//
+// TODO: MAKE Knowledge graph
 //  Created by Elijah Arbee on 9/6/24.
 //
 import SwiftUI

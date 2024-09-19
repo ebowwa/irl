@@ -1,5 +1,6 @@
 import SwiftUI
-
+// TODO: say your friend is learning and add other relevant context to passover till the ai learns and has things to share
+// Then the view should have updates that can be scrolled by the user and marked as viewed but still saved and locally hold off on saving now but keep the strings defined and easy to work with going forward. 
 struct HomeView: View {
     @Binding var showSettings: Bool
     @State private var selectedTab: Tab = .insights

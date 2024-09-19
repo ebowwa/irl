@@ -26,8 +26,10 @@ struct Constants {
             static let testConnection = "/"
             static let upload = "/upload"
             static let whisperTTS = "/ws/WhisperTTS"
-            static let humeWebSocket = "/ws/hume"
-            static let claudeMessages = "/api/v1/messages"  // New path for Claude API
+            static let humeWebSocket = "/ws/hume" // @depreciated need to add new routes
+            static let claudeMessages = "/api/v1/messages"
+            static let embeddingSmall = "/embeddings/small"
+            static let embeddingLarge = "/embeddings/large"
         }
     }
     // -- recent addition; will be adding in the functionality to the app -- not currently used
@@ -49,6 +51,27 @@ struct Constants {
         
         @UserDefault(key: "deepgramKey", defaultValue: "")
         static var deepgram: String
+    }
+    
+    struct AI_MODELS {
+        // Map simplified names to full API names
+        static let models: [String: String] = [
+            "hauiki-3": "claude-3-haiku-20240307",
+            "sonnet-3": "claude-3-sonnet-20240229",
+            "opus-3": "claude-3-opus-20240229",
+            "sonnet-3.5": "claude-3.5-sonnet-20240320"
+        ]
+        
+        // You can still access these as simplified names if needed
+        static let haiku = "hauiki-3"
+        static let sonnet = "sonnet-3"
+        static let opus = "opus-3"
+        static let sonnet3_5 = "sonnet-3.5"
+        
+        // Function to retrieve full API name based on simplified name
+        static func apiModel(for model: String) -> String? {
+            return models[model]
+        }
     }
 }
 

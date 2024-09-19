@@ -1,15 +1,18 @@
 //
 //  APIClient.swift
+//
 //  irl
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
+
 import Foundation
 import Combine
 
 class ClaudeAPIClient {
     private let baseURL: URL
     private let session: URLSession
+
     init(session: URLSession = .shared) {
         self.baseURL = URL(string: ClaudeConstants.API.baseURL)!
         self.session = session

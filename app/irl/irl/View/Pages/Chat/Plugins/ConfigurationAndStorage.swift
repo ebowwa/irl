@@ -1,16 +1,18 @@
 //
 //  ConfigurationAndStorage.swift
+//
 //  irl
 //
 //  Created by Elijah Arbee on 9/9/24.
 //
+
 import Foundation
 
 struct Configuration: Codable, Identifiable {
     let id: UUID
     let title: String
     let description: String
-    let parameters: ChatParametersViewModel
+    let parameters: ChatParametersViewModel // Ensure this is ChatParametersViewModel
     let isDraft: Bool
     let createdAt: Date
     let updatedAt: Date

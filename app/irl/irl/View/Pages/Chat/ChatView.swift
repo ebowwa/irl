@@ -1,12 +1,12 @@
 //
 //  ChatView.swift
 //  irl
-//  TODO: for the AI name i want it to say the plugin name if a system prompt and plugin is in use i.e. Moo GPT not saying Friend
+//  TODO: for the AI name i want it to say the plugin name if a system prompt and plugin is in use i.e. Moo GPT not saying friend
 //  make more imessage like
 //
 //  Created by Elijah Arbee on 9/5/24.
 //
-// TODO: a double tap to resend if message fails, and the message if failed to look like on ios imessage, max tokens and temperature are shit and both incorrect from an gui interface but also in functionality.
+// TODO: a double \\ tap to resend if message fails, and the message if failed to look like on ios imessage, max tokens and temperature are shit and both incorrect from an gui interface but also in functionality.
 
 // TODO: if message fails make the message box color red add a double tap to resend
 // i want this to look more like imessage with the `plugins/bubbles` as the favorited contacts
@@ -14,7 +14,7 @@
 //  Created by Elijah Arbee on 9/2/24.
 import SwiftUI
 
-// MARK: - Main View
+// MARK: - Main Chat View
 struct ChatView: View {
     @StateObject private var viewModel: ClaudeViewModel
     @State private var message: String = ""
@@ -33,17 +33,7 @@ struct ChatView: View {
                 ChatScrollView(messages: groupedMessages, onDelete: deleteMessage, onStash: stashMessage)
                 InputView(message: $message, isInputFocused: $isInputFocused, onSend: sendMessage, isLoading: viewModel.isLoading)
             }
-            VStack {
-                HStack {
-                    Spacer()
-                    Button(action: { showParametersModal = true }) {
-                        Image(systemName: "gear")
-                            .foregroundColor(.blue)
-                            .padding()
-                    }
-                }
-                Spacer()
-            }
+            ModalButton(showParametersModal: $showParametersModal)
         }
         .navigationTitle("Chat")
         .alert(item: Binding<AlertItem?>(
@@ -57,18 +47,14 @@ struct ChatView: View {
         }
         .onReceive(viewModel.$response) { response in
             if !response.isEmpty {
-                let friendMessage = ChatMessage(content: response, isUser: false, timestamp: Date())
-                messages.append(friendMessage)
+                appendFriendMessage(response)
             }
         }
     }
-
+    
     // MARK: - Helper Methods
     private var groupedMessages: [(key: Date, value: [ChatMessage])] {
-        let grouped = Dictionary(grouping: messages) { message in
-            Calendar.current.startOfDay(for: message.timestamp)
-        }
-        return grouped.sorted { $0.key < $1.key }
+        messages.groupByDate()
     }
 
     private func sendMessage() {
@@ -79,15 +65,60 @@ struct ChatView: View {
         isInputFocused = false
     }
 
+    private func appendFriendMessage(_ response: String) {
+        let friendMessage = ChatMessage(content: response, isUser: false, timestamp: Date())
+        messages.append(friendMessage)
+    }
+
     private func deleteMessage(_ message: ChatMessage) {
-        if let index = messages.firstIndex(where: { $0.id == message.id }) {
-            messages.remove(at: index)
-        }
+        messages.removeAll(where: { $0.id == message.id })
     }
 
     private func stashMessage(_ message: ChatMessage) {
         // Implement stash functionality here
         print("Stashed message: \(message.content)")
+    }
+}
+
+// MARK: - Modal Button View
+struct ModalButton: View {
+    @Binding var showParametersModal: Bool
+    var body: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button(action: { showParametersModal = true }) {
+                    Image(systemName: "gear")
+                        .foregroundColor(.blue)
+                        .padding()
+                }
+            }
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Extensions for Message Grouping and Formatting
+extension Array where Element == ChatMessage {
+    func groupByDate() -> [(key: Date, value: [ChatMessage])] {
+        let grouped = Dictionary(grouping: self) { message in
+            Calendar.current.startOfDay(for: message.timestamp)
+        }
+        return grouped.sorted { $0.key < $1.key }
+    }
+}
+
+extension Date {
+    func formatForSeparator() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d, yyyy"
+        return formatter.string(from: self)
+    }
+
+    func formatTime() -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: self)
     }
 }
 
@@ -130,7 +161,7 @@ struct ChatScrollView: View {
     }
 }
 
-// MARK: - Day Separator
+// MARK: - Day Separator View
 struct DaySeparator: View {
     let date: Date
     var body: some View {
@@ -139,7 +170,7 @@ struct DaySeparator: View {
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 1)
                 .overlay(
-                    Text(formatDateForSeparator(date))
+                    Text(date.formatForSeparator())
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 8)
@@ -147,11 +178,6 @@ struct DaySeparator: View {
                 )
         }
         .padding(.vertical, 8)
-    }
-    private func formatDateForSeparator(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d, yyyy"
-        return formatter.string(from: date)
     }
 }
 
@@ -167,7 +193,7 @@ struct MessageView: View {
                 Text(chatMessage.isUser ? "You" : "Friend")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                Text(formatTime(chatMessage.timestamp))
+                Text(chatMessage.timestamp.formatTime())
                     .font(.caption)
                     .foregroundColor(.secondary)
                 if !chatMessage.isUser {
@@ -176,17 +202,12 @@ struct MessageView: View {
             }
             Text(chatMessage.content)
                 .padding()
-                .background(chatMessage.isUser ? Color(red: 0.0, green: 0.478, blue: 1.0) : Color.white)
+                .background(chatMessage.isUser ? Color.blue : Color.white)
                 .foregroundColor(chatMessage.isUser ? .white : .black)
                 .cornerRadius(12)
                 .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 2)
         }
         .frame(maxWidth: .infinity, alignment: chatMessage.isUser ? .trailing : .leading)
-    }
-    private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
     }
 }
 
@@ -227,7 +248,7 @@ struct InputView: View {
     }
 }
 
-// MARK: - Model
+// MARK: - ChatMessage Model
 struct ChatMessage: Identifiable {
     let id = UUID()
     let content: String

@@ -16,29 +16,32 @@ class ChatParametersViewModel: ObservableObject, Codable {
     @Published var specificNeeds: String = ""
     @Published var apiEndpoint: String = ""
     @Published var jsonSchema: String = ""
+    
     @Published var model: String
     @Published var maxTokens: Int
     @Published var temperature: Double
     @Published var systemPrompt: String
+    
     @Published var imageGenerationEnabled: Bool = false
     @Published var speechGenerationEnabled: Bool = false
     @Published var videoGenerationEnabled: Bool = false
+    
     @Published var useAIAlignment: Bool = false
-
+    
     enum CodingKeys: String, CodingKey {
         case personality, skills, learningObjectives, intendedBehaviors, specificNeeds, apiEndpoint, jsonSchema
         case model, maxTokens, temperature, systemPrompt
         case imageGenerationEnabled, speechGenerationEnabled, videoGenerationEnabled
         case useAIAlignment
     }
-
+    
     init(claudeViewModel: ClaudeViewModel) {
         self.model = claudeViewModel.model
         self.maxTokens = claudeViewModel.maxTokens
         self.temperature = claudeViewModel.temperature
         self.systemPrompt = claudeViewModel.systemPrompt
     }
-
+    
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         personality = try container.decode(String.self, forKey: .personality)
@@ -57,7 +60,7 @@ class ChatParametersViewModel: ObservableObject, Codable {
         videoGenerationEnabled = try container.decode(Bool.self, forKey: .videoGenerationEnabled)
         useAIAlignment = try container.decode(Bool.self, forKey: .useAIAlignment)
     }
-
+    
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(personality, forKey: .personality)
@@ -76,7 +79,7 @@ class ChatParametersViewModel: ObservableObject, Codable {
         try container.encode(videoGenerationEnabled, forKey: .videoGenerationEnabled)
         try container.encode(useAIAlignment, forKey: .useAIAlignment)
     }
-
+    
     func applyToClaudeViewModel(_ claudeViewModel: ClaudeViewModel) {
         claudeViewModel.model = self.model
         claudeViewModel.maxTokens = self.maxTokens
@@ -85,66 +88,3 @@ class ChatParametersViewModel: ObservableObject, Codable {
         // are we missing any other properties?
     }
 }
-
-// MARK: - Cloud Storage (Firebase) Implementation Notes
-
-/*
-To implement cloud storage using Firebase:
-
-1. Set up Firebase in your project:
-   - Add the Firebase SDK to your project
-   - Initialize Firebase in your App Delegate
-
-2. Create a FirebaseStorage struct:
-
-struct FirebaseStorage {
-    static func saveConfiguration(_ config: Configuration) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        let db = Firestore.firestore()
-        
-        do {
-            try db.collection("users").document(userId).collection("configurations").document(config.title).setData(from: config)
-        } catch let error {
-            print("Error saving to Firestore: \(error)")
-        }
-    }
-    
-    static func loadConfiguration(withTitle title: String, completion: @escaping (Configuration?) -> Void) {
-        guard let userId = Auth.auth().currentUser?.uid else {
-            completion(nil)
-            return
-        }
-        
-        let db = Firestore.firestore()
-        db.collection("users").document(userId).collection("configurations").document(title).getDocument { (document, error) in
-            if let document = document, document.exists {
-                let result = Result {
-                    try document.data(as: Configuration.self)
-                }
-                switch result {
-                case .success(let config):
-                    completion(config)
-                case .failure(let error):
-                    print("Error decoding configuration: \(error)")
-                    completion(nil)
-                }
-            } else {
-                print("Configuration does not exist")
-                completion(nil)
-            }
-        }
-    }
-}
-
-
-3. In the saveConfiguration() method of ChatParametersModal:
-   Add: FirebaseStorage.saveConfiguration(config)
-
-4. Implement user authentication to associate configurations with specific users.
-
-5. Handle offline capabilities and data synchronization.
-
-6. Ensure proper security rules are set up in Firebase to protect user data.
-
-7. Implement error handling and loading states in the UI when interacting with Firebase.
-*/
