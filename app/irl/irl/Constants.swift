@@ -27,7 +27,7 @@ struct Constants {
             static let upload = "/upload"
             static let whisperTTS = "/ws/WhisperTTS"
             static let humeWebSocket = "/ws/hume" // @depreciated need to add new routes
-            static let claudeMessages = "/api/v1/messages"
+            static let claudeMessages = "/v3/claude/messages"
             static let embeddingSmall = "/embeddings/small"
             static let embeddingLarge = "/embeddings/large"
         }

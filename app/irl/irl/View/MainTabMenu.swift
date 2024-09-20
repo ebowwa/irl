@@ -58,6 +58,7 @@ struct MainTabMenu: View {
 
             NavigationView {
                 ChatView()
+                // BasicEmbeddingsView()
                 //ChatView()
             }
             .tabItem {

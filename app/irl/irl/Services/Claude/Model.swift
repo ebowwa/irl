@@ -4,6 +4,7 @@
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
+
 import Foundation
 import Combine
 import SwiftUI
@@ -65,25 +66,27 @@ class ClaudeViewModel: ObservableObject {
         )
     }
 
-    func sendMessage(_ message: String) {
-        isLoading = true
+    // Updated sendMessage to accept ChatMessageObservable and use a completion handler
+    func sendMessage(_ chatMessage: ChatMessageObservable, completion: @escaping (Bool) -> Void) {
+        // No need to set isLoading here, as each message has its own isSending state
         error = nil
         response = ""  // Clear previous response
 
         let (modelToUse, maxTokensToUse, temperatureToUse, systemPromptToUse) = getEffectiveParameters()
 
-        apiClient.sendMessage(message, maxTokens: maxTokensToUse, model: Constants.AI_MODELS.apiModel(for: modelToUse) ?? modelToUse, temperature: temperatureToUse, systemPrompt: systemPromptToUse)
+        apiClient.sendMessage(chatMessage.content, maxTokens: maxTokensToUse, model: Constants.AI_MODELS.apiModel(for: modelToUse) ?? modelToUse, temperature: temperatureToUse, systemPrompt: systemPromptToUse)
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] (completion: Subscribers.Completion<Error>) in
-                self?.isLoading = false
-                switch completion {
+            .sink(receiveCompletion: { [weak self] (completionResult: Subscribers.Completion<Error>) in
+                switch completionResult {
                 case .failure(let error):
                     self?.error = error.localizedDescription
+                    completion(false)
                 case .finished:
                     break
                 }
             }, receiveValue: { [weak self] (response: ClaudeResponse) in
                 self?.response = response.content
+                completion(true)
             })
             .store(in: &cancellables)
     }

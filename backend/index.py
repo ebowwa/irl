@@ -28,16 +28,18 @@ app.include_router(ping.router)
 
 # Whisper TTS Router ** this is a websocket ** 
 app.include_router(whisper_tts.router)
+# maybe need to set up a post
 
 # Claude/OpenAI/Gemini LLM Router ** this is a post ** 
-app.include_router(claude_router, prefix="/api/v1")
+# TODO: ADD OPENROUTER would like access to the Nous Models
+app.include_router(claude_router, prefix="/v3/claude")
 
 # Hume AI Router ** this is a post, but websocket is available ** 
 app.include_router(hume_router, prefix="/api/v1/hume")
-
+# speech prosody
 # Embeddings Router ** this is a post **
 app.include_router(embeddings_router, prefix="/embeddings")
-
+# small & large
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
