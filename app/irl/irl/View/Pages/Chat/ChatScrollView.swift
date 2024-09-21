@@ -3,7 +3,7 @@
 //  irl
 //
 //  Created by Elijah Arbee on 9/20/24.
-// Corrected the resend 
+// Corrected the resend
 
 import SwiftUI
 
@@ -129,19 +129,60 @@ struct MessageView: View {
 }
 
 
-// MARK: - Input View
+// MARK: - Input View with Greyed-Out File and Image Attachments (maybe not show the image and attachments just upfront but maybe three dots and then click to widget to upload image or attachment like modern imessage)
 struct InputView: View {
     @Binding var message: String
     @FocusState.Binding var isInputFocused: Bool
     let onSend: () -> Void
     let isLoading: Bool
+    
+    @State private var showAttachmentOptions = false // State to control attachment visibility
+
     var body: some View {
         VStack(spacing: 16) {
             HStack {
+                // Attachment Widget
+                Button(action: {
+                    showAttachmentOptions.toggle() // Toggle visibility
+                }) {
+                    Image(systemName: "ellipsis")
+                        .foregroundColor(.gray)
+                        .padding(10)
+                }
+                .padding(.leading)
+
+                // Conditionally show attachment buttons
+                if showAttachmentOptions {
+                    // File Attachment Button
+                    Button(action: {
+                        // openFilePicker()
+                    }) {
+                        Image(systemName: "paperclip")
+                            .foregroundColor(.gray)
+                            .padding(10)
+                    }
+                    .disabled(true) // Greyed out
+                    .padding(.leading)
+
+                    // Image Attachment Button
+                    Button(action: {
+                        // openImagePicker()
+                    }) {
+                        Image(systemName: "photo")
+                            .foregroundColor(.gray)
+                            .padding(10)
+                    }
+                    .disabled(true) // Greyed out
+                    .padding(.leading)
+                }
+
+                // Text Field for the Message Input
                 TextField("Type your message...", text: $message)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .focused($isInputFocused)
                     .padding(.horizontal)
+
+                // Send Button
                 Button(action: onSend) {
                     Image(systemName: "paperplane.fill")
                         .foregroundColor(.white)
@@ -156,6 +197,8 @@ struct InputView: View {
             .background(Color.white)
             .cornerRadius(25)
             .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: -2)
+            
+            // Show loading indicator if necessary
             if isLoading {
                 ProgressView()
                     .padding(.bottom)
@@ -165,4 +208,16 @@ struct InputView: View {
         .background(Color.white)
     }
 }
+    
+    // Placeholder function for image picker (to be implemented later)
+    /*
+    private func openImagePicker() {
+        // Image picker logic to be added here once API is ready
+    }
+
+    // Placeholder function for file picker (to be implemented later)
+    private func openFilePicker() {
+        // File picker logic to be added here once API is ready
+    }
+    */
 
