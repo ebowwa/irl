@@ -13,8 +13,8 @@ struct EmotionAnalysisDashboard: View {
     var body: some View {
         VStack {
             Picker("View", selection: $selectedTab) {
-                Text("Overview").tag(0)
-                Text("Transcript").tag(1)
+                Text("Overview").tag(0) // will probably move this and details to home or maybe just this overview
+                Text("Transcript").tag(1) // need to add timestamps and speaker tags
                 Text("Details").tag(2)
             }
             .pickerStyle(SegmentedPickerStyle())

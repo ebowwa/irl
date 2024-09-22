@@ -37,6 +37,7 @@ app.include_router(claude_router, prefix="/v3/claude")
 # Hume AI Router ** this is a post, but websocket is available ** 
 app.include_router(hume_router, prefix="/api/v1/hume")
 # speech prosody
+
 # Embeddings Router ** this is a post **
 app.include_router(embeddings_router, prefix="/embeddings")
 # small & large

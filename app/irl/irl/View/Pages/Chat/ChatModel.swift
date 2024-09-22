@@ -14,7 +14,7 @@ class ChatMessageObservable: ObservableObject, Identifiable {
     @Published var isUser: Bool
     @Published var timestamp: Date
     @Published var failed: Bool
-    @Published var isSending: Bool // New property
+    @Published var isSending: Bool 
     @Published var pluginName: String
     @Published var isSystem: Bool
     

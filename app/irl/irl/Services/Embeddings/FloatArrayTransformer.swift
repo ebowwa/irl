@@ -1,10 +1,10 @@
 //
-//  FloatArrayTransformer.swift
+//  FloatArrayEmbeddingTransformer.swift
 //  irl
 //
 //  Created by Elijah Arbee on 9/19/24.
 //
-// FloatArrayTransformer.swift
+
 import Foundation
 import CoreData
 
@@ -28,8 +28,6 @@ class FloatArrayTransformer: ValueTransformer {
         return try? JSONDecoder().decode([Float].self, from: data)
     }
 }
-// EmbeddingTransformable.swift
-import Foundation
 
 extension KeyEntity {
     var floatEmbedding: [Float] {

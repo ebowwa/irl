@@ -22,7 +22,7 @@ class EmbeddingsViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         result = ""
-        
+        // TODO: articulate this task and how the embedding data is used, so it may be used in another view/component  It seems to use the type metadata from the embeddingresponse
         Task {
             do {
                 let response = try await EmbeddingService.shared.getEmbedding(for: text)

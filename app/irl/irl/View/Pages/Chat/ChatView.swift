@@ -136,9 +136,4 @@ struct BackgroundView: View {
 //  TODO: for the AI name i want it to say the plugin name if a system prompt and plugin is in use i.e. Moo GPT not saying friend
 //  make more imessage like
 //
-//  Created by Elijah Arbee on 9/5/24.
-//
-// TODO: a double \\ tap to resend if message fails, and the message if failed to look like on ios imessage, max tokens and temperature are shit and both incorrect from an gui interface but also in functionality.
-
-// TODO: if message fails make the message box color red add a double tap to resend
 // i want this to look more like imessage with the `plugins/bubbles` as the favorited contacts

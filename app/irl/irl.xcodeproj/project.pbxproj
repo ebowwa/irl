@@ -25,7 +25,6 @@
 		764E15D82C9C00F3007049C9 /* ClaudeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D72C9C00F3007049C9 /* ClaudeTypes.swift */; };
 		764E15DA2C9CF7FF007049C9 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15D92C9CF7FF007049C9 /* PersistenceController.swift */; };
 		764E15DC2C9CF853007049C9 /* KeyEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15DB2C9CF853007049C9 /* KeyEntity+CoreDataClass.swift */; };
-		764E15DE2C9CF879007049C9 /* EmbeddingTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15DD2C9CF879007049C9 /* EmbeddingTransformable.swift */; };
 		764E15E02C9D1720007049C9 /* FloatArrayTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15DF2C9D1720007049C9 /* FloatArrayTransformer.swift */; };
 		764E15E82C9E0CDF007049C9 /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15E72C9E0CDF007049C9 /* ChatModel.swift */; };
 		764E15EA2C9E0ECD007049C9 /* DateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15E92C9E0ECD007049C9 /* DateHelper.swift */; };
@@ -110,7 +109,6 @@
 		764E15D72C9C00F3007049C9 /* ClaudeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeTypes.swift; sourceTree = "<group>"; };
 		764E15D92C9CF7FF007049C9 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		764E15DB2C9CF853007049C9 /* KeyEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
-		764E15DD2C9CF879007049C9 /* EmbeddingTransformable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingTransformable.swift; sourceTree = "<group>"; };
 		764E15DF2C9D1720007049C9 /* FloatArrayTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatArrayTransformer.swift; sourceTree = "<group>"; };
 		764E15E72C9E0CDF007049C9 /* ChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModel.swift; sourceTree = "<group>"; };
 		764E15E92C9E0ECD007049C9 /* DateHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
@@ -141,7 +139,6 @@
 		7673E2332C916E0900A0F4B0 /* EmotionChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionChartView.swift; sourceTree = "<group>"; };
 		7673E2352C916E3900A0F4B0 /* EmotionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionBarView.swift; sourceTree = "<group>"; };
 		7673E2372C916E5800A0F4B0 /* EmotionTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionTimelineView.swift; sourceTree = "<group>"; };
-		7673E23A2C916FF900A0F4B0 /* IMMEDIATE_TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = IMMEDIATE_TODO.md; sourceTree = "<group>"; };
 		7673E23C2C9172BB00A0F4B0 /* EmotionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionModels.swift; sourceTree = "<group>"; };
 		7673E23E2C9172D700A0F4B0 /* EmotionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionParser.swift; sourceTree = "<group>"; };
 		7673E2402C9172EA00A0F4B0 /* EmotionAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionAnalyzer.swift; sourceTree = "<group>"; };
@@ -233,7 +230,6 @@
 				764E15CC2C9B4550007049C9 /* EmbeddingService.swift */,
 				764E15D92C9CF7FF007049C9 /* PersistenceController.swift */,
 				764E15DB2C9CF853007049C9 /* KeyEntity+CoreDataClass.swift */,
-				764E15DD2C9CF879007049C9 /* EmbeddingTransformable.swift */,
 				764E15DF2C9D1720007049C9 /* FloatArrayTransformer.swift */,
 			);
 			path = Embeddings;
@@ -296,7 +292,6 @@
 				7637EBBC2C865EFB00BAF0EC /* Constants.swift */,
 				765E98B92C811FC700A6726B /* Assets.xcassets */,
 				765E98BB2C811FC700A6726B /* irl.entitlements */,
-				7673E23A2C916FF900A0F4B0 /* IMMEDIATE_TODO.md */,
 				765E98BC2C811FC700A6726B /* Preview Content */,
 			);
 			path = irl;
@@ -628,7 +623,6 @@
 				765E98B82C811FC500A6726B /* ContentView.swift in Sources */,
 				7673E2222C915A1C00A0F4B0 /* EmotionUtilities.swift in Sources */,
 				76E1AB242C8E4AB3006BDC0B /* WhisperModels.swift in Sources */,
-				764E15DE2C9CF879007049C9 /* EmbeddingTransformable.swift in Sources */,
 				7637EBE42C8A45CB00BAF0EC /* ChatView.swift in Sources */,
 				765E98DF2C813E6D00A6726B /* TabsView.swift in Sources */,
 				76E1AB372C8F6CD3006BDC0B /* AIAlignmentView.swift in Sources */,
