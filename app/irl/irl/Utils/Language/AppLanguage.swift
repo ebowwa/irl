@@ -18,7 +18,7 @@ struct AppLanguage: Codable, Equatable, Hashable {
     var isClaudeSupported: Bool {
         return service?.contains("anthropic-claude-3") ?? false
     }
-// add support for cohere - aya, gpt4o, gemini, open-source, hume?, etc.  maybe modularize this part into its own script i.e IsSupportedLanguage
+// add support for cohere - aya, gpt4o, gemini, open-source, hume, etc.  maybe modularize this part into its own script i.e IsSupportedLanguage
     func hash(into hasher: inout Hasher) {
         hasher.combine(code)
     }

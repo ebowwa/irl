@@ -58,7 +58,7 @@ class GlobalState: ObservableObject {
 struct ContentView: View {
     @StateObject private var globalState = GlobalState()
     @StateObject private var audioState = AudioState.shared
-    @AppStorage("isRecordingEnabled") private var isRecordingEnabled = false
+    @StateObject private var backgroundAudio = BackgroundAudio.shared
     @State private var selectedTab = 0
 
     let accentColor: Color = Color("AccentColor")
@@ -74,44 +74,9 @@ struct ContentView: View {
         )
         .environmentObject(globalState)
         .environmentObject(audioState)
-        .onAppear(perform: setupAudioSession)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
-            handleAppBackgrounding()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
-            handleAppTermination()
-        }
+        .environmentObject(backgroundAudio)
+        .onAppear(perform: backgroundAudio.setupAudioSession)
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
-    }
-
-    private func setupAudioSession() {
-        if isRecordingEnabled {
-            if !audioState.isRecording {
-                audioState.startRecording()
-            }
-        } else {
-            if audioState.isRecording {
-                audioState.stopRecording()
-            }
-        }
-    }
-
-    private func handleAppBackgrounding() {
-        if isRecordingEnabled {
-            if !audioState.isRecording {
-                audioState.startRecording()
-            }
-        } else {
-            if audioState.isRecording {
-                audioState.stopRecording()
-            }
-        }
-    }
-
-    private func handleAppTermination() {
-        if audioState.isRecording {
-            audioState.stopRecording()
-        }
     }
 }
 

@@ -1,8 +1,8 @@
 //
-//  ChatModel.swift
+//  ChatMessageObservable.swift
 //  irl
 //
-//  Created by Elijah Arbee on 9/20/24.
+//  Created by Elijah Arbee on 9/22/24.
 //
 
 import Foundation
@@ -14,7 +14,7 @@ class ChatMessageObservable: ObservableObject, Identifiable {
     @Published var isUser: Bool
     @Published var timestamp: Date
     @Published var failed: Bool
-    @Published var isSending: Bool 
+    @Published var isSending: Bool
     @Published var pluginName: String
     @Published var isSystem: Bool
     
@@ -29,8 +29,3 @@ class ChatMessageObservable: ObservableObject, Identifiable {
     }
 }
 
-// MARK: - Helper Struct for Alerts
-struct AlertItem: Identifiable {
-    let id = UUID()
-    let message: String
-}

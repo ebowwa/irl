@@ -3,13 +3,12 @@
 //  irl
 //
 //  Created by Elijah Arbee on 9/6/24.
-//
-
 import Foundation
 import Combine
 import SwiftUI
 
 class ClaudeViewModel: ObservableObject {
+    // Purpose: Manages the state and interactions with the Claude API.
     @Published var response: String = ""
     @Published var isLoading: Bool = false
     @Published var error: String?
@@ -104,3 +103,12 @@ class ClaudeViewModel: ObservableObject {
         loadDefaults()
     }
 }
+
+/**
+ Key Properties:
+ model, maxTokens, temperature, systemPrompt: Core API configurations.
+ currentConfiguration: Optional Configuration that can override default settings.
+ Key Methods:
+ sendMessage: Sends user messages to the API using the effective parameters.
+ setConfiguration and clearConfiguration: Manage applying and clearing saved configurations.
+ */
