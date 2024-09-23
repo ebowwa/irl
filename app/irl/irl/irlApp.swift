@@ -11,5 +11,4 @@ struct IRLApp: App {
     }
 }
 
-// Note: This structure depends on GlobalState, AudioState, and MainTabMenu
 
