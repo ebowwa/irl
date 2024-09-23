@@ -63,6 +63,10 @@
 		76989DA62CA094060035A891 /* BackgroundAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DA52CA094060035A891 /* BackgroundAudio.swift */; };
 		76989DA82CA0995A0035A891 /* Docs.md in Resources */ = {isa = PBXBuildFile; fileRef = 76989DA72CA0995A0035A891 /* Docs.md */; };
 		76989DC72CA122830035A891 /* OnboardingIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DC62CA122830035A891 /* OnboardingIntroView.swift */; };
+		76989DC92CA12AB10035A891 /* FluxService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DC82CA12AB10035A891 /* FluxService.swift */; };
+		76989DCB2CA12AC80035A891 /* FluxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DCA2CA12AC80035A891 /* FluxView.swift */; };
+		76989DCE2CA12B210035A891 /* FalClient in Frameworks */ = {isa = PBXBuildFile; productRef = 76989DCD2CA12B210035A891 /* FalClient */; };
+		76989DD02CA1F7160035A891 /* SDXLService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DCF2CA1F7160035A891 /* SDXLService.swift */; };
 		76E1AAEA2C8BB223006BDC0B /* ClaudeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */; };
 		76E1AAF72C8C35DC006BDC0B /* GLTFKit2 in Frameworks */ = {isa = PBXBuildFile; productRef = 76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */; };
 		76E1AB012C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */; };
@@ -152,6 +156,9 @@
 		76989DA52CA094060035A891 /* BackgroundAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAudio.swift; sourceTree = "<group>"; };
 		76989DA72CA0995A0035A891 /* Docs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Docs.md; sourceTree = "<group>"; };
 		76989DC62CA122830035A891 /* OnboardingIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingIntroView.swift; sourceTree = "<group>"; };
+		76989DC82CA12AB10035A891 /* FluxService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FluxService.swift; sourceTree = "<group>"; };
+		76989DCA2CA12AC80035A891 /* FluxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FluxView.swift; sourceTree = "<group>"; };
+		76989DCF2CA1F7160035A891 /* SDXLService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDXLService.swift; sourceTree = "<group>"; };
 		76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeConstants.swift; sourceTree = "<group>"; };
 		76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderDebugMenuView.swift; sourceTree = "<group>"; };
 		76E1AB072C8CC2F1006BDC0B /* AudioRecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingModel.swift; sourceTree = "<group>"; };
@@ -187,6 +194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				768B60602C8274CB00C5AB3A /* Starscream in Frameworks */,
+				76989DCE2CA12B210035A891 /* FalClient in Frameworks */,
 				76E1AAF72C8C35DC006BDC0B /* GLTFKit2 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,6 +319,7 @@
 				765E98DD2C813DB800A6726B /* Pages */,
 				765E98D52C81386800A6726B /* MainTabMenu.swift */,
 				764E15C02C982D82007049C9 /* HomeView.swift */,
+				76989DCA2CA12AC80035A891 /* FluxView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -416,9 +425,19 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		76989DD12CA1F7230035A891 /* ImageGeneration */ = {
+			isa = PBXGroup;
+			children = (
+				76989DCF2CA1F7160035A891 /* SDXLService.swift */,
+				76989DC82CA12AB10035A891 /* FluxService.swift */,
+			);
+			path = ImageGeneration;
+			sourceTree = "<group>";
+		};
 		76C597082C8188B600AD2F55 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				76989DD12CA1F7230035A891 /* ImageGeneration */,
 				76989DA52CA094060035A891 /* BackgroundAudio.swift */,
 				7637EBBE2C8660C400BAF0EC /* ServerHealth.swift */,
 				76E1AB1C2C8E4A56006BDC0B /* Whisper */,
@@ -561,6 +580,7 @@
 			packageProductDependencies = (
 				768B605F2C8274CB00C5AB3A /* Starscream */,
 				76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */,
+				76989DCD2CA12B210035A891 /* FalClient */,
 			);
 			productName = irl;
 			productReference = 765E98B22C811FC500A6726B /* irl.app */;
@@ -593,6 +613,7 @@
 			packageReferences = (
 				768B605E2C8274CB00C5AB3A /* XCRemoteSwiftPackageReference "Starscream" */,
 				76E1AAF52C8C35DC006BDC0B /* XCRemoteSwiftPackageReference "GLTFKit2" */,
+				76989DCC2CA12B210035A891 /* XCRemoteSwiftPackageReference "fal-swift" */,
 			);
 			productRefGroup = 765E98B32C811FC500A6726B /* Products */;
 			projectDirPath = "";
@@ -625,12 +646,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7673E23F2C9172D700A0F4B0 /* EmotionParser.swift in Sources */,
+				76989DCB2CA12AC80035A891 /* FluxView.swift in Sources */,
 				7673E2412C9172EA00A0F4B0 /* EmotionAnalyzer.swift in Sources */,
 				7637EBBF2C8660C400BAF0EC /* ServerHealth.swift in Sources */,
 				765E98B82C811FC500A6726B /* ContentView.swift in Sources */,
 				7673E2222C915A1C00A0F4B0 /* EmotionUtilities.swift in Sources */,
 				76E1AB242C8E4AB3006BDC0B /* WhisperModels.swift in Sources */,
 				7637EBE42C8A45CB00BAF0EC /* ChatView.swift in Sources */,
+				76989DC92CA12AB10035A891 /* FluxService.swift in Sources */,
 				765E98DF2C813E6D00A6726B /* TabsView.swift in Sources */,
 				76E1AB372C8F6CD3006BDC0B /* AIAlignmentView.swift in Sources */,
 				765E98D22C81324400A6726B /* SystemModels.swift in Sources */,
@@ -640,6 +663,7 @@
 				765E98CA2C812D6C00A6726B /* PrivacySettingsView.swift in Sources */,
 				764E15E02C9D1720007049C9 /* FloatArrayTransformer.swift in Sources */,
 				76989DA02CA08F680035A891 /* AlertItem.swift in Sources */,
+				76989DD02CA1F7160035A891 /* SDXLService.swift in Sources */,
 				7637EBB72C8521AD00BAF0EC /* HumeView.swift in Sources */,
 				764E15CD2C9B4550007049C9 /* EmbeddingService.swift in Sources */,
 				7673E2362C916E3900A0F4B0 /* EmotionBarView.swift in Sources */,
@@ -942,6 +966,14 @@
 				minimumVersion = 4.0.8;
 			};
 		};
+		76989DCC2CA12B210035A891 /* XCRemoteSwiftPackageReference "fal-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fal-ai/fal-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.6;
+			};
+		};
 		76E1AAF52C8C35DC006BDC0B /* XCRemoteSwiftPackageReference "GLTFKit2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/warrenm/GLTFKit2";
@@ -957,6 +989,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 768B605E2C8274CB00C5AB3A /* XCRemoteSwiftPackageReference "Starscream" */;
 			productName = Starscream;
+		};
+		76989DCD2CA12B210035A891 /* FalClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 76989DCC2CA12B210035A891 /* XCRemoteSwiftPackageReference "fal-swift" */;
+			productName = FalClient;
 		};
 		76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */ = {
 			isa = XCSwiftPackageProductDependency;

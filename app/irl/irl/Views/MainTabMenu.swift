@@ -57,7 +57,8 @@ struct MainTabMenu: View {
             .tag(1)
 
             NavigationView {
-                ChatView()
+                FluxView()
+                //ChatView()
                 //AudioRecorderDebugMenuView()
                 // BasicEmbeddingsView()
                 //ChatView()
