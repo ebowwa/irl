@@ -1,26 +1,28 @@
 //
-//  FluxView.swift
+//  ImageGenView.swift
 //  irl
 //
 //  Created by Elijah Arbee on 9/22/24.
 //
-
+//  rethink the selector for the models,  i do not want the toggle as i will likely add further models as well 
 import SwiftUI
 
-struct FluxView: View {
+struct ImageGenView: View {
     // MARK: - State Objects for Services
     @StateObject private var fluxService = FluxImageGenerationService()
+    // StateObject to handle FLUX image generation service, this object manages the state of the service
     @StateObject private var sdxlService = SDXLImageGenerationService()
+    // StateObject for SDXL image generation service, handles the state of this alternative service
     
     // MARK: - User Inputs
-    @State private var useSDXL = false  // Toggle between FLUX and SDXL models
-    @State private var prompt: String = ""
-    @State private var imageSize: String = "landscape_4_3"
-    @State private var numImages: String = "1"
-    @State private var outputFormat: String = "jpeg"
-    @State private var guidanceScale: String = "3.5"
-    @State private var numInferenceSteps: String = "28"
-    @State private var enableSafetyChecker: Bool = true
+    @State private var useSDXL = false  // Toggle between FLUX and SDXL models, the state will persist until the view is destroyed
+    @State private var prompt: String = ""  // Holds the user prompt for image generation, state persists within the view
+    @State private var imageSize: String = "landscape_4_3" // State for the selected image size
+    @State private var numImages: String = "1" // Holds the number of images user wants to generate
+    @State private var outputFormat: String = "jpeg" // State for output image format (e.g., jpeg, png)
+    @State private var guidanceScale: String = "3.5" // Adjusts the guidance scale, stored in local state
+    @State private var numInferenceSteps: String = "28" // Holds the number of inference steps for the image generation
+    @State private var enableSafetyChecker: Bool = true // Safety checker state, helps prevent inappropriate content generation
     
     // MARK: - Options
     let imageSizeOptions = ["square_hd", "square", "portrait_4_3", "portrait_16_9", "landscape_4_3", "landscape_16_9"]
@@ -278,8 +280,8 @@ struct FluxView: View {
     }
 }
 
-struct FluxView_Previews: PreviewProvider {
+struct ImageGenView_Previews: PreviewProvider {
     static var previews: some View {
-        FluxView()
+        ImageGenView()
     }
 }

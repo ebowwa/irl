@@ -1,10 +1,16 @@
+//                 get { KeychainHelper.read(forKey: "falAPIKey") ?? "35ed8e77-aff6-4e35-99cc-1c713d108129:cd1f6c4ac18ae2cbe40905ad0c8f51a6" }
+
+//  Constants.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/2/24.
+//
 //  Constants.swift
 //  irl
 //
 //  Created by Elijah Arbee on 9/2/24.
 //
 import Foundation
-import Security // Ensure Security is imported for KeychainHelper
 
 struct Constants {
     // DO NOT INCLUDE https
@@ -42,35 +48,24 @@ struct Constants {
     }
     
     struct APIKeys {
-        static var openAI: String {
-            get { KeychainHelper.read(forKey: "openAIKey") ?? "" }
-            set { KeychainHelper.save(newValue, forKey: "openAIKey") }
-        }
+        // Store API keys directly in UserDefaults or as constants
+        @UserDefault(key: "openAIKey", defaultValue: "")
+        static var openAI: String
         
-        static var humeAI: String {
-            get { KeychainHelper.read(forKey: "humeAIKey") ?? "" }
-            set { KeychainHelper.save(newValue, forKey: "humeAIKey") }
-        }
+        @UserDefault(key: "humeAIKey", defaultValue: "")
+        static var humeAI: String
         
-        static var anthropicAI: String {
-            get { KeychainHelper.read(forKey: "anthropicAIKey") ?? "" }
-            set { KeychainHelper.save(newValue, forKey: "anthropicAIKey") }
-        }
+        @UserDefault(key: "anthropicAIKey", defaultValue: "")
+        static var anthropicAI: String
         
-        static var gcp: String {
-            get { KeychainHelper.read(forKey: "gcpKey") ?? "" }
-            set { KeychainHelper.save(newValue, forKey: "gcpKey") }
-        }
+        @UserDefault(key: "gcpKey", defaultValue: "")
+        static var gcp: String
         
-        static var falAPI: String {
-            get { KeychainHelper.read(forKey: "falAPIKey") ?? "" }
-            set { KeychainHelper.save(newValue, forKey: "falAPIKey") }
-        }
+        @UserDefault(key: "falAPIKey", defaultValue: "")
+        static var falAPI: String
         
-        static var deepgram: String {
-            get { KeychainHelper.read(forKey: "deepgramKey") ?? "" }
-            set { KeychainHelper.save(newValue, forKey: "deepgramKey") }
-        }
+        @UserDefault(key: "deepgramKey", defaultValue: "")
+        static var deepgram: String
     }
     
     struct AI_MODELS {
@@ -115,36 +110,56 @@ struct UserDefault<T> {
     }
 }
 
-// KeychainHelper as defined earlier
-struct KeychainHelper {
-    static func save(_ value: String, forKey key: String) {
-        let data = Data(value.utf8)
-        let query = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: key,
-            kSecValueData: data
-        ] as CFDictionary
 
-        SecItemDelete(query) // Delete any existing item
-        SecItemAdd(query, nil)
-    }
 
-    static func read(forKey key: String) -> String? {
-        let query = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: key,
-            kSecReturnData: true,
-            kSecMatchLimit: kSecMatchLimitOne
-        ] as CFDictionary
 
-        var dataTypeRef: AnyObject?
-        let status = SecItemCopyMatching(query, &dataTypeRef)
 
-        if status == errSecSuccess,
-           let data = dataTypeRef as? Data,
-           let string = String(data: data, encoding: .utf8) {
-            return string
-        }
-        return nil
-    }
-}
+/**
+ The **Keychain** was included in your original code to securely store sensitive data such as API keys. It provides a safe way to manage confidential information, particularly because **storing sensitive data like API keys or passwords directly in your code or using less secure storage methods (like `UserDefaults`)** can expose your app to security risks.
+
+ ### **Why the Keychain Was Used:**
+
+ 1. **Security**:
+    - The Keychain is a secure storage mechanism provided by Apple. It encrypts sensitive data, ensuring that it’s stored safely and can only be accessed by the app or service that stored it. This makes it a more secure choice than storing sensitive data directly in the app’s code or `UserDefaults`, which is unencrypted.
+    
+ 2. **Confidentiality**:
+    - Storing API keys, authentication tokens, and other private data in plain text could lead to data breaches. For instance, if someone were to gain access to the device, such data in `UserDefaults` could be easily extracted, whereas Keychain data remains encrypted.
+    
+ 3. **Persistent Secure Storage**:
+    - The Keychain allows you to store data persistently across app sessions and even device reboots, while ensuring that only authorized access is allowed. This is crucial for API keys or credentials that need to be available whenever the app is running, without the user needing to re-enter them.
+
+ ### **What the Keychain Does:**
+
+ 1. **Encryption**:
+    - The Keychain stores sensitive data in an encrypted format, using a combination of device-specific and user-specific factors to encrypt and decrypt this data. Even if the storage location is accessed, the information stored within it cannot be read without proper decryption.
+
+ 2. **Access Control**:
+    - Only the app that added an item to the Keychain can retrieve it (unless you explicitly allow sharing between apps). This ensures that even if another app is installed on the same device, it cannot access the sensitive data stored by your app.
+
+ 3. **Security on Lock Screen**:
+    - Keychain entries are protected based on the lock screen. If a device is locked and the data is configured to be accessible only when unlocked, the data remains secure until the device is unlocked.
+
+ 4. **APIs for Secure Management**:
+    - The Keychain provides APIs for storing and retrieving data securely. For example, your code included:
+      - **`SecItemAdd()`**: Adds a new item (such as an API key) to the Keychain.
+      - **`SecItemCopyMatching()`**: Retrieves data from the Keychain (such as retrieving an API key for use).
+      - **`SecItemDelete()`**: Removes an item from the Keychain.
+
+ ### **How the Keychain Was Used in Your Code:**
+
+ In your code, the Keychain was used to securely store several sensitive API keys, like `openAIKey`, `humeAIKey`, `anthropicAIKey`, etc. Here’s how it functioned:
+
+ - **Storing Data**:
+    - The API keys were saved to the Keychain using `KeychainHelper.save`. When you assigned a new key, it encrypted and securely stored the key.
+    
+ - **Retrieving Data**:
+    - When an API key was needed, for example, `openAIKey`, the `KeychainHelper.read` function retrieved the encrypted key, decrypted it, and returned it for use.
+
+ - **Ensuring Confidentiality**:
+    - Using the Keychain for sensitive API keys ensured that even if someone gained access to the device, they couldn’t easily read or extract the API keys without going through the Keychain’s encryption.
+
+ ---
+
+ ### **In Short**:
+ The **Keychain** was there to **securely store** sensitive API keys, tokens, or passwords and **protect them from unauthorized access**, leveraging encryption and access control. It was used to ensure that confidential data remains safe even if someone accesses the device or app storage directly. By removing the Keychain, you're reducing the complexity and security of your implementation, but in certain development contexts, this can be acceptable if you're prioritizing simplicity over security.
+ */
