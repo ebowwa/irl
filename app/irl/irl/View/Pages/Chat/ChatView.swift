@@ -11,8 +11,8 @@ struct ChatView: View {
     @StateObject private var viewModel: ClaudeViewModel
     @State private var message: String = ""
     @State private var messages: [ChatMessageObservable] = []
-    @FocusState private var isInputFocused: Bool
-    @State private var showParametersModal = false
+    @FocusState private var isInputFocused: Bool // what is this?
+    @State private var showParametersModal = false // true will have the modal pop-up
 
     init() {
         _viewModel = StateObject(wrappedValue: ClaudeViewModel(apiClient: ClaudeAPIClient()))
@@ -40,7 +40,8 @@ struct ChatView: View {
             Alert(title: Text("Error"), message: Text(alertItem.message))
         }
         .sheet(isPresented: $showParametersModal) {
-            ChatParametersModal(claudeViewModel: viewModel)
+            // Create a ChatParametersViewModel from ClaudeViewModel
+            ChatParametersModal(viewModel: ChatParametersViewModel(claudeViewModel: viewModel))
         }
         .onReceive(viewModel.$response) { response in
             if !response.isEmpty {
@@ -96,6 +97,7 @@ struct ChatView: View {
         }
     }
 }
+
 
 extension Array where Element == ChatMessageObservable {
     func groupByDate() -> [(key: Date, value: [ChatMessageObservable])] {

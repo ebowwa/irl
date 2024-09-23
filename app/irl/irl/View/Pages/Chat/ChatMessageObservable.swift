@@ -1,7 +1,7 @@
 //
 //  ChatMessageObservable.swift
 //  irl
-//
+//  ClaudeViewModel handles the logic for sending and receiving messages & ChatMessageObservable instances represent the state of each message within the UI.
 //  Created by Elijah Arbee on 9/22/24.
 //
 

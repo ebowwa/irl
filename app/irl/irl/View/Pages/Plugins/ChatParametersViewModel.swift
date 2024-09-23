@@ -4,11 +4,23 @@
 //
 //  Created by Elijah Arbee on 9/9/24.
 //
-// TODO: don't ask the user to save the Config as anything if unchanged from default, also maybe we should modularize the dollowing to isomorphize the saved config from the ui so we can also load older configs and different configs
+//  This view model manages chat parameters, supports encoding and decoding for persistence,
+//  and applies configurations to the ClaudeViewModel.
+//
+// TODO:
+// - Prevent prompting users to save configurations if there are no changes from the default.
+// - Modularize the handling of saved configurations to allow loading older or different configurations.
+//
+
 import SwiftUI
 import CoreData
 
+// MARK: - ChatParametersViewModel
+
+/// ViewModel for managing chat parameters and configurations.
 class ChatParametersViewModel: ObservableObject, Codable {
+    // MARK: Published Properties
+    
     @Published var personality: String = ""
     @Published var skills: String = ""
     @Published var learningObjectives: String = ""
@@ -28,6 +40,8 @@ class ChatParametersViewModel: ObservableObject, Codable {
     
     @Published var useAIAlignment: Bool = false
     
+    // MARK: Coding Keys
+    
     enum CodingKeys: String, CodingKey {
         case personality, skills, learningObjectives, intendedBehaviors, specificNeeds, apiEndpoint, jsonSchema
         case model, maxTokens, temperature, systemPrompt
@@ -35,6 +49,10 @@ class ChatParametersViewModel: ObservableObject, Codable {
         case useAIAlignment
     }
     
+    // MARK: Initializers
+    
+    /// Initializes the ViewModel with a given ClaudeViewModel.
+    /// - Parameter claudeViewModel: The ClaudeViewModel to apply configurations to.
     init(claudeViewModel: ClaudeViewModel) {
         self.model = claudeViewModel.model
         self.maxTokens = claudeViewModel.maxTokens
@@ -42,6 +60,7 @@ class ChatParametersViewModel: ObservableObject, Codable {
         self.systemPrompt = claudeViewModel.systemPrompt
     }
     
+    /// Required initializer for decoding.
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         personality = try container.decode(String.self, forKey: .personality)
@@ -61,6 +80,8 @@ class ChatParametersViewModel: ObservableObject, Codable {
         useAIAlignment = try container.decode(Bool.self, forKey: .useAIAlignment)
     }
     
+    /// Encodes the ViewModel's properties.
+    /// - Parameter encoder: The encoder to write data to.
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(personality, forKey: .personality)
@@ -80,11 +101,15 @@ class ChatParametersViewModel: ObservableObject, Codable {
         try container.encode(useAIAlignment, forKey: .useAIAlignment)
     }
     
+    // MARK: Methods
+    
+    /// Applies the current parameters to a given ClaudeViewModel.
+    /// - Parameter claudeViewModel: The ClaudeViewModel to apply settings to.
     func applyToClaudeViewModel(_ claudeViewModel: ClaudeViewModel) {
         claudeViewModel.model = self.model
         claudeViewModel.maxTokens = self.maxTokens
         claudeViewModel.temperature = self.temperature
         claudeViewModel.systemPrompt = self.systemPrompt
-        // are we missing any other properties?
+        // Add any additional properties if necessary.
     }
 }
