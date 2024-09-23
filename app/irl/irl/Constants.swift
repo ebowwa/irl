@@ -1,5 +1,3 @@
-//                 get { KeychainHelper.read(forKey: "falAPIKey") ?? "35ed8e77-aff6-4e35-99cc-1c713d108129:cd1f6c4ac18ae2cbe40905ad0c8f51a6" }
-
 //  Constants.swift
 //  irl
 //
