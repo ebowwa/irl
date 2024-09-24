@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "www/irlweb/next.config.mjs",
+        "use": "@vercel/next"
+      },
+      {
+        "src": "backend/**/*",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "www/irlweb/$1"
+      }
+    ]
+  }
+  

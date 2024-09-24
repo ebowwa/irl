@@ -50,9 +50,9 @@ app.include_router(embeddings_router, prefix="/embeddings")
 # Image Generation Router ** new addition **
 app.include_router(fluxlora_router, prefix="/api")
 
-
 # New router for fast-sdxl image generation
 app.include_router(sdxl_router, prefix="/api")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

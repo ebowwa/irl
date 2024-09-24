@@ -37,6 +37,8 @@ struct Constants {
             
             // SDXL API Path
             static let sdxlGenerate = "/api/sdxl/generate"
+            static let sdxlStatus = "api/sdxl/status/"
+            static let sdxlResult = "/api/sdxl/result/" 
             
             // ** Flux Image Generation API Paths **
             static let imageGenerationSubmit = "/api/FLUXLORAFAL/submit"

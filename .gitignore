@@ -1822,3 +1822,4 @@ backend/routers/post/llm-inference/env_config.py
 backend/routers/post/llm_inference/env_config.py
 backend/irl-cult-firebase-adminsdk-q5hlz-a0df624fd5.json
 backend/routers/post/llm_inference/claude/env_config.py
+www/irlweb/pnpm-lock.yaml

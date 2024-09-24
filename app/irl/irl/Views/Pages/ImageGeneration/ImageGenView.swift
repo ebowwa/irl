@@ -3,39 +3,46 @@
 //  irl
 //
 //  Created by Elijah Arbee on 9/22/24.
-//
-//  rethink the selector for the models,  i do not want the toggle as i will likely add further models as well 
+// the response says the data couldnt be read beacue some is missing this is not specific enough
+
 import SwiftUI
 
 struct ImageGenView: View {
     // MARK: - State Objects for Services
     @StateObject private var fluxService = FluxImageGenerationService()
-    // StateObject to handle FLUX image generation service, this object manages the state of the service
-    @StateObject private var sdxlService = SDXLImageGenerationService()
-    // StateObject for SDXL image generation service, handles the state of this alternative service
+    @StateObject private var sdxlService = SDXLImageGenerationService() // Initialize without API key
     
     // MARK: - User Inputs
-    @State private var useSDXL = false  // Toggle between FLUX and SDXL models, the state will persist until the view is destroyed
-    @State private var prompt: String = ""  // Holds the user prompt for image generation, state persists within the view
-    @State private var imageSize: String = "landscape_4_3" // State for the selected image size
-    @State private var numImages: String = "1" // Holds the number of images user wants to generate
-    @State private var outputFormat: String = "jpeg" // State for output image format (e.g., jpeg, png)
-    @State private var guidanceScale: String = "3.5" // Adjusts the guidance scale, stored in local state
-    @State private var numInferenceSteps: String = "28" // Holds the number of inference steps for the image generation
-    @State private var enableSafetyChecker: Bool = true // Safety checker state, helps prevent inappropriate content generation
-    
+    @State private var selectedModel: String = "FLUX"  // Default selected model
+    @State private var prompt: String = ""
+    @State private var imageSize: String = "landscape_4_3"
+    @State private var numImages: String = "1"
+    @State private var outputFormat: String = "jpeg"
+    @State private var guidanceScale: String = "3.5"
+    @State private var numInferenceSteps: String = "28"
+    @State private var enableSafetyChecker: Bool = true
+
+    // MARK: - Available Models
+    let availableModels = ["FLUX", "SDXL"] // Add more models here as needed
+
     // MARK: - Options
     let imageSizeOptions = ["square_hd", "square", "portrait_4_3", "portrait_16_9", "landscape_4_3", "landscape_16_9"]
     let outputFormatOptions = ["jpeg", "png"]
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    // Toggle between FLUX and SDXL models
-                    Toggle("Use SDXL Model", isOn: $useSDXL)
+                    // Model Selection Picker
+                    Text("Select Model:")
                         .font(.headline)
-                        .padding(.top)
+                    
+                    Picker("Select Model", selection: $selectedModel) {
+                        ForEach(availableModels, id: \.self) { model in
+                            Text(model).tag(model)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
                     
                     Group {
                         // Image Description
@@ -146,7 +153,7 @@ struct ImageGenView: View {
                     if let urlString = currentGeneratedImageUrl, let url = URL(string: urlString) {
                         Text("Generated Image:")
                             .font(.headline)
-                        
+
                         AsyncImage(url: url) { phase in
                             switch phase {
                             case .empty:
@@ -167,20 +174,16 @@ struct ImageGenView: View {
                         .frame(maxWidth: .infinity, maxHeight: 300)
                         .shadow(radius: 5)
                     }
-                    
+
                     Spacer()
                 }
                 .padding()
             }
-            .navigationTitle(useSDXL ? "SDXL Image Generator" : "FLUX.1 Image Generator")
+            .navigationTitle("\(selectedModel) Image Generator")
             .alert(isPresented: Binding<Bool>(
                 get: { currentErrorMessage != nil },
                 set: { _ in
-                    if useSDXL {
-                        sdxlService.generationErrorMessage = nil
-                    } else {
-                        fluxService.generationErrorMessage = nil
-                    }
+                    clearErrorMessage()
                 }
             )) {
                 Alert(
@@ -194,19 +197,39 @@ struct ImageGenView: View {
     
     // MARK: - Computed Properties for Current Service States
     private var isGeneratingImage: Bool {
-        return useSDXL ? sdxlService.isGeneratingImage : fluxService.isGeneratingImage
+        switch selectedModel {
+        case "SDXL":
+            return sdxlService.isGeneratingImage
+        default:
+            return fluxService.isGeneratingImage
+        }
     }
     
     private var currentLogs: String? {
-        return useSDXL ? sdxlService.generationLogs : fluxService.generationLogs
+        switch selectedModel {
+        case "SDXL":
+            return sdxlService.generationLogs
+        default:
+            return fluxService.generationLogs
+        }
     }
     
     private var currentGeneratedImageUrl: String? {
-        return useSDXL ? sdxlService.generatedImageUrl : fluxService.generatedImageUrl
+        switch selectedModel {
+        case "SDXL":
+            return sdxlService.generatedImageUrl
+        default:
+            return fluxService.generatedImageUrl
+        }
     }
     
     private var currentErrorMessage: String? {
-        return useSDXL ? sdxlService.generationErrorMessage : fluxService.generationErrorMessage
+        switch selectedModel {
+        case "SDXL":
+            return sdxlService.generationErrorMessage
+        default:
+            return fluxService.generationErrorMessage
+        }
     }
     
     // MARK: - Input Validation
@@ -227,7 +250,8 @@ struct ImageGenView: View {
             return
         }
         
-        if useSDXL {
+        switch selectedModel {
+        case "SDXL":
             sdxlService.generateImage(
                 fromPrompt: prompt,
                 imageSize: imageSize,
@@ -237,7 +261,7 @@ struct ImageGenView: View {
                 numInferenceSteps: Int(numInferenceSteps) ?? 28,
                 enableSafetyChecker: enableSafetyChecker
             )
-        } else {
+        default:
             fluxService.generateImage(
                 fromPrompt: prompt,
                 imageSize: imageSize,
@@ -252,10 +276,20 @@ struct ImageGenView: View {
     
     // MARK: - Handle Error Messages
     private func currentErrorMessageHandler(_ message: String) {
-        if useSDXL {
+        switch selectedModel {
+        case "SDXL":
             sdxlService.generationErrorMessage = message
-        } else {
+        default:
             fluxService.generationErrorMessage = message
+        }
+    }
+    
+    private func clearErrorMessage() {
+        switch selectedModel {
+        case "SDXL":
+            sdxlService.generationErrorMessage = nil
+        default:
+            fluxService.generationErrorMessage = nil
         }
     }
     

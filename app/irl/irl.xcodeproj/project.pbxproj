@@ -872,7 +872,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app uses the microphone to listen to your voice and provide real-time transcription and emotional analysis. Your conversations are securely transmitted to our backend for processing and are stored locally in an encrypted SQLite database. This feature allows our AI companion to understand and respond to you with emotional intelligence, enhancing your daily interactions and providing personalized assistance.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "This app uses speech recognition to analyze audio recordings for speech content.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to your microphone to recognize speech for transcription.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -916,7 +916,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app uses the microphone to listen to your voice and provide real-time transcription and emotional analysis. Your conversations are securely transmitted to our backend for processing and are stored locally in an encrypted SQLite database. This feature allows our AI companion to understand and respond to you with emotional intelligence, enhancing your daily interactions and providing personalized assistance.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "This app uses speech recognition to analyze audio recordings for speech content.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to your microphone to recognize speech for transcription.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
