@@ -30,7 +30,7 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
    
 2. Navigate into the project directory:
    ```bash
-   cd irl
+   cd irl && cd backend
    ```
 
 3. Install the required dependencies:
@@ -40,8 +40,8 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 
 4. Configure API values
     ```bash
-    # Rename the template.env file to .env
-    mv template.env .env
+    # Duplicate the env.example file to create a new .env file
+    cp env.example .env
 
     # Open the .env file and add your API keys
     nano .env
