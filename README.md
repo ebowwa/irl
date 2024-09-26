@@ -6,27 +6,26 @@
 
 ## About
 
-IRL (In Real Life) is an AI-powered project that serves as an augmented memory assistant, a human interpreting tool, an advocator, and much more. This application is designed to enhance human-AI interaction, providing practical, real-time support and insights for users in various contexts.
+IRL (In Real Life) is an AI-powered project that functions as an augmented memory assistant, human interpreter, advocate, and more. This app is designed to elevate human-AI interaction by providing real-time support and insights to users in various contexts.
 
 ## Features
 
-- **Augmented Memory**: Assist users by storing and retrieving information as needed.
-- **Human Interpreter**: Provides interpretations based on real-time data.
-- **Advocacy**: Acts as a digital advocate, helping users navigate complex situations.
-- **AI Companion**: Your personal AI for a range of support tasks.
+- **Augmented Memory**: Helps users by storing and retrieving information as needed.
+- **Human Interpreter**: Provides contextual interpretations based on real-time input.
+- **Advocacy**: Acts as a digital advocate to assist users in navigating complex situations.
+- **AI Companion**: Serves as your personal AI assistant for various tasks.
 
 ## Requirements
 
-- Python 3.x
-- Uvicorn
-- FastAPI
-- Any other specific dependencies used in your project (list them here)
+- **Python**: Ensure you have Python installed on your machine.
+- **Xcode**: For building and running the iOS app.
+- **ngrok**: To expose local servers to the internet.
 
 ## Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/irl.git
+   git clone https://github.com/ebowwa/irl.git
    ```
    
 2. Navigate into the project directory:
@@ -41,21 +40,32 @@ IRL (In Real Life) is an AI-powered project that serves as an augmented memory a
 
 ## Running the App
 
-To run the application with Uvicorn in development mode:
+1. Start the FastAPI server with Uvicorn in development mode:
+   ```bash
+   uvicorn index:app --reload
+   ```
+   This will start the FastAPI server on your local machine, enabling automatic reloading during development.
 
-```bash
-uvicorn index:app --reload
-```
+2. Install ngrok if you don't have it already:
+   ```bash
+   brew install --cask ngrok
+   ```
+   Alternatively, you can download it from [ngrok's website](https://ngrok.com/download).
 
-This will start the FastAPI server on your local machine and allow for automatic reloading when you make changes.
+3. Expose your local server to the internet using ngrok:
+   ```bash
+   ngrok http 8000
+   ```
+   This will generate a public URL for your local server, which can be accessed externally.
+
+4. Open Xcode, build, and run the app.
 
 ## Usage
 
-- Once the server is running, open your web browser and navigate to `http://127.0.0.1:8000`.
-- This will bring you to the application interface where you can interact with the AI companion.
+Once your server is running and ngrok is set up, you can connect your iOS app to the public URL provided by ngrok, allowing it to communicate with your backend.
 
 ## Contributing
 
-Feel free to submit issues and pull requests! We welcome contributions that help improve the project.
+We welcome contributions! Feel free to submit issues or pull requests to help improve the project.
 
 ---
