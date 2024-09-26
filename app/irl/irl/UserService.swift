@@ -6,6 +6,12 @@
 //
 import Foundation
 
+struct User: Identifiable {
+    let id: UUID
+    let name: String
+    let email: String
+}
+
 class UserService {
     func loadUser(completion: @escaping (Result<User, Error>) -> Void) {
         // Simulate network call

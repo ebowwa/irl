@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
       {
-        "src": "www/irlweb/next.config.mjs",
+        "src": "/irlweb/next.config.mjs",
         "use": "@vercel/next"
       },
       {
@@ -13,7 +13,7 @@
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "www/irlweb/$1"
+        "dest": "/irlweb/$1"
       }
     ]
   }

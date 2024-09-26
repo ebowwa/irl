@@ -6,6 +6,11 @@
 //
 import Foundation
 
+struct Notification: Identifiable {
+    let id: UUID
+    let title: String
+    let body: String
+}
 // allow the models running inference to store 'todos' with notifications for the future or real-time
 // generate the uuid on device and use delimiters to segment llm response i.e. (delimiter) title: "walk dog" , body "go walk tom like you promised Jerome, take your scooter you both will enjoy it"
 
