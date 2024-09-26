@@ -6,7 +6,7 @@ from typing import Optional, List
 
 # APIRouter instance for creating API routes
 router = APIRouter()
-
+# Note: on amtrak wifi the peer refused the connection the api url 
 # FAL API URL for fast-sdxl image generation and the FAL API Key from environment variables
 FAL_API_URL = "https://queue.fal.run/fal-ai/fast-sdxl"
 FAL_KEY = os.getenv("FAL_KEY")
@@ -71,15 +71,26 @@ def check_sdxl_request_status(request_id: str):
         "Authorization": f"Key {FAL_KEY}"  # Authorization header with API key
     }
 
-    # Send GET request to check the status
+        # Send GET request to check the status
     response = requests.get(status_url, headers=headers)
 
-    # Handle non-200 status codes
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Error fetching request status")
+    # Parse the JSON response
+    try:
+        response_data = response.json()
+    except ValueError:
+        raise HTTPException(status_code=500, detail="Malformed response received from the FAL API")
+
+    # Check for 'detail' field indicating an error, even if status code is 200-299
+    if "detail" in response_data:
+        error_detail = response_data.get("detail", "Unknown error")
+        raise HTTPException(status_code=response.status_code, detail=error_detail)
+
+    # Check for 'status' field in the response
+    if 'status' not in response_data:
+        raise HTTPException(status_code=500, detail="Missing 'status' in FAL API response")
 
     # Return the status of the request
-    return response.json()
+    return response_data
 
 # Additional Pydantic models for image data and response handling
 from pydantic import BaseModel
@@ -122,6 +133,7 @@ def fetch_sdxl_image_result(request_id: str):
     # Parse the JSON response
     try:
         response_data = response.json()
+
 
         # Check for required fields in the response
         if 'images' not in response_data or not response_data['images']:

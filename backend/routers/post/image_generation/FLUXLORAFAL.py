@@ -1,13 +1,20 @@
 # File: backend/routers/post/image_generation/FLUXLORAFAL.py
 
-from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import httpx
 import os
 from dotenv import load_dotenv
+import logging
+import json
 
-load_dotenv()  # Load environment variables from the .env file
+# Load environment variables from the .env file
+load_dotenv()
+
+# Set up logging configuration
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/FLUXLORAFAL",  # Updated prefix
@@ -15,12 +22,12 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-
 # Configuration
 FAL_API_ENDPOINT = os.getenv("FAL_API_ENDPOINT", "https://queue.fal.run/fal-ai/flux-lora")
 FAL_API_KEY = os.getenv("FAL_KEY")
 
 if not FAL_API_KEY:
+    logger.error("FAL_KEY is not set in environment variables.")
     raise ValueError("FAL_KEY is not set in environment variables.")
 
 # Headers required by FAL's API
@@ -70,22 +77,32 @@ class ImageGenerationResponse(BaseModel):
 
 # Helper Function to Proxy Requests to FAL
 async def proxy_request(method: str, url: str, **kwargs):
+    logger.info(f"Making {method} request to {url}")
+    logger.debug(f"Request headers: {json.dumps(FAL_HEADERS, indent=2)}")
+    logger.debug(f"Request payload: {json.dumps(kwargs, indent=2)}")
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.request(method, url, **kwargs)
+            logger.info(f"Received response with status code: {response.status_code}")
+            logger.debug(f"Response content: {response.text}")
+
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as http_err:
+            logger.error(f"HTTP Status Error: {response.status_code} - {response.text}")
             raise HTTPException(
                 status_code=response.status_code,
                 detail=f"FAL API Error: {response.text}",
             )
         except httpx.RequestError as req_err:
+            logger.error(f"Request Error: {str(req_err)}")
             raise HTTPException(
                 status_code=502,
                 detail=f"Error connecting to FAL API: {str(req_err)}",
             )
         except Exception as err:
+            logger.error(f"Unexpected Error: {str(err)}")
             raise HTTPException(
                 status_code=500,
                 detail=f"Unexpected Error: {str(err)}",
@@ -96,11 +113,15 @@ async def submit_image_generation(request: ImageGenerationRequest):
     """
     Submit an image generation request to FAL's Queue API.
     """
+    logger.info(f"Received image generation request: {json.dumps(request.dict(), indent=2)}")
+    
     # Prepare the payload
     payload = request.dict(exclude_unset=True)
     
     # Remove any None values to avoid sending them if not necessary
     payload = {k: v for k, v in payload.items() if v is not None}
+    
+    logger.debug(f"Prepared payload for FAL API: {json.dumps(payload, indent=2)}")
     
     # Proxy the request to FAL's API
     fal_response = await proxy_request(
@@ -112,10 +133,14 @@ async def submit_image_generation(request: ImageGenerationRequest):
     
     # Ensure the response contains a request_id
     if "request_id" not in fal_response:
+        logger.error("Invalid response from FAL API: Missing request_id")
         raise HTTPException(
             status_code=502,
             detail="Invalid response from FAL API: Missing request_id.",
         )
+    
+    logger.info(f"Image generation request submitted successfully with request_id: {fal_response.get('request_id')}")
+    logger.debug(f"Full FAL API response: {json.dumps(fal_response, indent=2)}")
     
     return ImageGenerationResponse(**fal_response)
 
@@ -126,11 +151,17 @@ async def check_request_status(request_id: str):
     """
     status_url = f"{FAL_API_ENDPOINT}/requests/{request_id}/status"
     
+    logger.info(f"Checking status for request_id: {request_id} at {status_url}")
+    
     fal_response = await proxy_request(
         method="GET",
         url=status_url,
         headers=FAL_HEADERS,
     )
+    
+    logger.debug(f"Status check response: {json.dumps(fal_response, indent=2)}")
+    
+    logger.info(f"Status check for request_id {request_id} completed.")
     
     return ImageGenerationResponse(**fal_response)
 
@@ -138,22 +169,25 @@ async def check_request_status(request_id: str):
 async def fetch_request_result(request_id: str):
     result_url = f"{FAL_API_ENDPOINT}/requests/{request_id}"
     
+    logger.info(f"Fetching result for request_id: {request_id} from {result_url}")
+    
     fal_response = await proxy_request(
         method="GET",
         url=result_url,
         headers=FAL_HEADERS,
     )
 
-    # Debug the response from FAL API
-    print(f"FAL Response: {fal_response}")  # You can remove this after debugging
+    logger.debug(f"Result response from FAL API: {json.dumps(fal_response, indent=2)}")
 
     # Check if request is completed
     if fal_response.get("status") != "completed":
+        logger.warning(f"Request {request_id} is not yet completed.")
         raise HTTPException(
             status_code=400,
             detail="Request is not completed yet.",
         )
     
-    # Return the response
+    logger.info(f"Request {request_id} completed successfully.")
+    logger.debug(f"Completed request result: {json.dumps(fal_response, indent=2)}")
+    
     return ImageGenerationResponse(**fal_response)
-
