@@ -46,6 +46,7 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
     # Open the .env file and add your API keys
     nano .env
     ```
+**Get API KEYs Here:**
 
     [OpenAI](https://platform.openai.com)
 
