@@ -48,13 +48,13 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
     ```
 **Get API KEYs Here:**
 
-    [OpenAI](https://platform.openai.com)
+[OpenAI](https://platform.openai.com)
 
-    [HumeAI](https://platform.hume.ai/sign-up)
+[HumeAI](https://platform.hume.ai/sign-up)
 
-    [Anthropic](https://console.anthropic.com/) 
+[Anthropic](https://console.anthropic.com/) 
 
-    [FAL AI](https://fal.ai/dashboard) 
+[FAL AI](https://fal.ai/dashboard) 
 
 ## Running the App
 
