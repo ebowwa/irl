@@ -47,10 +47,13 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
     nano .env
     ```
 
-    ** [OpenAI](https://platform.openai.com) ** 
-    ** [HumeAI](https://platform.hume.ai/sign-up) ** 
-    ** [Anthropic](https://console.anthropic.com/) **
-    ** [FAL AI](https://fal.ai/dashboard) **
+    ** [OpenAI](https://platform.openai.com)
+
+    ** [HumeAI](https://platform.hume.ai/sign-up)
+
+    ** [Anthropic](https://console.anthropic.com/) 
+    
+    ** [FAL AI](https://fal.ai/dashboard) 
 
 ## Running the App
 
