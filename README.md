@@ -46,15 +46,9 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
     # Open the .env file and add your API keys
     nano .env
     ```
-**Get API KEYs Here:**
+**Get your API KEYs here:**
 
-[OpenAI](https://platform.openai.com)
-
-[HumeAI](https://platform.hume.ai/sign-up)
-
-[Anthropic](https://console.anthropic.com/) 
-
-[FAL AI](https://fal.ai/dashboard) 
+[OpenAI](https://platform.openai.com), [HumeAI](https://platform.hume.ai/sign-up), [Anthropic](https://console.anthropic.com/), [FAL AI](https://fal.ai/dashboard) 
 
 ## Running the App
 
