@@ -38,6 +38,15 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
    pip install -r requirements.txt
    ```
 
+4. Configure API values
+    ```bash
+    # Rename the template.env file to .env
+    mv template.env .env
+
+    # Open the .env file and add your API keys
+    nano .env
+    ```
+
 ## Running the App
 
 1. Start the FastAPI server with Uvicorn in development mode:
