@@ -15,6 +15,9 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 - **Advocacy**: Acts as a digital advocate to assist users in navigating complex situations.
 - **AI Companion**: Serves as your personal AI assistant for various tasks.
 
+## How it works
+![How it works](irlweb/CvYAfRRl1vtT-VbROgVus_c4536c4c4245410a9a5c1ae3a09e8d79.jpg)
+
 ## Requirements
 
 - **Python**: Ensure you have Python installed on your machine.
