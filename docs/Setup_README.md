@@ -2,7 +2,7 @@
 
 ## How it works
 
-![How it works](/irlweb/high_level_distribution.jpg)
+![How it works](/irlweb/public/high_level_distribution.jpg)
 
 ## Requirements
 

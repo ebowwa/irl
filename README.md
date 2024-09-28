@@ -2,7 +2,7 @@
 
 # IRL
 
-![IRL](irlweb/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
+![IRL](irlweb/public/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
 
 ## About
 
