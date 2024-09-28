@@ -87,6 +87,7 @@
 		76989E3A2CA68ACE0035A891 /* HashtagButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989E392CA68ACE0035A891 /* HashtagButton.swift */; };
 		76989E3C2CA68ADF0035A891 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989E3B2CA68ADF0035A891 /* PostView.swift */; };
 		76989E3E2CA68FC90035A891 /* DemoData.json in Resources */ = {isa = PBXBuildFile; fileRef = 76989E3D2CA68FC90035A891 /* DemoData.json */; };
+		76989E412CA887670035A891 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 76989E402CA887670035A891 /* SQLite */; };
 		76E1AAEA2C8BB223006BDC0B /* ClaudeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */; };
 		76E1AAF72C8C35DC006BDC0B /* GLTFKit2 in Frameworks */ = {isa = PBXBuildFile; productRef = 76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */; };
 		76E1AB012C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */; };
@@ -228,6 +229,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76989E412CA887670035A891 /* SQLite in Frameworks */,
 				76989DCE2CA12B210035A891 /* FalClient in Frameworks */,
 				76E1AAF72C8C35DC006BDC0B /* GLTFKit2 in Frameworks */,
 			);
@@ -648,6 +650,7 @@
 			packageProductDependencies = (
 				76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */,
 				76989DCD2CA12B210035A891 /* FalClient */,
+				76989E402CA887670035A891 /* SQLite */,
 			);
 			productName = irl;
 			productReference = 765E98B22C811FC500A6726B /* irl.app */;
@@ -681,6 +684,7 @@
 				768B605E2C8274CB00C5AB3A /* XCRemoteSwiftPackageReference "Starscream" */,
 				76E1AAF52C8C35DC006BDC0B /* XCRemoteSwiftPackageReference "GLTFKit2" */,
 				76989DCC2CA12B210035A891 /* XCRemoteSwiftPackageReference "fal-swift" */,
+				76989E3F2CA887660035A891 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 			);
 			productRefGroup = 765E98B32C811FC500A6726B /* Products */;
 			projectDirPath = "";
@@ -1059,6 +1063,14 @@
 				minimumVersion = 0.5.6;
 			};
 		};
+		76989E3F2CA887660035A891 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
 		76E1AAF52C8C35DC006BDC0B /* XCRemoteSwiftPackageReference "GLTFKit2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/warrenm/GLTFKit2";
@@ -1074,6 +1086,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 76989DCC2CA12B210035A891 /* XCRemoteSwiftPackageReference "fal-swift" */;
 			productName = FalClient;
+		};
+		76989E402CA887670035A891 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 76989E3F2CA887660035A891 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
 		};
 		76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */ = {
 			isa = XCSwiftPackageProductDependency;

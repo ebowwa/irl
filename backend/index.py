@@ -9,6 +9,7 @@ from routers.humeclient import router as hume_router
 from routers.post.embeddings.index import router as embeddings_router  # New import
 # from routers.post.image_generation.FLUXLORAFAL import router as fluxlora_router  # New import
 from routers.post.image_generation.fast_sdxl import router as sdxl_router  # New import for fast-sdxl model
+# from routers.post.getChatGPTShareChat.index import router as chatgpt_router  # Import the new router
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -53,6 +54,8 @@ app.include_router(embeddings_router, prefix="/embeddings")
 # New router for fast-sdxl image generation
 app.include_router(sdxl_router, prefix="/api")
 
+# Include the new ChatGPT Share Chat router
+# app.include_router(chatgpt_router, prefix="/chatgpt")
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

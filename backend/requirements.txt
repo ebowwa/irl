@@ -8,6 +8,7 @@ wsproto
 numpy 
 
 # aioredis @removed for now
+beautifulsoup4 # retrieving existing oai shared chats
 
 openai 
 anthropic 
