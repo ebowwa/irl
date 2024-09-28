@@ -59,7 +59,10 @@
    ```
    This will generate a public URL for your local server, which can be accessed externally.
 
-4. Open Xcode, build, and run the app.
+4. Build and Run the iOS App
+
+    Open Xcode.
+    Build and run the app.
 
 ## Usage
 
