@@ -10,7 +10,7 @@ import SwiftUI
 struct StoriesView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: 16) { // Use LazyHStack for better performance
+            LazyHStack(spacing: 16) {
                 ForEach(0..<9) { index in
                     VStack {
                         Circle()
@@ -25,11 +25,11 @@ struct StoriesView: View {
                         Text("Plugin \(index + 1)")
                             .font(.caption)
                     }
-                    .frame(width: 80) // Fixed width to ensure uniformity
+                    .frame(width: 80)
                 }
             }
             .padding(.horizontal)
         }
-        .frame(height: 100) // Ensure the ScrollView has a fixed height
+        .frame(height: 120) // Increase the height slightly for testing purposes
     }
 }
