@@ -1,7 +1,7 @@
 # SETUP DOCS
 
 ## How it works
-![How it works](irlweb/CvYAfRRl1vtT-VbROgVus_c4536c4c4245410a9a5c1ae3a09e8d79.jpg)
+![How it works](irlweb/high_level_distribution.jpg)
 
 ## Requirements
 
