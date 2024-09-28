@@ -1,6 +1,7 @@
 # SETUP DOCS
 
 ## How it works
+
 ![How it works](irlweb/high_level_distribution.jpg)
 
 ## Requirements
