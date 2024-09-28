@@ -342,7 +342,6 @@
 		765E98B42C811FC500A6726B /* irl */ = {
 			isa = PBXGroup;
 			children = (
-				76989E322CA68A5B0035A891 /* ViewModels */,
 				76989E2E2CA68A010035A891 /* Models */,
 				765E98BB2C811FC700A6726B /* irl.entitlements */,
 				768B60712C8304CE00C5AB3A /* Info.plist */,
@@ -350,6 +349,7 @@
 				765E98D42C8137A900A6726B /* Data */,
 				764E15CE2C9B54E1007049C9 /* Utils */,
 				76C597082C8188B600AD2F55 /* Services */,
+				76989E322CA68A5B0035A891 /* ViewModels */,
 				765E98C42C812A7F00A6726B /* Views */,
 				765E98B52C811FC500A6726B /* irlApp.swift */,
 				76E1AB592C8F96D0006BDC0B /* UserService.swift */,
@@ -404,7 +404,6 @@
 			children = (
 				7673E23C2C9172BB00A0F4B0 /* EmotionModels.swift */,
 				7673E23B2C91725500A0F4B0 /* Views */,
-				7673E2292C916C7500A0F4B0 /* EmotionAnalysisViewModel.swift */,
 				7673E22B2C916D3400A0F4B0 /* EmotionAnalysisDashboard.swift */,
 			);
 			path = Emotional;
@@ -514,6 +513,8 @@
 			isa = PBXGroup;
 			children = (
 				76989E332CA68A710035A891 /* SocialFeedViewModel.swift */,
+				76E1AB422C8F767D006BDC0B /* ChatParametersViewModel.swift */,
+				7673E2292C916C7500A0F4B0 /* EmotionAnalysisViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -536,7 +537,6 @@
 			children = (
 				764E15D02C9B6141007049C9 /* Tools */,
 				76E1AB3C2C8F6DCC006BDC0B /* ConfigurationAndStorage.swift */,
-				76E1AB422C8F767D006BDC0B /* ChatParametersViewModel.swift */,
 			);
 			path = Plugins;
 			sourceTree = "<group>";
