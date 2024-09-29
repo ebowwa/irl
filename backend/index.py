@@ -56,6 +56,7 @@ app.include_router(sdxl_router, prefix="/api")
 
 # Include the new ChatGPT Share Chat router
 # app.include_router(chatgpt_router, prefix="/chatgpt")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
