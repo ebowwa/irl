@@ -819,6 +819,74 @@ import CoreLocation
 ```
 
 ---
+## File: SpeechAnalysisService.swift
+
+Description:
+
+SpeechAnalysisService is a singleton class responsible for handling speech analysis of audio recordings. It determines if audio files are worth sending for transcription and prosody analysis. The service manages a queue of audio files ready for analysis and provides user control over the analysis process.
+
+Class Definition:
+
+swift
+Copy code
+@available(iOS 17.0, *)
+class SpeechAnalysisService: NSObject, ObservableObject, SFSpeechRecognitionTaskDelegate {
+    static let shared = SpeechAnalysisService()
+    // Properties and Initializer
+    // Methods...
+}
+Key Properties:
+
+analysisProbabilities: [URL: Double]
+Stores the likelihood that a recording contains speech, mapped by the recording's URL.
+isAnalyzing: Bool
+Indicates whether the service is currently analyzing a recording.
+errorMessage: String?
+Holds any error messages related to speech analysis.
+authorizationStatus: SFSpeechRecognizerAuthorizationStatus
+Represents the current authorization status for speech recognition.
+Key Methods:
+
+analyzeRecording(_ recording: AudioRecording) async
+Analyzes a single recording to determine the likelihood of containing speech.
+analyzeAllRecordings(_ recordings: [AudioRecording]) async
+Analyzes multiple recordings sequentially.
+changeLanguage(to identifier: String)
+Allows changing the language for speech recognition.
+checkSpeechRecognitionPermission()
+Requests and checks for speech recognition permissions.
+cancelOngoingTasks()
+Cancels any ongoing speech recognition tasks.
+Usage Example:
+
+swift
+Copy code
+if #available(iOS 17.0, *) {
+    let speechService = SpeechAnalysisService.shared
+
+    // Check permissions
+    speechService.checkSpeechRecognitionPermission()
+
+    // Analyze a recording
+    Task {
+        await speechService.analyzeRecording(someRecording)
+    }
+
+    // Handle analysis probabilities
+    speechService.$analysisProbabilities
+        .sink { probabilities in
+            // Update UI or handle results
+        }
+        .store(in: &cancellables)
+}
+Update Error Handling Section:
+
+Incorporate errors related to speech recognition, such as authorization failures or recognition errors.
+Explain how SpeechAnalysisService communicates errors via the errorMessage property.
+Add Dependencies:
+
+Ensure that Speech framework and permissions are included in the dependencies section.
+Update import statements in the documentation to reflect the need for Speech.
 
 ## License
 

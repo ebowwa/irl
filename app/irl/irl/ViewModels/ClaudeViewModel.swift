@@ -1,8 +1,8 @@
 //
-//  Model.swift
+//  ClaudeViewModel.swift
 //  irl
 //
-//  Created by Elijah Arbee on 9/6/24.
+//  Created by Elijah Arbee on 9/28/24.
 //
 //  This file defines the ClaudeViewModel, which manages the state and interactions with the Claude API.
 //  It handles sending messages, receiving responses, and managing configurations.
