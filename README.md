@@ -17,7 +17,7 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 
 ## Get Started
 
-[visit the documentation](docs/SetupREADME.md) for simple instuctions to serving the backend and installing the app.
+[Visit the documentation](docs/SetupREADME.md) for simple instuctions on serving the backend and installing the app.
 
 ## Contributing
 
