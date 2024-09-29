@@ -11,6 +11,7 @@
 - **ngrok**: To expose local servers to the internet.
 
 ## Installation
+Handle the following in your CLI terminal: 
 
 1. Clone the repository:
    ```bash
