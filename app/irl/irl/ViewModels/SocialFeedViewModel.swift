@@ -43,6 +43,19 @@ class SocialFeedViewModel: ObservableObject {
         }
     }
 
+    // Loads demo data from JSON
+    func loadDemoData() {
+        if let url = Bundle.main.url(forResource: "DemoData", withExtension: "json") {
+            do {
+                let data = try Data(contentsOf: url)
+                let demoPosts = try JSONDecoder().decode(DemoPosts.self, from: data)
+                self.posts = demoPosts.posts.map { $0.toSocialPost() }
+            } catch {
+                print("Error loading demo data: \(error)")
+            }
+        }
+    }
+
     // Converts all posts to JSON
     func getAllPostsJSON() -> String? {
         let encoder = JSONEncoder()

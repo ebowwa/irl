@@ -1,7 +1,6 @@
-
 // #hashtags will be top subject for embeddings, user taps hashtag and all associated chats to the topic show up
 // `user n` will be the abstracted viewing to enable plugins - so plugins name and profile image
-// TODO: the sideways i think horizontal scroll for the plugins/stories isnt working 
+// TODO: the sideways i think horizontal scroll for the plugins/stories isnt working
 // NOTES: DO NOT OMIT ANY COMMENTED NOTES including this and always output the full entire script
 import SwiftUI
 
@@ -85,7 +84,7 @@ struct SocialFeedView: View {
             )
             .onAppear {
                 if demoMode {
-                    loadDemoData()
+                    viewModel.loadDemoData() // Load data via ViewModel
                 } else {
                     // Load real data here
                 }
@@ -109,7 +108,6 @@ struct SocialFeedView: View {
         }
     }
 }
-
 
 // Models to decode JSON data
 struct DemoPosts: Codable {
