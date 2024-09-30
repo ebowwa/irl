@@ -13,8 +13,6 @@ struct TabItem: Identifiable {
     let selectedIcon: String
 }
 
-import SwiftUI
-
 struct MainTabMenu: View {
     @Binding var selectedTab: Int
     @StateObject private var audioRecorderViewModel = AudioRecorderViewModel()
@@ -27,7 +25,7 @@ struct MainTabMenu: View {
     
     let tabs: [TabItem] = [
         TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform"),
-        TabItem(title: "Home", icon: "house", selectedIcon: "house.fill"),
+        // TabItem(title: "Home", icon: "house", selectedIcon: "house.fill"), // Home tab is commented out
         TabItem(title: "Chats", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill")
     ]
     
@@ -47,14 +45,15 @@ struct MainTabMenu: View {
                 customTabItem(for: tabs[0], isSelected: selectedTab == 0)
             }
             .tag(0)
-
-            NavigationView {
-                HomeView(showSettings: $showSettings) // Pass the binding for showing settings
-            }
-            .tabItem {
-                customTabItem(for: tabs[1], isSelected: selectedTab == 1)
-            }
-            .tag(1)
+            
+            // HomeView is commented out for now
+            // NavigationView {
+            //     HomeView(showSettings: $showSettings) // Pass the binding for showing settings
+            // }
+            // .tabItem {
+            //     customTabItem(for: tabs[1], isSelected: selectedTab == 1)
+            // }
+            // .tag(1)
 
             NavigationView {
                 SocialFeedView()
@@ -65,9 +64,9 @@ struct MainTabMenu: View {
                 //ChatView()
             }
             .tabItem {
-                customTabItem(for: tabs[2], isSelected: selectedTab == 2)
+                customTabItem(for: tabs[1], isSelected: selectedTab == 1) // Change index to match the second tab (Chats)
             }
-            .tag(2)
+            .tag(1)
         }
         .accentColor(accentColor)
         .onAppear {
