@@ -15,7 +15,7 @@ enum Theme: String {
 class GlobalState: ObservableObject {
     @Published var user: User?
     @Published var notifications: [Notification] = []
-    @AppStorage("currentTheme") var currentTheme: Theme = .light
+    @AppStorage("currentTheme") var currentTheme: Theme = .light 
     @AppStorage("selectedLanguageCode") var selectedLanguageCode: String = "en"
 
     var selectedLanguage: AppLanguage {
