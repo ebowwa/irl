@@ -1,7 +1,6 @@
 //
 //  AppearanceSettingsView.swift
 //  irl
-// TODO: the dark mode looks ugly rn the colors we are using for it need to be corrected.. no text can be read
 //  Created by Elijah Arbee on 8/29/24.
 //
 import SwiftUI

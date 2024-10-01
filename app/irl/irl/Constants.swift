@@ -24,7 +24,7 @@ struct Constants {
         static var webSocketBaseURL: String {
             "wss://\(Constants.baseDomain)"
         }
-        
+        // modularize constants into a script just for routes - will require alot of work around the /Services files
         struct Paths {
             static let webSocketPing = "/ws/ping"
             static let testConnection = "/"
@@ -109,57 +109,3 @@ struct UserDefault<T> {
         }
     }
 }
-
-
-
-
-
-/**
- The **Keychain** was included in your original code to securely store sensitive data such as API keys. It provides a safe way to manage confidential information, particularly because **storing sensitive data like API keys or passwords directly in your code or using less secure storage methods (like `UserDefaults`)** can expose your app to security risks.
-
- ### **Why the Keychain Was Used:**
-
- 1. **Security**:
-    - The Keychain is a secure storage mechanism provided by Apple. It encrypts sensitive data, ensuring that it’s stored safely and can only be accessed by the app or service that stored it. This makes it a more secure choice than storing sensitive data directly in the app’s code or `UserDefaults`, which is unencrypted.
-    
- 2. **Confidentiality**:
-    - Storing API keys, authentication tokens, and other private data in plain text could lead to data breaches. For instance, if someone were to gain access to the device, such data in `UserDefaults` could be easily extracted, whereas Keychain data remains encrypted.
-    
- 3. **Persistent Secure Storage**:
-    - The Keychain allows you to store data persistently across app sessions and even device reboots, while ensuring that only authorized access is allowed. This is crucial for API keys or credentials that need to be available whenever the app is running, without the user needing to re-enter them.
-
- ### **What the Keychain Does:**
-
- 1. **Encryption**:
-    - The Keychain stores sensitive data in an encrypted format, using a combination of device-specific and user-specific factors to encrypt and decrypt this data. Even if the storage location is accessed, the information stored within it cannot be read without proper decryption.
-
- 2. **Access Control**:
-    - Only the app that added an item to the Keychain can retrieve it (unless you explicitly allow sharing between apps). This ensures that even if another app is installed on the same device, it cannot access the sensitive data stored by your app.
-
- 3. **Security on Lock Screen**:
-    - Keychain entries are protected based on the lock screen. If a device is locked and the data is configured to be accessible only when unlocked, the data remains secure until the device is unlocked.
-
- 4. **APIs for Secure Management**:
-    - The Keychain provides APIs for storing and retrieving data securely. For example, your code included:
-      - **`SecItemAdd()`**: Adds a new item (such as an API key) to the Keychain.
-      - **`SecItemCopyMatching()`**: Retrieves data from the Keychain (such as retrieving an API key for use).
-      - **`SecItemDelete()`**: Removes an item from the Keychain.
-
- ### **How the Keychain Was Used in Your Code:**
-
- In your code, the Keychain was used to securely store several sensitive API keys, like `openAIKey`, `humeAIKey`, `anthropicAIKey`, etc. Here’s how it functioned:
-
- - **Storing Data**:
-    - The API keys were saved to the Keychain using `KeychainHelper.save`. When you assigned a new key, it encrypted and securely stored the key.
-    
- - **Retrieving Data**:
-    - When an API key was needed, for example, `openAIKey`, the `KeychainHelper.read` function retrieved the encrypted key, decrypted it, and returned it for use.
-
- - **Ensuring Confidentiality**:
-    - Using the Keychain for sensitive API keys ensured that even if someone gained access to the device, they couldn’t easily read or extract the API keys without going through the Keychain’s encryption.
-
- ---
-
- ### **In Short**:
- The **Keychain** was there to **securely store** sensitive API keys, tokens, or passwords and **protect them from unauthorized access**, leveraging encryption and access control. It was used to ensure that confidential data remains safe even if someone accesses the device or app storage directly. By removing the Keychain, you're reducing the complexity and security of your implementation, but in certain development contexts, this can be acceptable if you're prioritizing simplicity over security.
- */

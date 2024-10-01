@@ -1,4 +1,4 @@
-# File: websocket/routers/whisper_tts.py
+# File: socket/routers/whisper_tts.py
 # TODO: stream updates
 from fastapi import APIRouter, UploadFile, WebSocket, WebSocketDisconnect, File, HTTPException
 from pydantic import BaseModel, Field

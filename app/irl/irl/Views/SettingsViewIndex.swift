@@ -1,7 +1,6 @@
 //
 //  SettingsViewIndex.swift
 //  irl
-//  TODO: allow DELETE USER ADDED API KEYS
 //  Created by Elijah Arbee on 9/9/24.
 //
 import SwiftUI
@@ -34,7 +33,7 @@ struct SettingsView: View {
                 AppearanceSettingsView()
             }
 
-            Section(header: Text("Language")) {
+            Section(header: Text("Language")) { // seems disabled now?
                 NavigationLink(destination: LanguageSettingsView(selectedLanguage: $appState.selectedLanguage)) {
                     HStack {
                         Text("Language")
@@ -50,7 +49,8 @@ struct SettingsView: View {
                 Toggle("Email Notifications", isOn: $isEmailNotificationsEnabled)
             }
 
-            Section(header: Text("Privacy")) {
+            Section(header: Text("Privacy")) { 
+                // seems disabled now?
                 NavigationLink(destination: PrivacySettingsView()) {
                     Text("Privacy Settings")
                 }
@@ -155,22 +155,3 @@ struct SettingsView_Previews: PreviewProvider {
     }
 }
 #endif
-
-/**
- 
- LIKE PRIVACY SHOULD HAVE AI SECTION
- 
- should also allow for customized maintabmenu items
- i.e.:
-  - chat
-  - transcript w/ timestamps, & speech prosody
-  - advocate
-  - coach/mentor
-  - other's {build this :) custom plugins - to keep private or share with the community}
- */
-
-/** TODO:
-- correct state management
-- establish privacy policy
-- add ble button: connect, check, check battery, test ble device
-**/
