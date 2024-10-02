@@ -1,5 +1,6 @@
 # backend/routers/post/getChatGPTShareChat.py
 # TODO: make this into a route for my backend, the response will be saved in the user's client storage 
+# TODO: + link list for queue
 import requests
 from bs4 import BeautifulSoup
 import json

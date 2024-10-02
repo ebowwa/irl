@@ -26,17 +26,17 @@ struct ContentView: View {
     // Define the tabs with their respective content
     private let tabs: [TabItem] = [
         TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform") {
-            AnyView(EmotionAnalysisDashboard())
+            AnyView(DemoExampleView())
         },
         // Uncomment and define Home tab when needed
         // TabItem(title: "Home", icon: "house", selectedIcon: "house.fill") {
         //     AnyView(HomeView(showSettings: /* Binding */))
         // },
-        TabItem(title: "Chats", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill") {
-            AnyView(SocialFeedView())
+        TabItem(title: "Arena", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill") {
+            AnyView(ChatsView())
         }
     ]
-
+// ChatsView
     var body: some View {
         TabView(selection: $selectedTab) {
             ForEach(tabs.indices, id: \.self) { index in
@@ -64,8 +64,7 @@ struct ContentView: View {
     private func tabContent(for index: Int, content: () -> AnyView) -> some View {
         NavigationView {
             content()
-                .navigationTitle(tabs[safe: index]?.title ?? "Tab")
-                // Add any common navigation modifiers or toolbar items here
+                .navigationTitle(index == 0 ? "" : tabs[safe: index]?.title ?? "Tab")
         }
     }
 

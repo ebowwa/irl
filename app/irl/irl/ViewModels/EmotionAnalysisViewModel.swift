@@ -4,12 +4,6 @@
 //
 //  Created by Elijah Arbee on 9/10/24.
 //
-//
-//  EmotionAnalysisViewModel.swift
-//  irl
-//
-//  Created by Elijah Arbee on 9/10/24.
-//
 import SwiftUI
 
 class EmotionAnalysisViewModel: ObservableObject {
@@ -150,5 +144,44 @@ class EmotionAnalysisViewModel: ObservableObject {
     
     func getEmotionCoOccurrences() -> [(String, String, Int)] {
         EmotionAnalyzer.getEmotionCoOccurrences(in: sentences)
+    }
+    
+    // MARK: - Utility Functions
+    
+    /// Calculates the linear trend (slope and intercept) of emotion scores over time.
+    func detectEmotionTrend() -> (slope: Double, intercept: Double)? {
+        let emotionTimeline = getEmotionTimeline()
+        let n = Double(emotionTimeline.count)
+        
+        guard n > 1 else { return nil }
+        
+        // Extract x (time indices) and y (emotion scores) values
+        let xValues = emotionTimeline.map { Double($0.0) }
+        let yValues = emotionTimeline.map { $0.1.first?.score ?? 0.0 }
+        
+        let sumX = xValues.reduce(0, +)
+        let sumY = yValues.reduce(0, +)
+        let sumXY = zip(xValues, yValues).reduce(0) { $0 + $1.0 * $1.1 }
+        let sumXX = xValues.reduce(0) { $0 + $1 * $1 }
+        
+        let denominator = n * sumXX - sumX * sumX
+        guard denominator != 0 else { return nil }
+        
+        let slope = (n * sumXY - sumX * sumY) / denominator
+        let intercept = (sumY - slope * sumX) / n
+        
+        return (slope, intercept)
+    }
+    
+    /// Calculates the standard deviation of emotion scores.
+    func calculateEmotionStandardDeviation() -> Double {
+        let scores = overallEmotions.map { $0.score }
+        let count = Double(scores.count)
+        
+        guard count > 0 else { return 0.0 }
+        
+        let mean = scores.reduce(0, +) / count
+        let variance = scores.reduce(0) { $0 + pow($1 - mean, 2) } / count
+        return sqrt(variance)
     }
 }

@@ -16,6 +16,7 @@
 		7637EBE82C8BA02900BAF0EC /* SimpleLocalTranscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBE72C8BA02900BAF0EC /* SimpleLocalTranscription.swift */; };
 		7637EBEA2C8BA4EE00BAF0EC /* MemoryModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBE92C8BA4EE00BAF0EC /* MemoryModule.swift */; };
 		7637EBF12C8BA6F700BAF0EC /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7637EBF02C8BA6F700BAF0EC /* APIClient.swift */; };
+		76389F742CADC2AD00711E65 /* ChatsExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F732CADC2AD00711E65 /* ChatsExample.swift */; };
 		764E15C12C982D82007049C9 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C02C982D82007049C9 /* HomeView.swift */; };
 		764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */; };
 		764E15CB2C9B452C007049C9 /* EmbeddingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */; };
@@ -95,6 +96,7 @@
 		76989E542CAC98640035A891 /* ComplexModule in Frameworks */ = {isa = PBXBuildFile; productRef = 76989E532CAC98640035A891 /* ComplexModule */; };
 		76989E562CAC98640035A891 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 76989E552CAC98640035A891 /* Numerics */; };
 		76989E582CAC98640035A891 /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = 76989E572CAC98640035A891 /* RealModule */; };
+		76989E5C2CACF4300035A891 /* DemoExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989E5B2CACF4300035A891 /* DemoExampleView.swift */; };
 		76E1AAEA2C8BB223006BDC0B /* ClaudeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */; };
 		76E1AAF72C8C35DC006BDC0B /* GLTFKit2 in Frameworks */ = {isa = PBXBuildFile; productRef = 76E1AAF62C8C35DC006BDC0B /* GLTFKit2 */; };
 		76E1AB012C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */; };
@@ -132,6 +134,7 @@
 		7637EBE72C8BA02900BAF0EC /* SimpleLocalTranscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleLocalTranscription.swift; sourceTree = "<group>"; };
 		7637EBE92C8BA4EE00BAF0EC /* MemoryModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryModule.swift; sourceTree = "<group>"; };
 		7637EBF02C8BA6F700BAF0EC /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		76389F732CADC2AD00711E65 /* ChatsExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsExample.swift; sourceTree = "<group>"; };
 		764E15C02C982D82007049C9 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingsView.swift; sourceTree = "<group>"; };
 		764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingTypes.swift; sourceTree = "<group>"; };
@@ -209,6 +212,7 @@
 		76989E4A2CAA60690035A891 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		76989E4E2CAB404F0035A891 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		76989E502CAC7EE50035A891 /* waveshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = waveshape.swift; sourceTree = "<group>"; };
+		76989E5B2CACF4300035A891 /* DemoExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoExampleView.swift; sourceTree = "<group>"; };
 		76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeConstants.swift; sourceTree = "<group>"; };
 		76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderDebugMenuView.swift; sourceTree = "<group>"; };
 		76E1AB072C8CC2F1006BDC0B /* AudioRecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingModel.swift; sourceTree = "<group>"; };
@@ -316,6 +320,7 @@
 		764E15CF2C9B5E3A007049C9 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				7637EBB62C8521AD00BAF0EC /* HumeView.swift */,
 				76E1AB632C8FAF6F006BDC0B /* AudioStreamView.swift */,
 				764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */,
 			);
@@ -385,7 +390,6 @@
 				765E98C92C812D6C00A6726B /* PrivacySettingsView.swift */,
 				76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */,
 				7637EBB32C85188D00BAF0EC /* Transcribe.swift */,
-				7637EBB62C8521AD00BAF0EC /* HumeView.swift */,
 				7637EBE72C8BA02900BAF0EC /* SimpleLocalTranscription.swift */,
 				76989E2B2CA645C30035A891 /* SocialFeedView.swift */,
 				7637EBDE2C8A288F00BAF0EC /* Chat */,
@@ -397,6 +401,8 @@
 				76E1AAEF2C8C248A006BDC0B /* Plugins */,
 				764E15CF2C9B5E3A007049C9 /* Demo */,
 				768B60612C8288F100C5AB3A /* Components */,
+				76989E5B2CACF4300035A891 /* DemoExampleView.swift */,
+				76389F732CADC2AD00711E65 /* ChatsExample.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -726,6 +732,7 @@
 				76989DEB2CA502D00035A891 /* ImageGenInputFields.swift in Sources */,
 				764E15DA2C9CF7FF007049C9 /* PersistenceController.swift in Sources */,
 				76989DD42CA20AF50035A891 /* ImageGenView.swift in Sources */,
+				76989E5C2CACF4300035A891 /* DemoExampleView.swift in Sources */,
 				76E1AB5C2C8F96EB006BDC0B /* NotificationView.swift in Sources */,
 				76989E272CA6266C0035A891 /* SaveConfigurationView.swift in Sources */,
 				76989E342CA68A710035A891 /* SocialFeedViewModel.swift in Sources */,
@@ -758,6 +765,7 @@
 				764E15D82C9C00F3007049C9 /* ClaudeTypes.swift in Sources */,
 				764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */,
 				76E1AB202C8E4A86006BDC0B /* WebsocketHandler.swift in Sources */,
+				76389F742CADC2AD00711E65 /* ChatsExample.swift in Sources */,
 				76E1AB082C8CC2F1006BDC0B /* AudioRecordingModel.swift in Sources */,
 				76989DA62CA094060035A891 /* BackgroundAudio.swift in Sources */,
 				76E1AB392C8F6CE7006BDC0B /* ToolsView.swift in Sources */,

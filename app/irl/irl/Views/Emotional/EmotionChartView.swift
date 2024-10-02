@@ -18,12 +18,26 @@ struct EmotionChartView: View {
                 ZStack {
                     ForEach(filteredEmotions.indices, id: \.self) { index in
                         let emotion = filteredEmotions[index]
+                        let amplitude = CGFloat(emotion.score) * (geometry.size.height / 4)
+                        let frequency = CGFloat(2 + index)
+                        let adjustedPhase = phase + CGFloat(index)
+                        
                         WaveShape(
-                            amplitude: CGFloat(emotion.score) * (geometry.size.height / 4),
-                            frequency: CGFloat(2 + index),
-                            phase: phase + CGFloat(index)
+                            amplitude: amplitude,
+                            frequency: frequency,
+                            phase: adjustedPhase
                         )
                         .stroke(emotionColor(for: emotion.name).opacity(0.7), lineWidth: 2)
+                        
+                        // Calculate the peak position for the label
+                        let peakX = geometry.size.width / 2
+                        let peakY = geometry.size.height / 2 - amplitude
+                        
+                        // Add numerical label at the peak of each wave
+                        Text(String(format: "%.2f", emotion.score))
+                            .font(.caption)
+                            .foregroundColor(emotionColor(for: emotion.name))
+                            .position(x: peakX, y: peakY)
                     }
                 }
                 .padding()
@@ -43,7 +57,7 @@ struct EmotionChartView: View {
                             Circle()
                                 .fill(emotionColor(for: emotion.name))
                                 .frame(width: 10, height: 10)
-                            Text(emotion.name)
+                            Text("\(emotion.name) (\(String(format: "%.2f", emotion.score)))")
                                 .font(.caption)
                         }
                         .padding(.horizontal, 5)
