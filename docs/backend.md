@@ -2,7 +2,7 @@
 
 ## [Testing](docs/testing)
 
-- [Emotional Measurement](docs/testing/backend/Emotional-API.md)
+- [Emotional Measurement](/testing/backend/Emotional-API.md)
 - [NGROK Local Console](http://127.0.0.1:4040)
 
 
