@@ -63,7 +63,6 @@
 		76989DA02CA08F680035A891 /* AlertItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989D9F2CA08F680035A891 /* AlertItem.swift */; };
 		76989DA22CA08FCF0035A891 /* ChatMessageObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DA12CA08FCF0035A891 /* ChatMessageObservable.swift */; };
 		76989DA62CA094060035A891 /* BackgroundAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DA52CA094060035A891 /* BackgroundAudio.swift */; };
-		76989DA82CA0995A0035A891 /* Docs.md in Resources */ = {isa = PBXBuildFile; fileRef = 76989DA72CA0995A0035A891 /* Docs.md */; };
 		76989DC72CA122830035A891 /* OnboardingIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DC62CA122830035A891 /* OnboardingIntroView.swift */; };
 		76989DC92CA12AB10035A891 /* FluxService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989DC82CA12AB10035A891 /* FluxService.swift */; };
 		76989DCE2CA12B210035A891 /* FalClient in Frameworks */ = {isa = PBXBuildFile; productRef = 76989DCD2CA12B210035A891 /* FalClient */; };
@@ -188,7 +187,6 @@
 		76989D9F2CA08F680035A891 /* AlertItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertItem.swift; sourceTree = "<group>"; };
 		76989DA12CA08FCF0035A891 /* ChatMessageObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageObservable.swift; sourceTree = "<group>"; };
 		76989DA52CA094060035A891 /* BackgroundAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAudio.swift; sourceTree = "<group>"; };
-		76989DA72CA0995A0035A891 /* Docs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Docs.md; sourceTree = "<group>"; };
 		76989DC62CA122830035A891 /* OnboardingIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingIntroView.swift; sourceTree = "<group>"; };
 		76989DC82CA12AB10035A891 /* FluxService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FluxService.swift; sourceTree = "<group>"; };
 		76989DCF2CA1F7160035A891 /* SDXLService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDXLService.swift; sourceTree = "<group>"; };
@@ -585,7 +583,6 @@
 				76E1AB092C8CC3C8006BDC0B /* WebSocketManagerProtocol.swift */,
 				76E1AB0D2C8CD3B2006BDC0B /* AudioFileManager.swift */,
 				76E1AB1A2C8E4728006BDC0B /* AudioStateIndex.swift */,
-				76989DA72CA0995A0035A891 /* Docs.md */,
 			);
 			path = AudioState;
 			sourceTree = "<group>";
@@ -696,7 +693,6 @@
 				7673E2242C916BCE00A0F4B0 /* EmotionsList.json in Resources */,
 				7673E2452C91765500A0F4B0 /* EmotionPredictionDemo.json in Resources */,
 				765E98BA2C811FC700A6726B /* Assets.xcassets in Resources */,
-				76989DA82CA0995A0035A891 /* Docs.md in Resources */,
 				765E98FC2C814F8A00A6726B /* SampleAudioAnalysis.plist in Resources */,
 				76989E3E2CA68FC90035A891 /* DemoData.json in Resources */,
 				76389F782CAE125000711E65 /* demoExampleData.json in Resources */,

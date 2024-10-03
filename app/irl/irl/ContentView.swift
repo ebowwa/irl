@@ -1,13 +1,14 @@
+// ContentView.swift
 import SwiftUI
 import Combine
 import Foundation
 
-// ContentView.swift
 struct ContentView: View {
-    @StateObject private var globalState = GlobalState()
-    @StateObject private var audioState = AudioState.shared
-    @StateObject private var backgroundAudio = BackgroundAudio.shared
-    @StateObject private var settingsViewModel = SettingsViewModel() // Integrated SettingsViewModel
+    // Access shared state objects via @EnvironmentObject
+    @EnvironmentObject var globalState: GlobalState
+    @EnvironmentObject var audioState: AudioState
+    @EnvironmentObject var backgroundAudio: BackgroundAudio
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
     
     @State private var selectedTab = 0
 
@@ -35,7 +36,7 @@ struct ContentView: View {
         TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform.fill") {
             AnyView(LiveView())
         },
-        TabItem(title: "Chat", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill") {
+        TabItem(title: "Arena", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill") {
             AnyView(ChatsView())
         }
     ]
@@ -90,7 +91,7 @@ struct ContentView: View {
                     VStack(spacing: 4) {
                         Image(systemName: selectedTab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
                             .font(.system(size: 18, weight: .semibold))
-                        Text("Chat")
+                        Text("Arena")
                             .font(.caption)
                             .bold() // Make title bold
                     }
@@ -115,10 +116,11 @@ struct ContentView: View {
             setupAppearance()
             backgroundAudio.setupAudioSession()
         }
-        .environmentObject(globalState)
-        .environmentObject(audioState)
-        .environmentObject(backgroundAudio)
-        .environmentObject(settingsViewModel) // Inject settingsViewModel into environment
+        // Remove redundant .environmentObject modifiers
+        // .environmentObject(globalState)
+        // .environmentObject(audioState)
+        // .environmentObject(backgroundAudio)
+        // .environmentObject(settingsViewModel)
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
     }
 

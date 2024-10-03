@@ -32,104 +32,111 @@ struct ChatsView: View {
     @State private var showDropDown: Bool = false
     @State private var hidePlugins: Bool = false
     @State private var scrollOffset: CGFloat = 0.0
-    
+
     var body: some View {
-        VStack(spacing: 0) {
-            // Top bar with slight changes in design
-            HStack {
-                Text("kellyjane")
-                    .font(.title2)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                Spacer()
-                Image(systemName: "brain.head.profile") // TODO: when cicked needs to display the `ChatView()`
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                Image(systemName: "magnifyingglass")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-                    .padding(.leading, 8)
-            }
-            .padding()
-            .background(Color(UIColor.systemGray6))
-            // TODO: this above should disappear on scroll as well
-            // Plugins Horizontal ScrollView (disappears on scroll)
-            if !hidePlugins {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(1..<5) { index in
-                            VStack {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(.gray)
-                                Text("Plugin \(index)")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                            }
-                            .padding(.leading, index == 1 ? 16 : 0)
-                        }
+        NavigationView {
+            VStack(spacing: 0) {
+                // Top bar with slight changes in design
+                HStack {
+                    Text("kellyjane")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    Spacer()
+                    
+                    // Brain icon with NavigationLink to ChatView
+                    NavigationLink(destination: ChatView()) {
+                        Image(systemName: "brain.head.profile")
+                            .font(.title2)
+                            .foregroundColor(.blue)
                     }
+                    
+                    Image(systemName: "magnifyingglass")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                        .padding(.leading, 8)
                 }
-                .padding(.vertical)
-                .transition(.slide)
-            }
-            
-            // Tags/Filters always visible
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    TagButtonView(tag: "All", selectedTag: $selectedTag)
-                    TagButtonView(tag: "SwiftUI", selectedTag: $selectedTag)
-                    TagButtonView(tag: "iOS", selectedTag: $selectedTag)
-                    TagButtonView(tag: "Development", selectedTag: $selectedTag)
-                }
-                .padding(.horizontal)
-            }
-            .background(Color(UIColor.systemGray6))
-            
-            Divider()
-            
-            // CPosts with scroll detection
-            ScrollView {
-                GeometryReader { geometry in
-                    Color.clear
-                        .onAppear {
-                            scrollOffset = geometry.frame(in: .global).minY
-                        }
-                        .onChange(of: geometry.frame(in: .global).minY) { newValue in
-                            if newValue < scrollOffset {
-                                withAnimation {
-                                    hidePlugins = true
-                                }
-                            } else {
-                                withAnimation {
-                                    hidePlugins = false
-                                }
-                            }
-                            scrollOffset = newValue
-                        }
-                }
-                .frame(height: 0) // Invisible frame just for capturing scroll
+                .padding()
+                .background(Color(UIColor.systemGray6))
+                // TODO: this above should disappear on scroll as well
                 
-                VStack(spacing: 12) {
-                    ForEach(sampleDemoPosts) { post in
-                        CPostView(post: post)
+                // Plugins Horizontal ScrollView (disappears on scroll)
+                if !hidePlugins {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(1..<5) { index in
+                                VStack {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(.gray)
+                                    Text("Plugin \(index)")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.leading, index == 1 ? 16 : 0)
+                            }
+                        }
                     }
+                    .padding(.vertical)
+                    .transition(.slide)
                 }
-                .padding(.horizontal)
-            }
-            
-            Spacer()
-            
-            // Bottom Bar with slight updates (Remove this section)
-            HStack {
+
+                // Tags/Filters always visible
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        TagButtonView(tag: "All", selectedTag: $selectedTag)
+                        TagButtonView(tag: "SwiftUI", selectedTag: $selectedTag)
+                        TagButtonView(tag: "iOS", selectedTag: $selectedTag)
+                        TagButtonView(tag: "Development", selectedTag: $selectedTag)
+                    }
+                    .padding(.horizontal)
+                }
+                .background(Color(UIColor.systemGray6))
+
+                Divider()
+
+                // CPosts with scroll detection
+                ScrollView {
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear {
+                                scrollOffset = geometry.frame(in: .global).minY
+                            }
+                            .onChange(of: geometry.frame(in: .global).minY) { newValue in
+                                if newValue < scrollOffset {
+                                    withAnimation {
+                                        hidePlugins = true
+                                    }
+                                } else {
+                                    withAnimation {
+                                        hidePlugins = false
+                                    }
+                                }
+                                scrollOffset = newValue
+                            }
+                    }
+                    .frame(height: 0) // Invisible frame just for capturing scroll
+                    
+                    VStack(spacing: 12) {
+                        ForEach(sampleDemoPosts) { post in
+                            CPostView(post: post)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+
                 Spacer()
+
+                // Bottom Bar with slight updates (Remove this section)
+                HStack {
+                    Spacer()
+                }
+                .background(Color(UIColor.systemGray6))
             }
-            .background(Color(UIColor.systemGray6))
         }
     }
 }
-
 struct TagButtonView: View {
     var tag: String
     @Binding var selectedTag: String
