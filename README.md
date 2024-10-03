@@ -17,12 +17,12 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 
 ## Get Started
 
-[Visit the documentation](docs/SetupREADME.md) for simple instuctions on serving the backend and installing the app.
-[Installing Swift Packages](docs/InstallingSwiftPackages.md)
+- [Visit the documentation](docs/SetupREADME.md) for simple instuctions on serving the backend and installing the app.
+- [Installing Swift Packages](docs/InstallingSwiftPackages.md)
 
 ## FAQ
-[Supported languages](docs/LanguageSupport.md)
-[Privacy](docs/Privacy.md)
+- [Supported languages](docs/LanguageSupport.md)
+- [Privacy](docs/Privacy.md)
 
 ## Contributing
 
