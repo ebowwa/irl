@@ -1,14 +1,14 @@
 # Quick Backend Guide
 
-## [Testing](/docs/testing)
+## [Testing](/docs/backend/testing)
 
-- [Emotional Measurement](/docs/testing/backend/Emotional-API.md)
+- [Emotional Measurement](/docs/backend/testing/Emotional-API.md)
 - [NGROK Local Console](http://127.0.0.1:4040)
 
 
-##  [routes](/docs/route-responses)
+##  [routes](/docs/backend/route-responses)
 
-- [claude llm](/docs/route-responses/claude-io.md)
-- [embeddings](/docs/route-responses/embedding-io.md)
-- [Fal Whisper](/docs/route-responses/whisper-fal.md)
-- [sdxl](/docs/route-responses/sdxl-io.md)
+- [claude llm](/docs/backend/route-responses/claude-io.md)
+- [embeddings](/docs/backend/route-responses/embedding-io.md)
+- [Fal Whisper](/docs/backend/route-responses/whisper-fal.md)
+- [sdxl](/docs/backend/route-responses/sdxl-io.md)

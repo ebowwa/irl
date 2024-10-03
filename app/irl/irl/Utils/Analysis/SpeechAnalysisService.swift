@@ -26,8 +26,8 @@ class SpeechAnalysisService: NSObject, ObservableObject, SFSpeechRecognitionTask
     private var speechRecognizer: SFSpeechRecognizer?  // Optional speech recognizer instance
     private var recognitionTask: SFSpeechRecognitionTask?  // Optional task for ongoing recognition
     private var currentRecordingURL: URL?  // Stores the URL of the current recording being analyzed
-    private let analysisQueue = DispatchQueue(label: "com.yourapp.speechAnalysis", qos: .userInitiated)  // Queue for background processing
-    
+    private let analysisQueue = DispatchQueue(label: "com.\(Constants.appName).speechAnalysis", qos: .userInitiated)
+
     // Initializer to set up the speech recognizer and permissions
     private override init() {
         super.init()

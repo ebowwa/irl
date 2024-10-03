@@ -19,7 +19,8 @@ struct Constants {
     static var productionMode: Bool
     
     // RUN backend: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python index.py && ngrok http 8000
-    
+    static let appName = "irl"
+
     struct API {
         static var baseURL: String {
             "https://\(Constants.baseDomain)"

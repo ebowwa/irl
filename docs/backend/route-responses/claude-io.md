@@ -1,4 +1,3 @@
-```markdown
 # API Documentation: `/messages` Endpoint
 
 ## Overview
@@ -203,5 +202,3 @@ Ensure that all dependencies are installed and properly configured, especially t
 The `/messages` endpoint provides a flexible interface for creating and processing messages, supporting both real-time streaming and complete responses. Proper error handling and logging ensure reliability and ease of maintenance.
 
 For further assistance or issues, please refer to the project's documentation or contact the development team.
-
-```
