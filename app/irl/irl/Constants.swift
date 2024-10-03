@@ -1,7 +1,3 @@
-//  Constants.swift
-//  irl
-//
-//  Created by Elijah Arbee on 9/2/24.
 //
 //  Constants.swift
 //  irl
@@ -14,6 +10,13 @@ struct Constants {
     // DO NOT INCLUDE https
     @UserDefault(key: "baseDomain", defaultValue: "33f1-2600-387-f-4812-00-8.ngrok-free.app")
     static var baseDomain: String
+    
+    // New flags for devMode and productionMode
+    @UserDefault(key: "devMode", defaultValue: true)
+    static var devMode: Bool
+    
+    @UserDefault(key: "productionMode", defaultValue: false)
+    static var productionMode: Bool
     
     // RUN backend: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python index.py && ngrok http 8000
     
@@ -38,7 +41,7 @@ struct Constants {
             // SDXL API Path
             static let sdxlGenerate = "/api/sdxl/generate"
             static let sdxlStatus = "api/sdxl/status/"
-            static let sdxlResult = "/api/sdxl/result/" 
+            static let sdxlResult = "/api/sdxl/result/"
             
             // ** Flux Image Generation API Paths **
             static let imageGenerationSubmit = "/api/FLUXLORAFAL/submit"

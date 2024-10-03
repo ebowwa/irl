@@ -42,7 +42,7 @@ struct ChatsView: View {
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
                 Spacer()
-                Image(systemName: "brain.head.profile")
+                Image(systemName: "brain.head.profile") // TODO: when cicked needs to display the `ChatView()`
                     .font(.title2)
                     .foregroundColor(.blue)
                 Image(systemName: "magnifyingglass")
@@ -52,7 +52,7 @@ struct ChatsView: View {
             }
             .padding()
             .background(Color(UIColor.systemGray6))
-            
+            // TODO: this above should disappear on scroll as well
             // Plugins Horizontal ScrollView (disappears on scroll)
             if !hidePlugins {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -121,17 +121,12 @@ struct ChatsView: View {
             
             Spacer()
             
-            // Bottom Bar with slight updates
+            // Bottom Bar with slight updates (Remove this section)
             HStack {
                 Spacer()
-                Image(systemName: "message.fill")
-                    .font(.system(size: 28))
-                    .foregroundColor(.orange)
-                    .padding()
             }
             .background(Color(UIColor.systemGray6))
         }
-        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
@@ -155,9 +150,10 @@ struct TagButtonView: View {
 }
 
 // Pulsating heart and thumbs down with gradient
+import SwiftUI
+
 struct CPostView: View {
     var post: DemoPostData
-    @State private var pulsate = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -181,10 +177,12 @@ struct CPostView: View {
                     .foregroundColor(.blue)
             }
             
-            if post.postImage != "" {
+            if !post.postImage.isEmpty {
                 Image(post.postImage)
                     .resizable()
+                    .scaledToFill()
                     .frame(height: 150)
+                    .clipped()
                     .background(Color.cyan)
                     .cornerRadius(10)
             }
@@ -211,8 +209,24 @@ struct CPostView: View {
             
             // Heart and Thumbs down with gradient animation
             HStack(spacing: 16) {
-                GradientPulsatingButton(imageName: "heart.fill")
-                GradientPulsatingButton(imageName: "hand.thumbsdown.fill")
+                GradientPulsatingButton(
+                    imageName: "heart.fill",
+                    gradientColors: [Color.pink, Color.purple],
+                    buttonSize: 24,
+                    shadowColor: Color.purple,
+                    shadowRadius: 10,
+                    shadowOffsetX: 0,
+                    shadowOffsetY: 5
+                )
+                GradientPulsatingButton(
+                    imageName: "hand.thumbsdown.fill",
+                    gradientColors: [Color.red, Color.orange],
+                    buttonSize: 24,
+                    shadowColor: Color.orange,
+                    shadowRadius: 10,
+                    shadowOffsetX: 0,
+                    shadowOffsetY: 5
+                )
                 Spacer()
                 Image(systemName: "square.and.arrow.up.fill")
             }
@@ -225,29 +239,6 @@ struct CPostView: View {
     }
 }
 
-// Gradient and pulsating animation for buttons
-struct GradientPulsatingButton: View {
-    var imageName: String
-    @State private var pulsate = false
-    
-    var body: some View {
-        Image(systemName: imageName)
-            .font(.system(size: 24))
-            .foregroundColor(.white)
-            .padding()
-            .background(
-                LinearGradient(gradient: Gradient(colors: [Color.pink, Color.purple]),
-                               startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .cornerRadius(30)
-                    .shadow(color: Color.purple.opacity(0.6), radius: 10, x: 0, y: 5)
-            )
-            .scaleEffect(pulsate ? 1.1 : 1.0)
-            .animation(Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: pulsate)
-            .onAppear {
-                pulsate = true
-            }
-    }
-}
 
 struct ChatsView_Previews: PreviewProvider {
     static var previews: some View {

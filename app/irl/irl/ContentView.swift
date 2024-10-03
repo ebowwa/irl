@@ -12,8 +12,15 @@ struct ContentView: View {
     @State private var selectedTab = 0
 
     private let accentColor = Color("AccentColor")
-    private let inactiveColor = Color.gray
+    private let inactiveColor = Color.gray.opacity(0.6)
     private let backgroundColor = Color("BackgroundColor")
+
+    // Gradient background for selected tabs
+    private let gradient = LinearGradient(
+        gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.purple.opacity(0.7)]),
+        startPoint: .leading,
+        endPoint: .trailing
+    )
 
     struct TabItem: Identifiable {
         let id = UUID()
@@ -25,29 +32,85 @@ struct ContentView: View {
 
     // Define the tabs with their respective content
     private let tabs: [TabItem] = [
-        TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform") {
-            AnyView(DemoExampleView())
+        TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform.fill") {
+            AnyView(LiveView())
         },
-        // Uncomment and define Home tab when needed
-        // TabItem(title: "Home", icon: "house", selectedIcon: "house.fill") {
-        //     AnyView(HomeView(showSettings: /* Binding */))
-        // },
-        TabItem(title: "Arena", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill") {
+        TabItem(title: "Chat", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill") {
             AnyView(ChatsView())
         }
     ]
-// ChatsView
+    
     var body: some View {
-        TabView(selection: $selectedTab) {
-            ForEach(tabs.indices, id: \.self) { index in
-                tabContent(for: index, content: tabs[index].content)
-                    .tabItem {
-                        customTabItem(for: tabs[index], isSelected: selectedTab == index)
-                    }
-                    .tag(index)
+        VStack {
+            // Display the selected tab's content
+            ZStack {
+                if selectedTab == 0 {
+                    LiveView() // Live view
+                        .transition(.opacity)
+                } else if selectedTab == 1 {
+                    ChatsView() // Chat view
+                        .transition(.opacity)
+                }
             }
+            Spacer()
+
+            // Bottom Tab Buttons
+            HStack(spacing: 4) { // Reduced spacing to make buttons nearly touch
+                // Live button
+                Button(action: {
+                    withAnimation(.easeInOut) {
+                        selectedTab = 0
+                    }
+                }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: selectedTab == 0 ? "waveform.fill" : "waveform")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text("Live")
+                            .font(.caption)
+                            .bold() // Make title bold
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 40) // Adjust button size
+                    .padding(.vertical, 8) // Reduced vertical padding
+                    .background(
+                        selectedTab == 0
+                            ? gradient // Use gradient for selected state
+                            : LinearGradient(gradient: Gradient(colors: [inactiveColor, inactiveColor]), startPoint: .leading, endPoint: .trailing) // Inactive state
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(16) // More rounded corners
+                    .shadow(color: selectedTab == 0 ? Color.black.opacity(0.2) : .clear, radius: 4, x: 0, y: 4)
+                }
+
+                // Chat button
+                Button(action: {
+                    withAnimation(.easeInOut) {
+                        selectedTab = 1
+                    }
+                }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: selectedTab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text("Chat")
+                            .font(.caption)
+                            .bold() // Make title bold
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 40) // Adjust button size
+                    .padding(.vertical, 8) // Reduced vertical padding
+                    .background(
+                        selectedTab == 1
+                            ? gradient // Use gradient for selected state
+                            : LinearGradient(gradient: Gradient(colors: [inactiveColor, inactiveColor]), startPoint: .leading, endPoint: .trailing) // Inactive state
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(16) // More rounded corners
+                    .shadow(color: selectedTab == 1 ? Color.black.opacity(0.2) : .clear, radius: 4, x: 0, y: 4)
+                }
+            }
+            .padding(.horizontal, 16) // Reduced horizontal padding
+            .padding(.bottom, 12) // Added some space at the bottom
         }
-        .accentColor(accentColor)
+        .background(backgroundColor)
+        .edgesIgnoringSafeArea(.bottom) // Ensure content extends to the bottom
         .onAppear {
             setupAppearance()
             backgroundAudio.setupAudioSession()
@@ -57,25 +120,6 @@ struct ContentView: View {
         .environmentObject(backgroundAudio)
         .environmentObject(settingsViewModel) // Inject settingsViewModel into environment
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
-    }
-
-    /// View builder to create tab content with navigation
-    @ViewBuilder
-    private func tabContent(for index: Int, content: () -> AnyView) -> some View {
-        NavigationView {
-            content()
-                .navigationTitle(index == 0 ? "" : tabs[safe: index]?.title ?? "Tab")
-        }
-    }
-
-    /// Custom tab item view
-    private func customTabItem(for tab: TabItem, isSelected: Bool) -> some View {
-        VStack {
-            Image(systemName: isSelected ? tab.selectedIcon : tab.icon)
-                .font(.system(size: 20, weight: .semibold))
-            Text(tab.title)
-                .font(.caption)
-        }
     }
 
     /// Setup TabBar appearance
