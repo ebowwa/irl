@@ -21,6 +21,8 @@
 		76389F7A2CAE317800711E65 /* LiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F792CAE317800711E65 /* LiveView.swift */; };
 		76389F7C2CAE421400711E65 /* GradientPulsatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F7B2CAE421400711E65 /* GradientPulsatingButton.swift */; };
 		76389F7E2CAE50A400711E65 /* JSONLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F7D2CAE50A400711E65 /* JSONLoader.swift */; };
+		76389F802CAE6A8D00711E65 /* ConnectionStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F7F2CAE6A8D00711E65 /* ConnectionStatusView.swift */; };
+		76389F872CAE6BB400711E65 /* WaveShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F862CAE6BB400711E65 /* WaveShape.swift */; };
 		764E15C12C982D82007049C9 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C02C982D82007049C9 /* HomeView.swift */; };
 		764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */; };
 		764E15CB2C9B452C007049C9 /* EmbeddingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */; };
@@ -96,7 +98,6 @@
 		76989E492CAA605D0035A891 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989E482CAA605D0035A891 /* OnboardingViewModel.swift */; };
 		76989E4B2CAA60690035A891 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989E4A2CAA60690035A891 /* OnboardingView.swift */; };
 		76989E4F2CAB404F0035A891 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989E4E2CAB404F0035A891 /* SettingsViewModel.swift */; };
-		76989E512CAC7EE50035A891 /* waveshape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76989E502CAC7EE50035A891 /* waveshape.swift */; };
 		76989E542CAC98640035A891 /* ComplexModule in Frameworks */ = {isa = PBXBuildFile; productRef = 76989E532CAC98640035A891 /* ComplexModule */; };
 		76989E562CAC98640035A891 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 76989E552CAC98640035A891 /* Numerics */; };
 		76989E582CAC98640035A891 /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = 76989E572CAC98640035A891 /* RealModule */; };
@@ -142,6 +143,8 @@
 		76389F792CAE317800711E65 /* LiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveView.swift; sourceTree = "<group>"; };
 		76389F7B2CAE421400711E65 /* GradientPulsatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientPulsatingButton.swift; sourceTree = "<group>"; };
 		76389F7D2CAE50A400711E65 /* JSONLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONLoader.swift; sourceTree = "<group>"; };
+		76389F7F2CAE6A8D00711E65 /* ConnectionStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusView.swift; sourceTree = "<group>"; };
+		76389F862CAE6BB400711E65 /* WaveShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveShape.swift; sourceTree = "<group>"; };
 		764E15C02C982D82007049C9 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingsView.swift; sourceTree = "<group>"; };
 		764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingTypes.swift; sourceTree = "<group>"; };
@@ -218,7 +221,6 @@
 		76989E482CAA605D0035A891 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		76989E4A2CAA60690035A891 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		76989E4E2CAB404F0035A891 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
-		76989E502CAC7EE50035A891 /* waveshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = waveshape.swift; sourceTree = "<group>"; };
 		76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeConstants.swift; sourceTree = "<group>"; };
 		76E1AB002C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderDebugMenuView.swift; sourceTree = "<group>"; };
 		76E1AB072C8CC2F1006BDC0B /* AudioRecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingModel.swift; sourceTree = "<group>"; };
@@ -298,6 +300,13 @@
 				76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */,
 			);
 			path = Claude;
+			sourceTree = "<group>";
+		};
+		76389F812CAE6B2A00711E65 /* LiveView */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = LiveView;
 			sourceTree = "<group>";
 		};
 		764E15C92C9B4516007049C9 /* Embeddings */ = {
@@ -391,6 +400,7 @@
 		765E98C42C812A7F00A6726B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				76389F812CAE6B2A00711E65 /* LiveView */,
 				7673E22B2C916D3400A0F4B0 /* EmotionAnalysisDashboard.swift */,
 				76989DC62CA122830035A891 /* OnboardingIntroView.swift */,
 				76989E4A2CAA60690035A891 /* OnboardingView.swift */,
@@ -444,8 +454,9 @@
 				76E1AB132C8CE2CB006BDC0B /* RecordingsList.swift */,
 				7637EBBA2C865A3600BAF0EC /* ServerHealthWidget.swift */,
 				768B60622C82890700C5AB3A /* Card.swift */,
-				76989E502CAC7EE50035A891 /* waveshape.swift */,
 				76389F7B2CAE421400711E65 /* GradientPulsatingButton.swift */,
+				76389F7F2CAE6A8D00711E65 /* ConnectionStatusView.swift */,
+				76389F862CAE6BB400711E65 /* WaveShape.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -714,8 +725,8 @@
 				7637EBBD2C865EFB00BAF0EC /* Constants.swift in Sources */,
 				768B60632C82890700C5AB3A /* Card.swift in Sources */,
 				76389F7C2CAE421400711E65 /* GradientPulsatingButton.swift in Sources */,
-				76989E512CAC7EE50035A891 /* waveshape.swift in Sources */,
 				765E98CA2C812D6C00A6726B /* PrivacySettingsView.swift in Sources */,
+				76389F872CAE6BB400711E65 /* WaveShape.swift in Sources */,
 				764E15E02C9D1720007049C9 /* FloatArrayTransformer.swift in Sources */,
 				76989DE92CA502AA0035A891 /* ImageGenModels.swift in Sources */,
 				76989DA02CA08F680035A891 /* AlertItem.swift in Sources */,
@@ -748,6 +759,7 @@
 				76989E342CA68A710035A891 /* SocialFeedViewModel.swift in Sources */,
 				76989DA22CA08FCF0035A891 /* ChatMessageObservable.swift in Sources */,
 				7637EBBB2C865A3600BAF0EC /* ServerHealthWidget.swift in Sources */,
+				76389F802CAE6A8D00711E65 /* ConnectionStatusView.swift in Sources */,
 				76989DF32CA5034A0035A891 /* ImageGenHelper.swift in Sources */,
 				76E1AB282C8E4B1C006BDC0B /* WhisperServiceIndex.swift in Sources */,
 				76E1AB012C8CBF1C006BDC0B /* AudioRecorderDebugMenuView.swift in Sources */,

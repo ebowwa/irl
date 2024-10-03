@@ -1,8 +1,8 @@
 //
-//  waveshape.swift
+//  WaveShape.swift
 //  irl
 //
-//  Created by Elijah Arbee on 10/1/24.
+//  Created by Elijah Arbee on 10/2/24.
 //
 import SwiftUI
 import Numerics
