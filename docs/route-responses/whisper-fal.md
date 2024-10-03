@@ -1,4 +1,3 @@
-```markdown
 # I/O Notes for `socket/routers/whisper_tts.py`
 
 This document outlines the input and output specifications for the API routes defined in the `whisper_tts.py` module. The module provides functionalities for transcribing and translating audio files using WebSockets and file upload endpoints.
@@ -214,4 +213,3 @@ Both endpoints handle errors gracefully and provide meaningful error messages to
   - Ensure that `FAL_KEY` is securely managed and not exposed in version control systems.
 
 ---
-```
