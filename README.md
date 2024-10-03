@@ -28,6 +28,11 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 
 We welcome contributions! Feel free to submit issues or pull requests to help improve the project.
 
+## Testing 
+
+- [Emotional Measurement](docs/testing/backend/Emotional-API.md)
+- [NGROK Local Console](http://127.0.0.1:4040)
+
 ## Liability
 
 We just want to build cool stuff.. Use this at your own risk! Probably don't use this in the EU plz.
