@@ -1,28 +1,30 @@
-// ContentView.swift
 import SwiftUI
 import Combine
 import Foundation
 
 struct ContentView: View {
-    // Access shared state objects via @EnvironmentObject
+    // MARK: - Environment Objects
     @EnvironmentObject var globalState: GlobalState
     @EnvironmentObject var audioState: AudioState
     @EnvironmentObject var backgroundAudio: BackgroundAudio
     @EnvironmentObject var settingsViewModel: SettingsViewModel
     
-    @State private var selectedTab = 0
-
+    // MARK: - State
+    @State private var selectedTab: Int = 0
+    
+    // MARK: - Colors
     private let accentColor = Color("AccentColor")
     private let inactiveColor = Color.gray.opacity(0.6)
     private let backgroundColor = Color("BackgroundColor")
-
-    // Gradient background for selected tabs
+    
+    // MARK: - Gradient
     private let gradient = LinearGradient(
         gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.purple.opacity(0.7)]),
         startPoint: .leading,
         endPoint: .trailing
     )
-
+    
+    // MARK: - TabItem Definition
     struct TabItem: Identifiable {
         let id = UUID()
         let title: String
@@ -30,173 +32,115 @@ struct ContentView: View {
         let selectedIcon: String
         let content: () -> AnyView
     }
-
-    // Define the tabs with their respective content
+    
+    // MARK: - Tabs Array
     private let tabs: [TabItem] = [
-        TabItem(title: "Live", icon: "waveform", selectedIcon: "waveform.fill") {
+        TabItem(title: "Live",
+                icon: "waveform",
+                selectedIcon: "waveform.fill") {
             AnyView(LiveView())
         },
-        TabItem(title: "Arena", icon: "bubble.left.and.bubble.right", selectedIcon: "bubble.left.and.bubble.right.fill") {
+        TabItem(title: "Arena",
+                icon: "bubble.left.and.bubble.right",
+                selectedIcon: "bubble.left.and.bubble.right.fill") {
             AnyView(ChatsView())
         }
     ]
     
+    // MARK: - Body
     var body: some View {
         VStack {
-            // Display the selected tab's content
+            // Selected Tab Content
             ZStack {
-                if selectedTab == 0 {
-                    LiveView() // Live view
+                if let currentTab = tabs[safe: selectedTab] {
+                    currentTab.content()
                         .transition(.opacity)
-                } else if selectedTab == 1 {
-                    ChatsView() // Chat view
+                } else {
+                    Text("Other Content")
                         .transition(.opacity)
                 }
             }
             Spacer()
-
-            // Bottom Tab Buttons
-            HStack(spacing: 4) { // Reduced spacing to make buttons nearly touch
-                // Live button
-                Button(action: {
-                    withAnimation(.easeInOut) {
-                        selectedTab = 0
+            
+            // Bottom Tab Buttons - Displayed for specific tabs
+            if selectedTab < tabs.count {
+                HStack(spacing: 4) { // Reduced spacing to make buttons nearly touch
+                    ForEach(tabs.indices, id: \.self) { index in
+                        let tab = tabs[index]
+                        TabButton(
+                            title: tab.title,
+                            icon: tab.icon,
+                            selectedIcon: tab.selectedIcon,
+                            isSelected: selectedTab == index,
+                            gradient: gradient,
+                            inactiveColor: inactiveColor
+                        ) {
+                            withAnimation(.easeInOut) {
+                                selectedTab = index
+                            }
+                        }
                     }
-                }) {
-                    VStack(spacing: 4) {
-                        Image(systemName: selectedTab == 0 ? "waveform.fill" : "waveform")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("Live")
-                            .font(.caption)
-                            .bold() // Make title bold
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: 40) // Adjust button size
-                    .padding(.vertical, 8) // Reduced vertical padding
-                    .background(
-                        selectedTab == 0
-                            ? gradient // Use gradient for selected state
-                            : LinearGradient(gradient: Gradient(colors: [inactiveColor, inactiveColor]), startPoint: .leading, endPoint: .trailing) // Inactive state
-                    )
-                    .foregroundColor(.white)
-                    .cornerRadius(16) // More rounded corners
-                    .shadow(color: selectedTab == 0 ? Color.black.opacity(0.2) : .clear, radius: 4, x: 0, y: 4)
                 }
-
-                // Chat button
-                Button(action: {
-                    withAnimation(.easeInOut) {
-                        selectedTab = 1
-                    }
-                }) {
-                    VStack(spacing: 4) {
-                        Image(systemName: selectedTab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("Arena")
-                            .font(.caption)
-                            .bold() // Make title bold
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: 40) // Adjust button size
-                    .padding(.vertical, 8) // Reduced vertical padding
-                    .background(
-                        selectedTab == 1
-                            ? gradient // Use gradient for selected state
-                            : LinearGradient(gradient: Gradient(colors: [inactiveColor, inactiveColor]), startPoint: .leading, endPoint: .trailing) // Inactive state
-                    )
-                    .foregroundColor(.white)
-                    .cornerRadius(16) // More rounded corners
-                    .shadow(color: selectedTab == 1 ? Color.black.opacity(0.2) : .clear, radius: 4, x: 0, y: 4)
-                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 12)
             }
-            .padding(.horizontal, 16) // Reduced horizontal padding
-            .padding(.bottom, 12) // Added some space at the bottom
         }
         .background(backgroundColor)
-        .edgesIgnoringSafeArea(.bottom) // Ensure content extends to the bottom
+        .edgesIgnoringSafeArea(.bottom)
         .onAppear {
             setupAppearance()
             backgroundAudio.setupAudioSession()
         }
-        // Remove redundant .environmentObject modifiers
-        // .environmentObject(globalState)
-        // .environmentObject(audioState)
-        // .environmentObject(backgroundAudio)
-        // .environmentObject(settingsViewModel)
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
     }
-
-    /// Setup TabBar appearance
+    
+    // MARK: - Setup Appearance
     private func setupAppearance() {
         UITabBar.appearance().backgroundColor = UIColor(backgroundColor)
         UITabBar.appearance().unselectedItemTintColor = UIColor(inactiveColor)
     }
 }
 
+// MARK: - TabButton View
+struct TabButton: View {
+    let title: String
+    let icon: String
+    let selectedIcon: String
+    let isSelected: Bool
+    let gradient: LinearGradient
+    let inactiveColor: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: isSelected ? selectedIcon : icon)
+                    .font(.system(size: 18, weight: .semibold))
+                Text(title)
+                    .font(.caption)
+                    .bold()
+            }
+            .frame(maxWidth: .infinity, maxHeight: 40)
+            .padding(.vertical, 8)
+            .background(
+                isSelected
+                    ? gradient
+                    : LinearGradient(
+                        gradient: Gradient(colors: [inactiveColor, inactiveColor]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                      )
+            )
+            .foregroundColor(.white)
+            .cornerRadius(16)
+            .shadow(color: isSelected ? Color.black.opacity(0.2) : .clear, radius: 4, x: 0, y: 4)
+        }
+    }
+}
+
+// MARK: - Array Safe Subscript Extension
 extension Array {
-    /// Safe array indexing to avoid out-of-bounds errors
     subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
-    }
-}
-
-
-// GlobalState.swift
-enum Theme: String {
-    case light, dark
-}
-
-class GlobalState: ObservableObject {
-    @Published var user: User?
-    @Published var notifications: [Notification] = []
-
-    @AppStorage("currentTheme") var currentTheme: Theme = .light
-    @AppStorage("selectedLanguageCode") private var selectedLanguageCode: String = "en"
-
-    var selectedLanguage: AppLanguage {
-        get {
-            LanguageManager.shared.language(forCode: selectedLanguageCode) ?? AppLanguage(
-                code: "en",
-                name: "English",
-                service: ["falwhisperSep2024", "anthropic-claude-3"]
-            )
-        }
-        set {
-            selectedLanguageCode = newValue.code
-        }
-    }
-
-    private let userService: UserService
-    private let notificationService: NotificationService
-
-    init(userService: UserService = UserService(), notificationService: NotificationService = NotificationService()) {
-        self.userService = userService
-        self.notificationService = notificationService
-        loadUser()
-        fetchNotifications()
-    }
-
-    func loadUser() {
-        userService.loadUser { [weak self] result in
-            switch result {
-            case .success(let user):
-                self?.user = user
-            case .failure(let error):
-                print("Failed to load user: \(error)")
-            }
-        }
-    }
-
-    func fetchNotifications() {
-        notificationService.fetchNotifications { [weak self] result in
-            switch result {
-            case .success(let notifications):
-                self?.notifications = notifications
-            case .failure(let error):
-                print("Failed to fetch notifications: \(error)")
-            }
-        }
-    }
-
-    func toggleTheme() {
-        currentTheme = currentTheme == .light ? .dark : .light
     }
 }

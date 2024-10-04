@@ -23,6 +23,7 @@
 		76389F7E2CAE50A400711E65 /* JSONLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F7D2CAE50A400711E65 /* JSONLoader.swift */; };
 		76389F802CAE6A8D00711E65 /* ConnectionStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F7F2CAE6A8D00711E65 /* ConnectionStatusView.swift */; };
 		76389F872CAE6BB400711E65 /* WaveShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F862CAE6BB400711E65 /* WaveShape.swift */; };
+		76389F892CAE7D4200711E65 /* GlobalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389F882CAE7D4200711E65 /* GlobalState.swift */; };
 		764E15C12C982D82007049C9 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C02C982D82007049C9 /* HomeView.swift */; };
 		764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */; };
 		764E15CB2C9B452C007049C9 /* EmbeddingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */; };
@@ -144,6 +145,7 @@
 		76389F7D2CAE50A400711E65 /* JSONLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONLoader.swift; sourceTree = "<group>"; };
 		76389F7F2CAE6A8D00711E65 /* ConnectionStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusView.swift; sourceTree = "<group>"; };
 		76389F862CAE6BB400711E65 /* WaveShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveShape.swift; sourceTree = "<group>"; };
+		76389F882CAE7D4200711E65 /* GlobalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalState.swift; sourceTree = "<group>"; };
 		764E15C02C982D82007049C9 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingsView.swift; sourceTree = "<group>"; };
 		764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingTypes.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 				765E98C42C812A7F00A6726B /* Views */,
 				765E98B52C811FC500A6726B /* irlApp.swift */,
 				765E98B72C811FC500A6726B /* ContentView.swift */,
+				76389F882CAE7D4200711E65 /* GlobalState.swift */,
 				7637EBBC2C865EFB00BAF0EC /* Constants.swift */,
 				765E98B92C811FC700A6726B /* Assets.xcassets */,
 			);
@@ -784,6 +787,7 @@
 				7637EBEA2C8BA4EE00BAF0EC /* MemoryModule.swift in Sources */,
 				764E15D82C9C00F3007049C9 /* ClaudeTypes.swift in Sources */,
 				764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */,
+				76389F892CAE7D4200711E65 /* GlobalState.swift in Sources */,
 				76E1AB202C8E4A86006BDC0B /* WebsocketHandler.swift in Sources */,
 				76389F742CADC2AD00711E65 /* ChatsExample.swift in Sources */,
 				76E1AB082C8CC2F1006BDC0B /* AudioRecordingModel.swift in Sources */,
