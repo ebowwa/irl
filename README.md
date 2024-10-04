@@ -30,8 +30,8 @@ We welcome contributions! Feel free to submit issues or pull requests to help im
 - [Suggest a feature]() # TODO: https://forms.gle/yourGoogleFormURL
 
 ## Developer Guides
-- [Backend Guide](docs/backend.md)
-- [App Guide](docs/app.md)
+- [Backend Guide](docs/backend/main.md)
+- [App Guide](docs/app/main.md)
 
 ## Liability
 

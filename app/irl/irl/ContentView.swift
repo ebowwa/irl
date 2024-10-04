@@ -38,7 +38,7 @@ struct ContentView: View {
         TabItem(title: "Live",
                 icon: "waveform",
                 selectedIcon: "waveform.fill") {
-            AnyView(LiveView())
+            AnyView(LiveView()) // LiveView
         },
         TabItem(title: "Arena",
                 icon: "bubble.left.and.bubble.right",
@@ -89,7 +89,10 @@ struct ContentView: View {
         .edgesIgnoringSafeArea(.bottom)
         .onAppear {
             setupAppearance()
-            backgroundAudio.setupAudioSession()
+            // Ensure that the background audio session is set up and recording starts automatically if enabled
+            if backgroundAudio.isBackgroundRecordingEnabled {
+                backgroundAudio.startRecording() // Automatically start recording
+            }
         }
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
     }

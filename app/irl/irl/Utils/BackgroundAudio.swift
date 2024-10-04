@@ -34,7 +34,7 @@ class BackgroundAudio: ObservableObject {
     @AppStorage("isRecordingEnabled") private(set) var isRecordingEnabled = false
     
     // isBackgroundRecordingEnabled tracks whether recording in the background is allowed.
-    @AppStorage("isBackgroundRecordingEnabled") var isBackgroundRecordingEnabled = false
+    @AppStorage("isBackgroundRecordingEnabled") var isBackgroundRecordingEnabled = true // Default to true to enable background recording by default
     
     // Reference to a shared instance of AudioState, which handles the low-level audio recording functionality.
     private var audioState: AudioState
@@ -50,6 +50,11 @@ class BackgroundAudio: ObservableObject {
         
         // Set up listeners for app lifecycle notifications like backgrounding and termination.
         setupNotifications()
+        
+        // Automatically start recording if background recording is enabled
+        if isBackgroundRecordingEnabled {
+            startRecording()
+        }
     }
     
     // Factory method to return the shared instance, allowing flexibility during testing.

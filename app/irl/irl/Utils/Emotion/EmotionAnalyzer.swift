@@ -7,7 +7,7 @@
 import Foundation
 
 class EmotionAnalyzer {
-    static func calculateOverallEmotions(from sentences: [Sentence]) -> [Emotion] {
+    static func calculateOverallEmotions(from sentences: [Sentence]) -> [MainEmotion] {
         var emotionScores: [String: [Double]] = [:]
         
         for sentence in sentences {
@@ -18,12 +18,12 @@ class EmotionAnalyzer {
         
         return emotionScores.map { (name, scores) in
             let avgScore = scores.reduce(0, +) / Double(scores.count)
-            return Emotion(name: name, score: avgScore)
+            return MainEmotion(name: name, score: avgScore)
         }.sorted { $0.score > $1.score }
     }
     
-    static func categorizeEmotions(_ overallEmotions: [Emotion], allEmotions: [EmotionDimension]) -> [EmotionCategory: [Emotion]] {
-        var emotionsByCategory: [EmotionCategory: [Emotion]] = [:]
+    static func categorizeEmotions(_ overallEmotions: [MainEmotion], allEmotions: [EmotionDimension]) -> [EmotionCategory: [MainEmotion]] {
+        var emotionsByCategory: [EmotionCategory: [MainEmotion]] = [:]
         
         for category in EmotionCategory.allCases {
             let categoryEmotions = overallEmotions.filter { emotion in
@@ -35,13 +35,13 @@ class EmotionAnalyzer {
         return emotionsByCategory
     }
     
-    static func getEmotionTimeline(sentences: [Sentence]) -> [(Int, [Emotion])] {
+    static func getEmotionTimeline(sentences: [Sentence]) -> [(Int, [MainEmotion])] {
         sentences.enumerated().map { (index, sentence) in
             (index, sentence.emotions.sorted { $0.score > $1.score })
         }
     }
     
-    static func getEmotionTimeline(sentences: [Sentence], for category: EmotionCategory) -> [(Int, [Emotion])] {
+    static func getEmotionTimeline(sentences: [Sentence], for category: EmotionCategory) -> [(Int, [MainEmotion])] {
         sentences
             .filter { $0.category == category }
             .enumerated()
@@ -50,11 +50,11 @@ class EmotionAnalyzer {
             }
     }
     
-    static func getDominantEmotion(for sentence: Sentence) -> Emotion? {
+    static func getDominantEmotion(for sentence: Sentence) -> MainEmotion? {
         sentence.emotions.max { $0.score < $1.score }
     }
     
-    static func getAverageEmotionIntensity(emotions: [Emotion]) -> Double {
+    static func getAverageEmotionIntensity(emotions: [MainEmotion]) -> Double {
         let totalIntensity = emotions.reduce(0) { $0 + $1.score }
         return totalIntensity / Double(emotions.count)
     }
@@ -66,13 +66,13 @@ class EmotionAnalyzer {
         return Double(emotionAppearances) / Double(sentences.count)
     }
     
-    static func getMostFrequentEmotion(in sentences: [Sentence], overallEmotions: [Emotion]) -> String? {
+    static func getMostFrequentEmotion(in sentences: [Sentence], overallEmotions: [MainEmotion]) -> String? {
         overallEmotions.max { a, b in
             getEmotionFrequency(emotion: a.name, in: sentences) < getEmotionFrequency(emotion: b.name, in: sentences)
         }?.name
     }
     
-    static func getEmotionVariability(emotions: [Emotion]) -> Double {
+    static func getEmotionVariability(emotions: [MainEmotion]) -> Double {
         let meanScore = emotions.reduce(0) { $0 + $1.score } / Double(emotions.count)
         let sumSquaredDifferences = emotions.reduce(0) { $0 + pow($1.score - meanScore, 2) }
         return sqrt(sumSquaredDifferences / Double(emotions.count))

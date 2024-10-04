@@ -11,19 +11,29 @@ struct IdentifiableString: Identifiable {
     let value: String
 }
 
+struct ChatMessage: Identifiable, Codable {
+    let id = UUID() // unique id for ForEach
+    let speaker: String
+    let message: String
+    let timestamp: String
+}
+
+func loadChatData() -> [ChatMessage] {
+    guard let url = Bundle.main.url(forResource: "chatData", withExtension: "json"),
+          let data = try? Data(contentsOf: url),
+          let decodedData = try? JSONDecoder().decode([ChatMessage].self, from: data) else {
+        return []
+    }
+    return decodedData
+}
+
 struct LiveView: View {
     @State private var selectedWord: String? = nil
     @State private var selectedSentence: String? = nil
     @State private var activeConnection: ConnectionType? = nil
+    @State private var chatData: [ChatMessage] = []
 
-    // Chat messages with metadata
-    let chatData = [
-        (speaker: "John Doe", message: "2 PM works. I’ll see you in the conference room.", timestamp: "10:27 AM"),
-        (speaker: "Jane Smith", message: "Sounds good! Let’s aim for 2 PM?", timestamp: "10:26 AM"),
-        (speaker: "John Doe", message: "I thought so too. Let’s meet this afternoon to go through it.", timestamp: "10:25 AM"),
-        (speaker: "Jane Smith", message: "Yeah, I looked it over this morning. Some sections need updates.", timestamp: "10:23 AM"),
-        (speaker: "John Doe", message: "Hey Jane, did you check out the new report?", timestamp: "10:21 AM")
-    ]
+    @EnvironmentObject var backgroundAudio: BackgroundAudio
 
     enum ConnectionType {
         case ble, wifi, other
@@ -36,10 +46,17 @@ struct LiveView: View {
                     ConnectionStatusView(activeConnection: $activeConnection)
                         .padding(.leading, 20)
 
-                    // Chat message display with TextFlowView
-                    ForEach(chatData, id: \.message) { message in
-                        MessageFlowView(message: message.message, timestamp: message.timestamp, speaker: message.speaker, selectedWord: $selectedWord, selectedSentence: $selectedSentence)
-                            .padding()
+                    // Only show chat data if devMode is true
+                    if Constants.devMode {
+                        ForEach(chatData) { message in
+                            MessageFlowView(message: message.message, timestamp: message.timestamp, speaker: message.speaker, selectedWord: $selectedWord, selectedSentence: $selectedSentence)
+                                .padding()
+                        }
+                    /**
+                     if Constants.productionMode {
+                            have live transcription locally but also batch or live send to backend for higher quality transcriptions to replace/merge with the local
+                     
+                     */
                     }
 
                     Spacer()
@@ -59,8 +76,29 @@ struct LiveView: View {
                     self.selectedSentence = nil
                 }
             }
+
+            // Show the recording indicator (red dot) if recording is in progress
+            if backgroundAudio.isRecording {
+                VStack {
+                    HStack {
+                        Circle()
+                            .fill(Color.red)
+                            .frame(width: 12, height: 12) // Red dot indicating recording
+                        Text("Recording...")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                    .padding(8)
+                    .background(Color.black.opacity(0.6))
+                    .cornerRadius(8)
+                    .padding(.top, 20) // Adjust placement if necessary
+                    Spacer()
+                }
+                .transition(.opacity)
+            }
         }
         .onAppear {
+            chatData = loadChatData()
             simulateConnectionStates()
         }
         .background(Color.clear)
@@ -79,6 +117,9 @@ struct LiveView: View {
         }
     }
 }
+
+
+
 
 // Message display view with text flow and interactions
 struct MessageFlowView: View {

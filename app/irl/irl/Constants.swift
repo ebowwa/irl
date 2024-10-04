@@ -11,11 +11,10 @@ struct Constants {
     @UserDefault(key: "baseDomain", defaultValue: "33f1-2600-387-f-4812-00-8.ngrok-free.app")
     static var baseDomain: String
     
-    // New flags for devMode and productionMode
-    @UserDefault(key: "devMode", defaultValue: true)
+    @UserDefault(key: "devMode", defaultValue: false)
     static var devMode: Bool
     
-    @UserDefault(key: "productionMode", defaultValue: false)
+    @UserDefault(key: "productionMode", defaultValue: true)
     static var productionMode: Bool
     
     // RUN backend: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python index.py && ngrok http 8000

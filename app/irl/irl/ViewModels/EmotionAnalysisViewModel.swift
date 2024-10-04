@@ -8,8 +8,8 @@ import SwiftUI
 
 class EmotionAnalysisViewModel: ObservableObject {
     @Published var sentences: [Sentence] = []
-    @Published var overallEmotions: [Emotion] = []
-    @Published var emotionsByCategory: [EmotionCategory: [Emotion]] = [:]
+    @Published var overallEmotions: [MainEmotion] = []
+    @Published var emotionsByCategory: [EmotionCategory: [MainEmotion]] = [:]
     
     private var allEmotions: [EmotionDimension] = []
     
@@ -95,23 +95,23 @@ class EmotionAnalysisViewModel: ObservableObject {
         }
     }
     
-    func getTopEmotions(count: Int = 5) -> [Emotion] {
+    func getTopEmotions(count: Int = 5) -> [MainEmotion] {
         Array(overallEmotions.prefix(count))
     }
     
-    func getTopEmotions(for category: EmotionCategory, count: Int = 5) -> [Emotion] {
+    func getTopEmotions(for category: EmotionCategory, count: Int = 5) -> [MainEmotion] {
         Array((emotionsByCategory[category] ?? []).prefix(count))
     }
     
-    func getEmotionTimeline() -> [(Int, [Emotion])] {
+    func getEmotionTimeline() -> [(Int, [MainEmotion])] {
         EmotionAnalyzer.getEmotionTimeline(sentences: sentences)
     }
     
-    func getEmotionTimeline(for category: EmotionCategory) -> [(Int, [Emotion])] {
+    func getEmotionTimeline(for category: EmotionCategory) -> [(Int, [MainEmotion])] {
         EmotionAnalyzer.getEmotionTimeline(sentences: sentences, for: category)
     }
     
-    func getDominantEmotion(for sentence: Sentence) -> Emotion? {
+    func getDominantEmotion(for sentence: Sentence) -> MainEmotion? {
         EmotionAnalyzer.getDominantEmotion(for: sentence)
     }
     

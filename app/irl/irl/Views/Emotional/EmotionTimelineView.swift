@@ -8,7 +8,7 @@ import SwiftUI
 import Charts
 
 struct EmotionTimelineView: View {
-    let timeline: [(Int, [Emotion])]
+    let timeline: [(Int, [MainEmotion])]
     
     var body: some View {
         Chart {

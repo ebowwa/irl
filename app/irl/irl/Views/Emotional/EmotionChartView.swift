@@ -9,7 +9,7 @@ import SwiftUI
 // MARK: - EmotionChartView
 
 struct EmotionChartView: View {
-    let emotions: [Emotion]
+    let emotions: [MainEmotion]
     @State private var phase: CGFloat = 0
     
     var body: some View {
@@ -68,7 +68,7 @@ struct EmotionChartView: View {
         }
     }
     
-    private var filteredEmotions: [Emotion] {
+    private var filteredEmotions: [MainEmotion] {
         emotions.filter { $0.score > 0.1 }
     }
 }

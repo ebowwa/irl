@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct EmotionBarView: View {
-    let emotion: Emotion
+    let emotion: MainEmotion
     var compact: Bool = false
     
     var body: some View {
