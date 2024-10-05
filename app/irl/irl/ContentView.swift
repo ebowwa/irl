@@ -43,7 +43,7 @@ struct ContentView: View {
         TabItem(title: "Arena",
                 icon: "bubble.left.and.bubble.right",
                 selectedIcon: "bubble.left.and.bubble.right.fill") {
-            AnyView(ChatsView())
+            AnyView(SocialViewB())
         }
     ]
     

@@ -1,5 +1,5 @@
 //
-//  ChatsExample.swift
+//  SocialViewB.swift
 //  irl
 //
 //  Created by Elijah Arbee on 10/2/24.
@@ -19,7 +19,7 @@ struct DemoPostData: Identifiable {
     var hearts: Int
 }
 
-// Sample data using the renamed model
+// Sample demo data
 let sampleDemoPosts: [DemoPostData] = [
     DemoPostData(username: "Gianna A", timeAgo: "12m ago", postImage: "omi", postTitle: "Exploring SwiftUI", postDescription: "A deep dive into building responsive UIs with SwiftUI.", hashtags: ["#SwiftUI", "#iOS", "#Development"], likes: 10, hearts: 2),
     DemoPostData(username: "Alex B", timeAgo: "30m ago", postImage: "waveform", postTitle: "Live", postDescription: "", hashtags: [], likes: 0, hearts: 0),
@@ -27,18 +27,29 @@ let sampleDemoPosts: [DemoPostData] = [
     DemoPostData(username: "Michael D", timeAgo: "2h ago", postImage: "mountains", postTitle: "Into the Wild", postDescription: "Escaping the city for a peaceful retreat in the mountains.", hashtags: ["#Nature", "#Mountains", "#Travel"], likes: 57, hearts: 12)
 ]
 
-struct ChatsView: View {
+// Placeholder for production data
+let productionPosts: [DemoPostData] = [
+    // Add actual production data here
+]
+
+struct SocialViewB: View {
     @State private var selectedTag: String = "All"
     @State private var showDropDown: Bool = false
     @State private var hidePlugins: Bool = false
     @State private var scrollOffset: CGFloat = 0.0
+    @State private var username: String = "Guest"
+    
+    // Determine the data based on the mode
+    var posts: [DemoPostData] {
+        return Constants.devMode ? sampleDemoPosts : productionPosts
+    }
 
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Top bar with slight changes in design
+                // Top bar
                 HStack {
-                    Text("kellyjane")
+                    Text(Constants.productionMode ? "Hey \(username)" : "kellyjane") // Updated to pull the user's name
                         .font(.title2)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
@@ -58,9 +69,14 @@ struct ChatsView: View {
                 }
                 .padding()
                 .background(Color(UIColor.systemGray6))
-                // TODO: this above should disappear on scroll as well
+                .onAppear {
+                    // Load the username if in production mode
+                    if Constants.productionMode {
+                        username = UserDefaults.standard.string(forKey: "username") ?? "User"
+                    }
+                }
                 
-                // Plugins Horizontal ScrollView (disappears on scroll)
+                // Plugins Horizontal ScrollView
                 if !hidePlugins {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
@@ -82,7 +98,7 @@ struct ChatsView: View {
                     .transition(.slide)
                 }
 
-                // Tags/Filters always visible
+                // Tags/Filters TODO: EMBEDDINGS topic clusters these will be for the devmode only prod will need further work
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
                         TagButtonView(tag: "All", selectedTag: $selectedTag)
@@ -96,14 +112,15 @@ struct ChatsView: View {
 
                 Divider()
 
-                // CPosts with scroll detection
+                // Posts ScrollView
                 ScrollView {
                     GeometryReader { geometry in
                         Color.clear
                             .onAppear {
                                 scrollOffset = geometry.frame(in: .global).minY
                             }
-                            .onChange(of: geometry.frame(in: .global).minY) { newValue in
+                            .onChange(of: geometry.frame(in: .global).minY) { oldValue, newValue in
+                                // Updated 'onChange' to conform to iOS 17.0 changes
                                 if newValue < scrollOffset {
                                     withAnimation {
                                         hidePlugins = true
@@ -117,9 +134,9 @@ struct ChatsView: View {
                             }
                     }
                     .frame(height: 0) // Invisible frame just for capturing scroll
-                    
+
                     VStack(spacing: 12) {
-                        ForEach(sampleDemoPosts) { post in
+                        ForEach(posts) { post in
                             CPostView(post: post)
                         }
                     }
@@ -127,20 +144,17 @@ struct ChatsView: View {
                 }
 
                 Spacer()
-
-                // Bottom Bar with slight updates (Remove this section)
-                HStack {
-                    Spacer()
-                }
-                .background(Color(UIColor.systemGray6))
+                // Removed the Bottom Bar section as requested
             }
         }
     }
 }
+
+// TagButtonView for managing tags in horizontal scroll; these tags will differ by whatever topic clusters are most relevant to the users life
 struct TagButtonView: View {
     var tag: String
     @Binding var selectedTag: String
-    
+
     var body: some View {
         Button(action: {
             selectedTag = tag
@@ -156,12 +170,9 @@ struct TagButtonView: View {
     }
 }
 
-// Pulsating heart and thumbs down with gradient
-import SwiftUI
-
 struct CPostView: View {
     var post: DemoPostData
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -243,12 +254,5 @@ struct CPostView: View {
         .background(Color.white)
         .cornerRadius(15)
         .shadow(color: Color.gray.opacity(0.3), radius: 5, x: 0, y: 3)
-    }
-}
-
-
-struct ChatsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatsView()
     }
 }
