@@ -34,8 +34,8 @@ We welcome contributions! Feel free to submit issues or pull requests to help im
 - [App Guide](docs/app/main.md)
 
 ## Special Thanks to the Open-Source Community!
-- [Omi formerly Friend]
-- [Ollama]
+- [Omi formerly Friend](https://omi.me)
+- [Ollama](https://ollama.com)
 - [Meta Llama Releases]
 - [Python]
 - [Pydantic]
@@ -45,6 +45,8 @@ We welcome contributions! Feel free to submit issues or pull requests to help im
 - [Black Forest Labs]
 - [Tailnet]
 - [Cerebral Valley]
+- [Buildspace](https://buildspace.so)
+- [YCombinator]
 
 ## Liability
 

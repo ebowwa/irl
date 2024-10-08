@@ -30,6 +30,16 @@
 		76389FAF2CB46AB600711E65 /* IrlAudioConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FAE2CB46AB600711E65 /* IrlAudioConfiguration.swift */; };
 		76389FB12CB46AD800711E65 /* IrlAudioConfigLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FB02CB46AD800711E65 /* IrlAudioConfigLoader.swift */; };
 		76389FB32CB5C0F200711E65 /* WaveformGradientEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FB22CB5C0F200711E65 /* WaveformGradientEffect.swift */; };
+		76389FBB2CB5C65A00711E65 /* friend_irl_addon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FBA2CB5C65A00711E65 /* friend_irl_addon.swift */; };
+		76389FBD2CB5C65A00711E65 /* BluetoothDeviceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FBC2CB5C65A00711E65 /* BluetoothDeviceLocator.swift */; };
+		76389FBF2CB5C65A00711E65 /* NetworkDeviceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FBE2CB5C65A00711E65 /* NetworkDeviceLocator.swift */; };
+		76389FC22CB5C65A00711E65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76389FC12CB5C65A00711E65 /* Assets.xcassets */; };
+		76389FC62CB5C65A00711E65 /* friend-irl-addon.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 76389FB82CB5C65A00711E65 /* friend-irl-addon.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		76389FD22CB5CB2500711E65 /* watch_irlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FD12CB5CB2500711E65 /* watch_irlApp.swift */; };
+		76389FD42CB5CB2500711E65 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76389FD32CB5CB2500711E65 /* ContentView.swift */; };
+		76389FD62CB5CB2700711E65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76389FD52CB5CB2700711E65 /* Assets.xcassets */; };
+		76389FD92CB5CB2700711E65 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76389FD82CB5CB2700711E65 /* Preview Assets.xcassets */; };
+		76389FDC2CB5CB2700711E65 /* watch-irl Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 76389FCF2CB5CB2400711E65 /* watch-irl Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		764E15C12C982D82007049C9 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C02C982D82007049C9 /* HomeView.swift */; };
 		764E15C72C9ACB15007049C9 /* EmbeddingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */; };
 		764E15CB2C9B452C007049C9 /* EmbeddingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */; };
@@ -134,6 +144,48 @@
 		76E1AB642C8FAF70006BDC0B /* AudioStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1AB632C8FAF6F006BDC0B /* AudioStreamView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		76389FC42CB5C65A00711E65 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 765E98AA2C811FC500A6726B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 76389FB72CB5C65A00711E65;
+			remoteInfo = "friend-irl-addon";
+		};
+		76389FDA2CB5CB2700711E65 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 765E98AA2C811FC500A6726B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 76389FCE2CB5CB2400711E65;
+			remoteInfo = "watch-irl Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		76389FCA2CB5C65B00711E65 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				76389FC62CB5C65A00711E65 /* friend-irl-addon.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76389FE02CB5CB2700711E65 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				76389FDC2CB5CB2700711E65 /* watch-irl Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		7637EBB32C85188D00BAF0EC /* Transcribe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transcribe.swift; sourceTree = "<group>"; };
 		7637EBB62C8521AD00BAF0EC /* HumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumeView.swift; sourceTree = "<group>"; };
@@ -158,6 +210,18 @@
 		76389FAE2CB46AB600711E65 /* IrlAudioConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlAudioConfiguration.swift; sourceTree = "<group>"; };
 		76389FB02CB46AD800711E65 /* IrlAudioConfigLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlAudioConfigLoader.swift; sourceTree = "<group>"; };
 		76389FB22CB5C0F200711E65 /* WaveformGradientEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformGradientEffect.swift; sourceTree = "<group>"; };
+		76389FB82CB5C65A00711E65 /* friend-irl-addon.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = "friend-irl-addon.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		76389FBA2CB5C65A00711E65 /* friend_irl_addon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = friend_irl_addon.swift; sourceTree = "<group>"; };
+		76389FBC2CB5C65A00711E65 /* BluetoothDeviceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceLocator.swift; sourceTree = "<group>"; };
+		76389FBE2CB5C65A00711E65 /* NetworkDeviceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDeviceLocator.swift; sourceTree = "<group>"; };
+		76389FC02CB5C65A00711E65 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		76389FC12CB5C65A00711E65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		76389FC32CB5C65A00711E65 /* friend_irl_addon.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = friend_irl_addon.entitlements; sourceTree = "<group>"; };
+		76389FCF2CB5CB2400711E65 /* watch-irl Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "watch-irl Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		76389FD12CB5CB2500711E65 /* watch_irlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = watch_irlApp.swift; sourceTree = "<group>"; };
+		76389FD32CB5CB2500711E65 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		76389FD52CB5CB2700711E65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		76389FD82CB5CB2700711E65 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		764E15C02C982D82007049C9 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		764E15C62C9ACB15007049C9 /* EmbeddingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingsView.swift; sourceTree = "<group>"; };
 		764E15CA2C9B452C007049C9 /* EmbeddingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingTypes.swift; sourceTree = "<group>"; };
@@ -260,6 +324,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		76389FB52CB5C65A00711E65 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76389FCC2CB5CB2400711E65 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		765E98AF2C811FC500A6726B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -312,6 +390,38 @@
 				76E1AAE92C8BB223006BDC0B /* ClaudeConstants.swift */,
 			);
 			path = Claude;
+			sourceTree = "<group>";
+		};
+		76389FB92CB5C65A00711E65 /* friend-irl-addon */ = {
+			isa = PBXGroup;
+			children = (
+				76389FBA2CB5C65A00711E65 /* friend_irl_addon.swift */,
+				76389FBC2CB5C65A00711E65 /* BluetoothDeviceLocator.swift */,
+				76389FBE2CB5C65A00711E65 /* NetworkDeviceLocator.swift */,
+				76389FC02CB5C65A00711E65 /* Info.plist */,
+				76389FC12CB5C65A00711E65 /* Assets.xcassets */,
+				76389FC32CB5C65A00711E65 /* friend_irl_addon.entitlements */,
+			);
+			path = "friend-irl-addon";
+			sourceTree = "<group>";
+		};
+		76389FD02CB5CB2500711E65 /* watch-irl Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				76389FD12CB5CB2500711E65 /* watch_irlApp.swift */,
+				76389FD32CB5CB2500711E65 /* ContentView.swift */,
+				76389FD52CB5CB2700711E65 /* Assets.xcassets */,
+				76389FD72CB5CB2700711E65 /* Preview Content */,
+			);
+			path = "watch-irl Watch App";
+			sourceTree = "<group>";
+		};
+		76389FD72CB5CB2700711E65 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				76389FD82CB5CB2700711E65 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		764E15C92C9B4516007049C9 /* Embeddings */ = {
@@ -376,6 +486,8 @@
 			isa = PBXGroup;
 			children = (
 				765E98B42C811FC500A6726B /* irl */,
+				76389FB92CB5C65A00711E65 /* friend-irl-addon */,
+				76389FD02CB5CB2500711E65 /* watch-irl Watch App */,
 				765E98B32C811FC500A6726B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -384,6 +496,8 @@
 			isa = PBXGroup;
 			children = (
 				765E98B22C811FC500A6726B /* irl.app */,
+				76389FB82CB5C65A00711E65 /* friend-irl-addon.appex */,
+				76389FCF2CB5CB2400711E65 /* watch-irl Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -632,6 +746,40 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		76389FB72CB5C65A00711E65 /* friend-irl-addon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 76389FC72CB5C65B00711E65 /* Build configuration list for PBXNativeTarget "friend-irl-addon" */;
+			buildPhases = (
+				76389FB42CB5C65A00711E65 /* Sources */,
+				76389FB52CB5C65A00711E65 /* Frameworks */,
+				76389FB62CB5C65A00711E65 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "friend-irl-addon";
+			productName = "friend-irl-addon";
+			productReference = 76389FB82CB5C65A00711E65 /* friend-irl-addon.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
+		76389FCE2CB5CB2400711E65 /* watch-irl Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 76389FDD2CB5CB2700711E65 /* Build configuration list for PBXNativeTarget "watch-irl Watch App" */;
+			buildPhases = (
+				76389FCB2CB5CB2400711E65 /* Sources */,
+				76389FCC2CB5CB2400711E65 /* Frameworks */,
+				76389FCD2CB5CB2400711E65 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "watch-irl Watch App";
+			productName = "watch-irl Watch App";
+			productReference = 76389FCF2CB5CB2400711E65 /* watch-irl Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		765E98B12C811FC500A6726B /* irl */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 765E98C12C811FC700A6726B /* Build configuration list for PBXNativeTarget "irl" */;
@@ -639,10 +787,14 @@
 				765E98AE2C811FC500A6726B /* Sources */,
 				765E98AF2C811FC500A6726B /* Frameworks */,
 				765E98B02C811FC500A6726B /* Resources */,
+				76389FCA2CB5C65B00711E65 /* Embed ExtensionKit Extensions */,
+				76389FE02CB5CB2700711E65 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				76389FC52CB5C65A00711E65 /* PBXTargetDependency */,
+				76389FDB2CB5CB2700711E65 /* PBXTargetDependency */,
 			);
 			name = irl;
 			packageProductDependencies = (
@@ -667,6 +819,12 @@
 				LastSwiftUpdateCheck = 1540;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
+					76389FB72CB5C65A00711E65 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					76389FCE2CB5CB2400711E65 = {
+						CreatedOnToolsVersion = 15.4;
+					};
 					765E98B12C811FC500A6726B = {
 						CreatedOnToolsVersion = 15.4;
 					};
@@ -693,11 +851,30 @@
 			projectRoot = "";
 			targets = (
 				765E98B12C811FC500A6726B /* irl */,
+				76389FB72CB5C65A00711E65 /* friend-irl-addon */,
+				76389FCE2CB5CB2400711E65 /* watch-irl Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		76389FB62CB5C65A00711E65 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76389FC22CB5C65A00711E65 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76389FCD2CB5CB2400711E65 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76389FD92CB5CB2700711E65 /* Preview Assets.xcassets in Resources */,
+				76389FD62CB5CB2700711E65 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		765E98B02C811FC500A6726B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -717,6 +894,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		76389FB42CB5C65A00711E65 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76389FBB2CB5C65A00711E65 /* friend_irl_addon.swift in Sources */,
+				76389FBD2CB5C65A00711E65 /* BluetoothDeviceLocator.swift in Sources */,
+				76389FBF2CB5C65A00711E65 /* NetworkDeviceLocator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76389FCB2CB5CB2400711E65 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76389FD42CB5CB2500711E65 /* ContentView.swift in Sources */,
+				76389FD22CB5CB2500711E65 /* watch_irlApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		765E98AE2C811FC500A6726B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -836,7 +1032,138 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		76389FC52CB5C65A00711E65 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 76389FB72CB5C65A00711E65 /* friend-irl-addon */;
+			targetProxy = 76389FC42CB5C65A00711E65 /* PBXContainerItemProxy */;
+		};
+		76389FDB2CB5CB2700711E65 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 76389FCE2CB5CB2400711E65 /* watch-irl Watch App */;
+			targetProxy = 76389FDA2CB5CB2700711E65 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		76389FC82CB5C65B00711E65 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "friend-irl-addon/friend_irl_addon.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 42R8ZPM5N8;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "friend-irl-addon/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "friend-irl-addon";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "ebowwa.irl.friend-irl-addon";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		76389FC92CB5C65B00711E65 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "friend-irl-addon/friend_irl_addon.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 42R8ZPM5N8;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "friend-irl-addon/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "friend-irl-addon";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "ebowwa.irl.friend-irl-addon";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		76389FDE2CB5CB2700711E65 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"watch-irl Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 42R8ZPM5N8;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "watch-irl";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ebowwa.irl;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ebowwa.irl.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.5;
+			};
+			name = Debug;
+		};
+		76389FDF2CB5CB2700711E65 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"watch-irl Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 42R8ZPM5N8;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "watch-irl";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ebowwa.irl;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ebowwa.irl.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.5;
+			};
+			name = Release;
+		};
 		765E98BF2C811FC700A6726B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -956,9 +1283,11 @@
 		765E98C22C811FC700A6726B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = irl/irl.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -1000,9 +1329,11 @@
 		765E98C32C811FC700A6726B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = irl/irl.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -1044,6 +1375,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		76389FC72CB5C65B00711E65 /* Build configuration list for PBXNativeTarget "friend-irl-addon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76389FC82CB5C65B00711E65 /* Debug */,
+				76389FC92CB5C65B00711E65 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		76389FDD2CB5CB2700711E65 /* Build configuration list for PBXNativeTarget "watch-irl Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76389FDE2CB5CB2700711E65 /* Debug */,
+				76389FDF2CB5CB2700711E65 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		765E98AD2C811FC500A6726B /* Build configuration list for PBXProject "irl" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
