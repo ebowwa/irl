@@ -1,0 +1,38 @@
+# TODO update to less generic api route naming
+
+Curls to use the api/generate route
+
+## TO OLLAMA
+
+```
+curl -X POST "http://localhost:11434/api/generate" \
+-H "Content-Type: application/json" \
+-d '{
+  "model": "llama3.2:1b",
+  "prompt": "Tell me how you can be my life autopilot and help me in various ways.",
+  "temperature": 0.7,
+  "max_tokens": 150,
+  "top_p": 1.0,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "stream": false
+}'
+```
+
+## TO OPENAI
+```
+curl -X POST "http://localhost:8000/openai/generate-text/" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_url": "https://api.openai.com/v1",
+  "model": "gpt-4o-mini",
+  "system_prompt": "You are the embodiment of an autopilot for someone’s life - your AI companion: a source for augmented memory, human interpreting workers, advocator, and much more.",
+  "prompt": "Tell me how you can be my life autopilot and help me in various ways.",
+  "temperature": 0.7,
+  "max_tokens": 150,
+  "top_p": 1.0,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "n": 1
+}'
+```
