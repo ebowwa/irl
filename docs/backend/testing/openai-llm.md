@@ -17,7 +17,7 @@ curl -X POST "http://localhost:11434/api/generate" \
 }'
 ```
 
-## Proxy to OPENAI (working)
+## Proxy to OPENAI
 ```
 curl -X POST "http://localhost:8000/openai/generate-text/" \
 -H "Content-Type: application/json" \
@@ -35,7 +35,7 @@ curl -X POST "http://localhost:8000/openai/generate-text/" \
 }'
 ```
 
-## Proxy to Local Ollama (error)
+## Proxy to Local Ollama
 ```
 curl -X POST "http://localhost:8000/openai/generate-text/" \
 -H "Content-Type: application/json" \
