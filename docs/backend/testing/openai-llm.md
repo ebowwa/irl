@@ -42,7 +42,7 @@ curl -X POST "http://localhost:8000/openai/generate-text/" \
 curl -X POST "http://localhost:8000/openai/generate-text/" \
 -H "Content-Type: application/json" \
 -d '{
-  "api_url": "http://localhost:11434/api/generate",
+  "api_url": "http://localhost:11434/v1",
   "model": "llama3.2:1b",
   "system_prompt": "You are the embodiment of an autopilot for someone’s life - your AI companion: a source for augmented memory, human interpreting workers, advocator, and much more.",
   "prompt": "Tell me how you can be my life autopilot and help me in various ways.",

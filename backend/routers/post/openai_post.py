@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, HttpUrl
-import openai  # Import the entire openai module
+import openai  # Import the entire OpenAI module
 import tiktoken  # For counting tokens
-import subprocess  # To call local model like Ollama
 from typing import Optional, Dict, Any
 import json
 import os
 
 router = APIRouter()
+
 def parse_ollama_response(response: str) -> dict:
     try:
         response_json = json.loads(response)  # Assuming response is a JSON string.
@@ -27,9 +27,9 @@ def parse_ollama_response(response: str) -> dict:
 
 # Pydantic Model for Request Configuration with all parameters
 class OpenAIRequestConfig(BaseModel):
-    api_url: HttpUrl = Field(..., description="API URL for OpenAI or other provider")
+    api_url: HttpUrl = Field(..., description="API URL for OpenAI or Ollama provider")
     api_key: Optional[str] = Field(None, description="API Key for authentication, can fallback to environment")
-    model: str = Field(..., description="Model to use (e.g., gpt-4o-mini, llama3.2:1b, etc.)")
+    model: str = Field(..., description="Model to use (e.g., gpt-4, llama3.2:1b, etc.)")
     system_prompt: Optional[str] = Field(None, description="System prompt to set the role/context of the model")
     prompt: str = Field(..., description="User prompt text to send to the model")
     temperature: Optional[float] = 0.7  # Default temperature
@@ -46,100 +46,138 @@ class OpenAIRequestConfig(BaseModel):
 
 # Token counter function using tiktoken to check token usage before sending requests
 def count_tokens(model: str, prompt: str) -> int:
-    if "ollama" not in model:  # Only for OpenAI models
+    try:
         enc = tiktoken.encoding_for_model(model)
-        return len(enc.encode(prompt))
-    return 0  # Ollama natively counts tokens
+    except KeyError:
+        # If the model is not recognized by tiktoken, use a default encoding
+        enc = tiktoken.get_encoding("cl100k_base")
+    return len(enc.encode(prompt))
 
-
-# Function to handle local Ollama model requests
-def run_ollama(prompt: str, model: str, options: Optional[Dict[str, Any]] = None) -> str:
-    """Run a local model using Ollama with advanced options."""
-    command = ["ollama", "run", model, "--prompt", prompt]
-    
-    # Add advanced options as necessary (e.g., temperature, top_p)
-    if options:
-        for option, value in options.items():
-            command.append(f"--{option}")
-            command.append(str(value))
-    
-    result = subprocess.run(command, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise HTTPException(status_code=500, detail="Error running local Ollama model.")
-    return result.stdout.strip()
-
-
-# Route to handle OpenAI API or Local Ollama API requests dynamically
+# Route to handle OpenAI API or Ollama API requests dynamically
 @router.post("/generate-text/")
 async def generate_text(config: OpenAIRequestConfig):
     try:
-        if "ollama" in str(config.api_url):
-            # Add context to the prompt for conversational memory
-            if config.extra_params and "context" in config.extra_params:
-                prompt_with_context = {"prompt": config.prompt, "context": config.extra_params["context"]}
+        # Determine if the request is for Ollama based on the API URL or model name
+        is_ollama = "ollama" in str(config.api_url).lower() or "llama3.2" in config.model.lower()
+
+        if is_ollama:
+            # Handle Ollama model request using OpenAI library compatibility
+            # Instantiate the OpenAI client with the provided API key and base URL
+            api_key = config.api_key or os.getenv("OLLAMA_API_KEY", "ollama")  # Default key as per Ollama docs
+            client = openai.OpenAI(
+                api_key=api_key,
+                base_url=str(config.api_url)
+            )
+
+            # Construct the message structure for Ollama models using system prompts
+            if config.system_prompt:
+                messages = [
+                    {"role": "system", "content": config.system_prompt},
+                    {"role": "user", "content": config.prompt}
+                ]
             else:
-                prompt_with_context = {"prompt": config.prompt}
+                messages = [{"role": "user", "content": config.prompt}]
 
-            response = run_ollama(**prompt_with_context, model=config.model)
-            response_data = parse_ollama_response(response)
-            return {"result": response_data}
-        # Otherwise, use OpenAI API or other remote provider
-        # Set the API key from request or environment variable
-        api_key = config.api_key or os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise HTTPException(status_code=401, detail="API Key is missing and not found in environment variables")
-        
-        # Ensure the API URL is passed as a string
-        api_url = str(config.api_url)
+            # Construct the request dynamically with all possible parameters
+            completion_args = {
+                "model": config.model,
+                "messages": messages,
+                "temperature": config.temperature,
+                "max_tokens": config.max_tokens,
+                "top_p": config.top_p,
+                "frequency_penalty": config.frequency_penalty,
+                "presence_penalty": config.presence_penalty,
+                "stop": config.stop,
+                "n": config.n,
+                "logit_bias": config.logit_bias,
+                "user": config.user
+            }
 
-        # Instantiate the OpenAI client with the provided API key and base URL
-        client = openai.OpenAI(api_key=api_key, base_url=api_url)
+            # Add any extra parameters
+            if config.extra_params:
+                completion_args.update(config.extra_params)
 
-        # Token counting to prevent exceeding model limits
-        token_count = count_tokens(config.model, config.prompt)
-        if token_count > config.max_tokens:
-            raise HTTPException(status_code=400, detail=f"Token count {token_count} exceeds max_tokens limit")
+            # Handle streaming if enabled
+            if config.stream:
+                response = []
+                stream = client.chat.completions.create(stream=True, **completion_args)
+                for chunk in stream:
+                    if 'choices' in chunk and len(chunk.choices) > 0:
+                        delta = chunk.choices[0].delta
+                        if 'content' in delta:
+                            response.append(delta['content'])
+                return {"streamed_response": ''.join(response)}
+            else:
+                # Standard Ollama completion
+                response = client.chat.completions.create(**completion_args)
+                if hasattr(response, 'choices') and len(response.choices) > 0:
+                    return {"result": response.choices[0].message.content.strip()}
+                else:
+                    raise HTTPException(status_code=500, detail="No response from Ollama model.")
 
-        # Construct the message structure for GPT-4o-mini models using system prompts
-        if config.system_prompt:
-            messages = [
-                {"role": "system", "content": config.system_prompt},
-                {"role": "user", "content": config.prompt}
-            ]
         else:
-            messages = [{"role": "user", "content": config.prompt}]
+            # Handle OpenAI API or other remote provider requests
+            # Set the API key from request or environment variable
+            api_key = config.api_key or os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                raise HTTPException(status_code=401, detail="API Key is missing and not found in environment variables")
 
-        # Construct the request dynamically with all possible parameters
-        completion_args = {
-            "model": config.model,
-            "messages": messages,
-            "temperature": config.temperature,
-            "max_tokens": config.max_tokens,
-            "top_p": config.top_p,
-            "frequency_penalty": config.frequency_penalty,
-            "presence_penalty": config.presence_penalty,
-            "stop": config.stop,
-            "n": config.n,
-            "logit_bias": config.logit_bias,
-            "user": config.user
-        }
+            # Instantiate the OpenAI client with the provided API key and base URL
+            client = openai.OpenAI(
+                api_key=api_key,
+                base_url=str(config.api_url)
+            )
 
-        # Add any extra parameters
-        if config.extra_params:
-            completion_args.update(config.extra_params)
+            # Token counting to prevent exceeding model limits
+            token_count = count_tokens(config.model, config.prompt)
+            if token_count > config.max_tokens:
+                raise HTTPException(status_code=400, detail=f"Token count {token_count} exceeds max_tokens limit")
 
-        # Handle streaming if enabled
-        if config.stream:
-            response = []
-            stream = client.chat.completions.create(stream=True, **completion_args)
-            for chunk in stream:
-                response.append(chunk.choices[0].delta.get("content", ""))
-            return {"streamed_response": ''.join(response)}
-        else:
-            # Standard OpenAI completion
-            response = client.chat.completions.create(**completion_args)
-            # Access the content attribute directly
-            return {"result": response.choices[0].message.content.strip()}
+            # Construct the message structure for GPT-4 or similar models using system prompts
+            if config.system_prompt:
+                messages = [
+                    {"role": "system", "content": config.system_prompt},
+                    {"role": "user", "content": config.prompt}
+                ]
+            else:
+                messages = [{"role": "user", "content": config.prompt}]
+
+            # Construct the request dynamically with all possible parameters
+            completion_args = {
+                "model": config.model,
+                "messages": messages,
+                "temperature": config.temperature,
+                "max_tokens": config.max_tokens,
+                "top_p": config.top_p,
+                "frequency_penalty": config.frequency_penalty,
+                "presence_penalty": config.presence_penalty,
+                "stop": config.stop,
+                "n": config.n,
+                "logit_bias": config.logit_bias,
+                "user": config.user
+            }
+
+            # Add any extra parameters
+            if config.extra_params:
+                completion_args.update(config.extra_params)
+
+            # Handle streaming if enabled
+            if config.stream:
+                response = []
+                stream = client.chat.completions.create(stream=True, **completion_args)
+                for chunk in stream:
+                    if 'choices' in chunk and len(chunk.choices) > 0:
+                        delta = chunk.choices[0].delta
+                        if 'content' in delta:
+                            response.append(delta['content'])
+                return {"streamed_response": ''.join(response)}
+            else:
+                # Standard OpenAI completion
+                response = client.chat.completions.create(**completion_args)
+                if hasattr(response, 'choices') and len(response.choices) > 0:
+                    return {"result": response.choices[0].message.content.strip()}
+                else:
+                    raise HTTPException(status_code=500, detail="No response from OpenAI model.")
 
     except openai.APIError as e:
         raise HTTPException(status_code=500, detail=f"OpenAI API Error: {str(e)}")
