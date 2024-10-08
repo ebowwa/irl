@@ -46,8 +46,8 @@ struct LiveView: View {
                     ConnectionStatusView(activeConnection: $activeConnection)
                         .padding(.leading, 20)
 
-                    // Only show chat data if devMode is true
-                    if Constants.devMode {
+                    // Only show chat data if demoMode is true
+                    if Constants.demoMode {
                         ForEach(chatData) { message in
                             MessageFlowView(message: message.message, timestamp: message.timestamp, speaker: message.speaker, selectedWord: $selectedWord, selectedSentence: $selectedSentence)
                                 .padding()
@@ -289,28 +289,6 @@ struct WaveformVisualizationView: View {
     }
 }
 
-// Reusable gradient effect for waveform
-struct WaveformGradientEffect: View {
-    @Binding var gradientShift: Bool
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(
-                LinearGradient(gradient: Gradient(colors: [Color.blue, Color.purple, Color.blue]),
-                               startPoint: gradientShift ? .leading : .trailing,
-                               endPoint: gradientShift ? .trailing : .leading)
-            )
-            .frame(width: 150, height: 40)
-            .animation(Animation.linear(duration: 2), value: gradientShift)
-            .onAppear {
-                self.gradientShift = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    self.gradientShift = false
-                }
-            }
-    }
-}
-
 // Word-level analysis popup
 struct WordAnalysisPopup: View {
     let word: String
@@ -318,7 +296,7 @@ struct WordAnalysisPopup: View {
 
     var body: some View {
         VStack {
-            Text("Word Analysis for '\(word)'")
+            Text("Word Breakdown for '\(word)'")
                 .font(.headline)
                 .padding(.top, 8)
 
@@ -350,14 +328,14 @@ struct SentenceAnalysisPopup: View {
 
     var body: some View {
         VStack {
-            Text("Sentence Analysis")
+            Text("Sentence Breakdown")
                 .font(.headline)
                 .padding(.top, 8)
 
             Text(sentence)
                 .padding(.horizontal, 12)
 
-            Text("Overall pitch: High\nIntensity: Strong\nAI Sentiment: Positive")
+            Text("Overall pitch: High\nIntensity: Strong\nfeelings: Positive")
                 .multilineTextAlignment(.leading)
                 .padding(.horizontal, 12)
 

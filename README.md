@@ -46,7 +46,6 @@ We welcome contributions! Feel free to submit issues or pull requests to help im
 - [Tailnet]
 - [Cerebral Valley]
 
-
 ## Liability
 
 We just want to build cool stuff.. Use this at your own risk! Probably don't use this in the EU plz.

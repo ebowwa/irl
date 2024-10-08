@@ -12,3 +12,9 @@
 - [embeddings](/docs/backend/route-responses/embedding-io.md)
 - [Fal Whisper](/docs/backend/route-responses/whisper-fal.md)
 - [sdxl](/docs/backend/route-responses/sdxl-io.md)
+
+## [External Documentation] 
+
+- [OpenAI](https://platform.openai.com/docs/api-reference)
+- [Ollama](https://github.com/ollama)
+- []

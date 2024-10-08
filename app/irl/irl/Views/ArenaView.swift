@@ -47,7 +47,7 @@ struct SocialViewB: View {
     
     // Determine the data based on the mode
     var posts: [DemoPostData] {
-        return Constants.devMode ? sampleDemoPosts : productionPosts
+        return Constants.demoMode ? sampleDemoPosts : productionPosts
     }
 
     var body: some View {

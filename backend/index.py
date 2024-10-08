@@ -17,7 +17,7 @@ import os
 load_dotenv()
 
 # New router for OpenAI API integration for GPT-4o-mini, dynamic models, and configuration
-from backend.routers.post.llm_inference.openai_post import router as openai_router  # Import the new route
+from routers.post.llm_inference.openai_post import router as openai_router  # Import the new route
 
 app = FastAPI(
     title="IRL Backend Service",
@@ -62,7 +62,7 @@ app.include_router(sdxl_router, prefix="/api")
 # app.include_router(chatgpt_router, prefix="/chatgpt")
 
 # New route for OpenAI GPT models (including GPT-4o-mini)
-app.include_router(openai_router, prefix="/openai")
+app.include_router(openai_router, prefix="/LLM")
 
 if __name__ == "__main__":
     import uvicorn
