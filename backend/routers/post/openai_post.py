@@ -4,9 +4,26 @@ import openai  # Import the entire openai module
 import tiktoken  # For counting tokens
 import subprocess  # To call local model like Ollama
 from typing import Optional, Dict, Any
+import json
 import os
 
 router = APIRouter()
+def parse_ollama_response(response: str) -> dict:
+    try:
+        response_json = json.loads(response)  # Assuming response is a JSON string.
+        parsed_response = {
+            "model": response_json.get("model"),
+            "response": response_json.get("response"),
+            "total_duration": response_json.get("total_duration"),
+            "prompt_eval_count": response_json.get("prompt_eval_count"),
+            "eval_count": response_json.get("eval_count"),
+            "load_duration": response_json.get("load_duration"),
+            "context": response_json.get("context"),
+            # Optionally: calculate tokens per second or other derived stats.
+        }
+        return parsed_response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error parsing Ollama response: {str(e)}")
 
 # Pydantic Model for Request Configuration with all parameters
 class OpenAIRequestConfig(BaseModel):
@@ -29,28 +46,43 @@ class OpenAIRequestConfig(BaseModel):
 
 # Token counter function using tiktoken to check token usage before sending requests
 def count_tokens(model: str, prompt: str) -> int:
-    enc = tiktoken.encoding_for_model(model)
-    return len(enc.encode(prompt))
+    if "ollama" not in model:  # Only for OpenAI models
+        enc = tiktoken.encoding_for_model(model)
+        return len(enc.encode(prompt))
+    return 0  # Ollama natively counts tokens
+
 
 # Function to handle local Ollama model requests
-def run_ollama(prompt: str, model: str) -> str:
-    """Run a local model using Ollama."""
+def run_ollama(prompt: str, model: str, options: Optional[Dict[str, Any]] = None) -> str:
+    """Run a local model using Ollama with advanced options."""
     command = ["ollama", "run", model, "--prompt", prompt]
+    
+    # Add advanced options as necessary (e.g., temperature, top_p)
+    if options:
+        for option, value in options.items():
+            command.append(f"--{option}")
+            command.append(str(value))
+    
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
         raise HTTPException(status_code=500, detail="Error running local Ollama model.")
     return result.stdout.strip()
 
+
 # Route to handle OpenAI API or Local Ollama API requests dynamically
 @router.post("/generate-text/")
 async def generate_text(config: OpenAIRequestConfig):
     try:
-        # Check if using the local model (ollama)
         if "ollama" in str(config.api_url):
-            # Using Ollama with a local model
-            response = run_ollama(prompt=config.prompt, model=config.model)
-            return {"result": response}
+            # Add context to the prompt for conversational memory
+            if config.extra_params and "context" in config.extra_params:
+                prompt_with_context = {"prompt": config.prompt, "context": config.extra_params["context"]}
+            else:
+                prompt_with_context = {"prompt": config.prompt}
 
+            response = run_ollama(**prompt_with_context, model=config.model)
+            response_data = parse_ollama_response(response)
+            return {"result": response_data}
         # Otherwise, use OpenAI API or other remote provider
         # Set the API key from request or environment variable
         api_key = config.api_key or os.getenv("OPENAI_API_KEY")
