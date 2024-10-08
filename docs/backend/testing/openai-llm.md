@@ -1,6 +1,4 @@
-# TODO update to less generic api route naming
-
-Curls to use the api/generate route
+Curls to use the LLM api/generate route
 
 ## Directly to OLLAMA (example)
 

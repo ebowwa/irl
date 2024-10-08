@@ -10,7 +10,7 @@ numpy
 
 # aioredis @removed for now
 beautifulsoup4 # retrieving existing oai shared chats
-
+ollama
 openai 
 anthropic 
 fal-client # ai inference provider over image models
