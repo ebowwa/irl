@@ -17,7 +17,7 @@ import os
 load_dotenv()
 
 # New router for OpenAI API integration for GPT-4o-mini, dynamic models, and configuration
-from routers.post.openai_post import router as openai_router  # Import the new route
+from backend.routers.post.llm_inference.openai_post import router as openai_router  # Import the new route
 
 app = FastAPI(
     title="IRL Backend Service",

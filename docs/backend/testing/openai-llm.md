@@ -1,22 +1,5 @@
 Curls to use the LLM api/generate route
 
-## Directly to OLLAMA (example)
-
-```
-curl -X POST "http://localhost:11434/api/generate" \
--H "Content-Type: application/json" \
--d '{
-  "model": "llama3.2:1b",
-  "prompt": "Tell me how you can be my life autopilot and help me in various ways.",
-  "temperature": 0.7,
-  "max_tokens": 150,
-  "top_p": 1.0,
-  "frequency_penalty": 0,
-  "presence_penalty": 0,
-  "stream": false
-}'
-```
-
 ## Proxy to OPENAI
 ```
 curl -X POST "http://localhost:8000/openai/generate-text/" \
@@ -50,5 +33,22 @@ curl -X POST "http://localhost:8000/openai/generate-text/" \
   "frequency_penalty": 0,
   "presence_penalty": 0,
   "n": 1
+}'
+```
+
+
+## Stream Ollama 
+```
+curl -X POST "http://localhost:11434/api/generate" \
+-H "Content-Type: application/json" \
+-d '{
+  "model": "llama3.2:1b",
+  "prompt": "Tell me how you can be my life autopilot and help me in various ways.",
+  "temperature": 0.7,
+  "max_tokens": 150,
+  "top_p": 1.0,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "stream": true
 }'
 ```

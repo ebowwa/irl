@@ -33,6 +33,20 @@ We welcome contributions! Feel free to submit issues or pull requests to help im
 - [Backend Guide](docs/backend/main.md)
 - [App Guide](docs/app/main.md)
 
+## Special Thanks to the Open-Source Community!
+- [Omi formerly Friend]
+- [Ollama]
+- [Meta Llama Releases]
+- [Python]
+- [Pydantic]
+- [Fal AI]
+- [Stable Diffusion]
+- [Ngrok]
+- [Black Forest Labs]
+- [Tailnet]
+- [Cerebral Valley]
+
+
 ## Liability
 
 We just want to build cool stuff.. Use this at your own risk! Probably don't use this in the EU plz.
