@@ -2,6 +2,7 @@ python-dotenv
 python-multipart
 uvicorn[standard]
 websockets 
+pydant
 fastapi 
 uvicorn 
 wsproto

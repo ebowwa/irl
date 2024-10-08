@@ -1,4 +1,10 @@
 //
+//  ArenaView.swift
+//  irl
+//
+//  Created by Elijah Arbee on 10/7/24.
+//
+//
 //  SocialViewB.swift
 //  irl
 //

@@ -65,7 +65,9 @@ class AudioState: NSObject, AudioStateProtocol {
             try recordingSession?.setCategory(.playAndRecord, mode: .default)
             try recordingSession?.setActive(true)
         } catch {
-            errorMessage = "Failed to set up audio session: \(error.localizedDescription)"
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Failed to set up audio session: \(error.localizedDescription)"
+            }
         }
     }
 
@@ -99,11 +101,13 @@ class AudioState: NSObject, AudioStateProtocol {
             audioRecorder?.stop() // Otherwise, stop the file-based recording.
         }
 
-        isRecording = false
-        stopRecordingTimer() // Stop the timer tracking the recording length.
-        updateCurrentRecording() // Save the recorded file and update the list of recordings.
-        updateLocalRecordings()
-        isPlaybackAvailable = true // After recording is stopped, playback becomes available.
+        DispatchQueue.main.async { [weak self] in
+            self?.isRecording = false
+            self?.stopRecordingTimer() // Stop the timer tracking the recording length.
+            self?.updateCurrentRecording() // Save the recorded file and update the list of recordings.
+            self?.updateLocalRecordings()
+            self?.isPlaybackAvailable = true // After recording is stopped, playback becomes available.
+        }
     }
 
     // MARK: - Live Streaming
@@ -112,7 +116,9 @@ class AudioState: NSObject, AudioStateProtocol {
     private func startLiveStreaming() {
         audioEngine = AVAudioEngine()
         guard let audioEngine = audioEngine else {
-            errorMessage = "Failed to create audio engine"
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Failed to create audio engine"
+            }
             return
         }
 
@@ -124,15 +130,21 @@ class AudioState: NSObject, AudioStateProtocol {
             self?.processMicrophoneBuffer(buffer: buffer, time: time)
         }
 
-        do {
-            try audioEngine.start() // Starts the audio engine to begin capturing audio data.
-            isRecording = true
-            recordingTime = 0
-            recordingProgress = 0
-            startRecordingTimer() // Starts a timer to track the duration of the recording.
-            errorMessage = nil
-        } catch {
-            errorMessage = "Failed to start audio engine: \(error.localizedDescription)"
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            do {
+                try audioEngine.start() // Starts the audio engine to begin capturing audio data.
+                DispatchQueue.main.async {
+                    self?.isRecording = true
+                    self?.recordingTime = 0
+                    self?.recordingProgress = 0
+                    self?.startRecordingTimer() // Starts a timer to track the duration of the recording.
+                    self?.errorMessage = nil
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self?.errorMessage = "Failed to start audio engine: \(error.localizedDescription)"
+                }
+            }
         }
     }
 
@@ -171,18 +183,22 @@ class AudioState: NSObject, AudioStateProtocol {
             audioRecorder?.isMeteringEnabled = true
             audioRecorder?.record()
 
-            isRecording = true
-            recordingTime = 0
-            recordingProgress = 0
-            startRecordingTimer() // Starts a timer to track recording duration.
-            errorMessage = nil
+            DispatchQueue.main.async { [weak self] in
+                self?.isRecording = true
+                self?.recordingTime = 0
+                self?.recordingProgress = 0
+                self?.startRecordingTimer() // Starts a timer to track recording duration.
+                self?.errorMessage = nil
+            }
         } catch {
-            errorMessage = "Could not start recording: \(error.localizedDescription)"
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Could not start recording: \(error.localizedDescription)"
+            }
         }
     }
 
     // MARK: - Recording Timer
-    
+
     // Starts a timer that increments the recording duration every 0.1 seconds and updates the audio levels.
     private func startRecordingTimer() {
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
@@ -196,8 +212,10 @@ class AudioState: NSObject, AudioStateProtocol {
 
     // Stops the timer that tracks the recording duration.
     private func stopRecordingTimer() {
-        recordingTimer?.invalidate()
-        recordingTimer = nil
+        DispatchQueue.main.async { [weak self] in
+            self?.recordingTimer?.invalidate()
+            self?.recordingTimer = nil
+        }
     }
 
     // Updates the audio levels by querying the current recording's meter data.
@@ -205,7 +223,9 @@ class AudioState: NSObject, AudioStateProtocol {
         guard let recorder = audioRecorder, recorder.isRecording else { return }
         recorder.updateMeters() // Updates the metering information for the audio input.
         let averagePower = recorder.averagePower(forChannel: 0)
-        audioLevelSubject.send(averagePower) // Sends the current audio level via the Combine publisher.
+        DispatchQueue.main.async { [weak self] in
+            self?.audioLevelSubject.send(averagePower) // Publishes on the main thread.
+        }
     }
 
     // MARK: - File Management
@@ -219,10 +239,10 @@ class AudioState: NSObject, AudioStateProtocol {
 
         // Performs speech likelihood analysis on the newly saved recording.
         if let recording = currentRecording {
-            determineSpeechLikelihood(for: recording.url) { isSpeechLikely in
+            determineSpeechLikelihood(for: recording.url) { [weak self] isSpeechLikely in
                 DispatchQueue.main.async {
-                    self.currentRecording?.isSpeechLikely = isSpeechLikely
-                    self.updateLocalRecordings() // Updates local recordings with speech likelihood info.
+                    self?.currentRecording?.isSpeechLikely = isSpeechLikely
+                    self?.updateLocalRecordings() // Updates local recordings with speech likelihood info.
                 }
             }
         }
@@ -231,7 +251,7 @@ class AudioState: NSObject, AudioStateProtocol {
     // Updates the list of local recordings by querying the file system for saved recordings.
     func updateLocalRecordings() {
         let updatedRecordings = AudioFileManager.shared.updateLocalRecordings()
-        
+
         // For each recording, if speech likelihood has not been determined, initiate speech analysis.
         for recording in updatedRecordings {
             if recording.isSpeechLikely == nil {
@@ -245,8 +265,10 @@ class AudioState: NSObject, AudioStateProtocol {
                 }
             }
         }
-        
-        self.localRecordings = updatedRecordings // Updates the local recordings array to reflect changes.
+
+        DispatchQueue.main.async { [weak self] in
+            self?.localRecordings = updatedRecordings // Updates the local recordings array to reflect changes.
+        }
     }
     
     // Fetches the list of recordings, useful for reloading the list in the UI.
@@ -256,19 +278,25 @@ class AudioState: NSObject, AudioStateProtocol {
 
     // Deletes a recording file from local storage and updates the list of recordings.
     func deleteRecording(_ recording: AudioRecording) {
-        do {
-            try AudioFileManager.shared.deleteRecording(recording) // Attempts to delete the recording file.
-            updateLocalRecordings()
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            do {
+                try AudioFileManager.shared.deleteRecording(recording) // Attempts to delete the recording file.
+                DispatchQueue.main.async {
+                    self?.updateLocalRecordings()
 
-            // If the deleted recording was the current one, reset playback availability.
-            if currentRecording?.url == recording.url {
-                currentRecording = nil
-                isPlaybackAvailable = false
+                    // If the deleted recording was the current one, reset playback availability.
+                    if self?.currentRecording?.url == recording.url {
+                        self?.currentRecording = nil
+                        self?.isPlaybackAvailable = false
+                    }
+
+                    self?.errorMessage = nil
+                }
+            } catch {
+                DispatchQueue.main.async { [weak self] in
+                    self?.errorMessage = "Error deleting recording: \(error.localizedDescription)"
+                }
             }
-
-            errorMessage = nil
-        } catch {
-            errorMessage = "Error deleting recording: \(error.localizedDescription)"
         }
     }
 
@@ -278,14 +306,26 @@ class AudioState: NSObject, AudioStateProtocol {
     private func determineSpeechLikelihood(for url: URL, completion: @escaping (Bool) -> Void) {
         let request = SFSpeechURLRecognitionRequest(url: url)
         speechRecognizer?.recognitionTask(with: request) { result, error in
+            if let _ = error {
+                DispatchQueue.main.async {
+                    completion(false)
+                }
+                return
+            }
+            
             guard let result = result else {
-                completion(false)
+                DispatchQueue.main.async {
+                    completion(false)
+                }
                 return
             }
             
             // Analyzes the speech transcription result and confidence to determine if speech is present.
-            let isSpeechLikely = result.bestTranscription.formattedString.split(separator: " ").count > 1 && result.bestTranscription.segments.first?.confidence ?? 0 > 0.5
-            completion(isSpeechLikely)
+            let isSpeechLikely = result.bestTranscription.formattedString.split(separator: " ").count > 1 &&
+                                (result.bestTranscription.segments.first?.confidence ?? 0 > 0.5)
+            DispatchQueue.main.async {
+                completion(isSpeechLikely)
+            }
         }
     }
 
@@ -303,7 +343,9 @@ class AudioState: NSObject, AudioStateProtocol {
     // Starts playback of the current recording.
     private func startPlayback() {
         guard let recording = currentRecording else {
-            errorMessage = "No recording available to play"
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "No recording available to play"
+            }
             return
         }
 
@@ -312,17 +354,23 @@ class AudioState: NSObject, AudioStateProtocol {
             audioPlayer = try AVAudioPlayer(contentsOf: recording.url)
             audioPlayer?.delegate = self // Set the delegate to respond to playback events.
             audioPlayer?.play()
-            isPlaying = true
-            errorMessage = nil
+            DispatchQueue.main.async { [weak self] in
+                self?.isPlaying = true
+                self?.errorMessage = nil
+            }
         } catch {
-            errorMessage = "Error playing audio: \(error.localizedDescription)"
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Error playing audio: \(error.localizedDescription)"
+            }
         }
     }
 
     // Pauses playback of the current recording.
     private func pausePlayback() {
         audioPlayer?.pause()
-        isPlaying = false
+        DispatchQueue.main.async { [weak self] in
+            self?.isPlaying = false
+        }
     }
 
     // MARK: - Formatting Helpers
@@ -344,9 +392,11 @@ class AudioState: NSObject, AudioStateProtocol {
 extension AudioState: AVAudioPlayerDelegate {
     // Called when playback finishes, either successfully or with an error.
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        isPlaying = false // Resets the isPlaying flag when playback is finished.
-        if !flag {
-            errorMessage = "Playback finished with an error"
+        DispatchQueue.main.async { [weak self] in
+            self?.isPlaying = false // Resets the isPlaying flag when playback is finished.
+            if !flag {
+                self?.errorMessage = "Playback finished with an error"
+            }
         }
     }
 }

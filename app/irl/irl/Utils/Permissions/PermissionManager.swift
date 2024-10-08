@@ -1,7 +1,7 @@
 //
 //  PermissionManager.swift
 //  irl
-// give the permissions the i as well
+// give the permissions the i icon as well
 //  Created by Elijah Arbee on 9/9/24.
 //
 import SwiftUI

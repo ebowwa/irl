@@ -25,7 +25,8 @@ class BackgroundAudio: ObservableObject {
     @Published var isRecording: Bool {
         didSet {
             // Synchronize the recording state with the shared AudioState instance.
-            audioState.isRecording = isRecording
+            // Use the provided methods instead:
+            audioState.toggleRecording()
         }
     }
     

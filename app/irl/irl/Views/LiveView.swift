@@ -54,7 +54,10 @@ struct LiveView: View {
                         }
                     /**
                      if Constants.productionMode {
-                            have live transcription locally but also batch or live send to backend for higher quality transcriptions to replace/merge with the local
+                     - first, local transcribe and show as how the demo data is now then
+                     - second,
+                            (have live transcription locally) but also, 
+                            batch or live send to backend for higher quality transcriptions to replace/merge with the local
                      
                      */
                     }

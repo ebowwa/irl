@@ -31,20 +31,25 @@ struct ContentView: View {
         let icon: String
         let selectedIcon: String
         let content: () -> AnyView
+        let showButtons: Bool // Add a flag to indicate if the buttons should be shown
     }
     
     // MARK: - Tabs Array
     private let tabs: [TabItem] = [
-        TabItem(title: "Live",
-                icon: "waveform",
-                selectedIcon: "waveform.fill") {
-            AnyView(LiveView()) // LiveView
-        },
-        TabItem(title: "Arena",
-                icon: "bubble.left.and.bubble.right",
-                selectedIcon: "bubble.left.and.bubble.right.fill") {
-            AnyView(SocialViewB())
-        }
+        TabItem(
+            title: "Live",
+            icon: "waveform",
+            selectedIcon: "waveform.fill",
+            content: { AnyView(LiveView()) },  // Provide content closure
+            showButtons: true
+        ),
+        TabItem(
+            title: "Arena",
+            icon: "bubble.left.and.bubble.right",
+            selectedIcon: "bubble.left.and.bubble.right.fill",
+            content: { AnyView(SocialViewB()) },  // Provide content closure
+            showButtons: true
+        )
     ]
     
     // MARK: - Body
@@ -62,8 +67,8 @@ struct ContentView: View {
             }
             Spacer()
             
-            // Bottom Tab Buttons - Displayed for specific tabs
-            if selectedTab < tabs.count {
+            // Bottom Tab Buttons - Conditional based on `showButtons` flag
+            if let currentTab = tabs[safe: selectedTab], currentTab.showButtons {
                 HStack(spacing: 4) { // Reduced spacing to make buttons nearly touch
                     ForEach(tabs.indices, id: \.self) { index in
                         let tab = tabs[index]
