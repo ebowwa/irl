@@ -24,7 +24,7 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 - [Privacy](docs/Privacy.md)
 
 ## What happens?
-![AppFlow](mermaid-diagram-2024-10-11-203323.svg)
+![AppFlow](irlweb/public/mermaid-diagram-2024-10-11-203323.svg)
 
 ## Contributing
 
