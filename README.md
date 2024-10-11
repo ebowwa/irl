@@ -36,17 +36,17 @@ We welcome contributions! Feel free to submit issues or pull requests to help im
 ## Special Thanks to the Open-Source Community!
 - [Omi formerly Friend](https://omi.me)
 - [Ollama](https://ollama.com)
-- [Meta Llama Releases]
-- [Python]
-- [Pydantic]
-- [Fal AI]
-- [Stable Diffusion]
-- [Ngrok]
-- [Black Forest Labs]
-- [Tailnet]
-- [Cerebral Valley]
+- [Meta Llama Releases](https://ai.meta.com)
+- [Python](https://www.python.org/)
+- [Pydantic](https://github.com/pydantic/pydantic)
+- [Fal AI](https://github.com/fal-ai)
+- [Stability AI](https://huggingface.co/stabilityai)
+- [Ngrok](https://ngrok.com)
+- [Black Forest Labs](https://blackforestlabs.ai/)
+- [Tailnet](https://tailscale.com/)
+- [Cerebral Valley](https://cerebralvalley.beehiiv.com/)
 - [Buildspace](https://buildspace.so)
-- [YCombinator]
+- [YCombinator](https://www.ycombinator.com/)
 
 ## Liability
 
