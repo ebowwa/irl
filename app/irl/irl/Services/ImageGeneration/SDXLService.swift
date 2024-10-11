@@ -252,7 +252,7 @@ class SDXLImageGenerationService: ObservableObject {
         safetyCheckerVersion: String?,
         expandPrompt: Bool?
     ) -> AnyPublisher<SDXLImageGenerationResponse, Error> {
-        guard let requestURL = URL(string: Constants.API.baseURL + Constants.API.Paths.sdxlGenerate) else {
+        guard let requestURL = URL(string: Constants.API.baseURL + ConstantRoutes.API.Paths.sdxlGenerate) else {
             return Fail(error: SDXLServiceError.invalidURL).eraseToAnyPublisher()
         }
 
@@ -323,7 +323,7 @@ class SDXLImageGenerationService: ObservableObject {
     private func checkRequestStatusWithDelays(requestId: String) -> AnyPublisher<SDXLRequestStatusResponse, Error> {
         // Construct the URL carefully to avoid extra slashes
         let baseURLString = Constants.API.baseURL.trimmingCharacters(in: .init(charactersIn: "/"))
-        let statusPath = Constants.API.Paths.sdxlStatus.trimmingCharacters(in: .init(charactersIn: "/"))
+        let statusPath = ConstantRoutes.API.Paths.sdxlStatus.trimmingCharacters(in: .init(charactersIn: "/"))
         let urlString = "\(baseURLString)/\(statusPath)/\(requestId)"
 
         guard let statusURL = URL(string: urlString) else {
@@ -408,7 +408,7 @@ class SDXLImageGenerationService: ObservableObject {
     private func fetchImageResult(requestId: String) -> AnyPublisher<ImageResultResponse, Error> {
         // Construct the URL to your backend's /sdxl/result/{request_id} endpoint
         let baseURLString = Constants.API.baseURL.trimmingCharacters(in: .init(charactersIn: "/"))
-        let resultPath = Constants.API.Paths.sdxlResult.trimmingCharacters(in: .init(charactersIn: "/"))
+        let resultPath = ConstantRoutes.API.Paths.sdxlResult.trimmingCharacters(in: .init(charactersIn: "/"))
         let urlString = "\(baseURLString)/\(resultPath)/\(requestId)"
 
         guard let resultURL = URL(string: urlString) else {

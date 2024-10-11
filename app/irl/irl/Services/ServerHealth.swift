@@ -18,8 +18,8 @@ class ServerHealthManager: ObservableObject {
     private var webSocketTask: URLSessionWebSocketTask?
     private var isCancelled = false
 
-    init(webSocketPath: String = Constants.API.Paths.webSocketPing,
-         testConnectionPath: String = Constants.API.Paths.testConnection) {
+    init(webSocketPath: String = ConstantRoutes.API.Paths.webSocketPing,
+         testConnectionPath: String = ConstantRoutes.API.Paths.testConnection) {
         self.webSocketURL = Constants.API.webSocketBaseURL + webSocketPath
         self.testConnectionURL = Constants.API.baseURL + testConnectionPath
     }

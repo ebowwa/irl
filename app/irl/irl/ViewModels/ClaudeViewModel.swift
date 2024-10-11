@@ -111,7 +111,7 @@ class ClaudeViewModel: ObservableObject {
         apiClient.sendMessage(
             chatMessage.content,
             maxTokens: maxTokensToUse,
-            model: Constants.AI_MODELS.apiModel(for: modelToUse) ?? modelToUse,
+            model: ConstantAIModels.apiModel(for: modelToUse) ?? modelToUse,
             temperature: temperatureToUse,
             systemPrompt: systemPromptToUse
         )

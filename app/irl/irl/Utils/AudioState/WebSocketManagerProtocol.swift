@@ -26,7 +26,7 @@ protocol AudioStateProtocol: ObservableObject {
     var localRecordings: [AudioRecording] { get set }
     var audioLevelPublisher: AnyPublisher<Float, Never> { get }
     var formattedRecordingTime: String { get }
-    
+
     func setupWebSocket(manager: WebSocketManagerProtocol)
     func toggleRecording()
     func stopRecording()
@@ -61,7 +61,7 @@ class WebSocketManager: NSObject, WebSocketManagerProtocol {
     func sendAudioData(_ data: Data) {
         webSocketTask?.send(.data(data)) { error in
             if let error = error {
-                print("Error sending audio data: \(error)")
+                print("Error sending audio data: \(error.localizedDescription)")
             }
         }
     }
@@ -78,12 +78,17 @@ class WebSocketManager: NSObject, WebSocketManagerProtocol {
                 case .data(let data):
                     self?.receivedDataSubject.send(data)
                 @unknown default:
-                    break
+                    print("Received unknown message type.")
                 }
-                self?.receiveMessage()
+                self?.receiveMessage() // Continue listening for more messages
             case .failure(let error):
-                print("Error receiving message: \(error)")
+                print("Error receiving message: \(error.localizedDescription)")
+                // Optionally, you might want to implement reconnection logic here
             }
         }
+    }
+
+    deinit {
+        webSocketTask?.cancel(with: .goingAway, reason: nil)
     }
 }

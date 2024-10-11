@@ -47,7 +47,7 @@ struct ContentView: View {
             title: "Arena",
             icon: "bubble.left.and.bubble.right",
             selectedIcon: "bubble.left.and.bubble.right.fill",
-            content: { AnyView(SocialViewB()) },  // Provide content closure
+            content: { AnyView(SimpleLocalTranscription()) },  // Provide content closure
             showButtons: true
         )
     ]
@@ -152,3 +152,4 @@ extension Array {
         return indices.contains(index) ? self[index] : nil
     }
 }
+

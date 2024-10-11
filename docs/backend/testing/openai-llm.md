@@ -1,4 +1,17 @@
+# Install Ollama 
+
+[macOS](https://ollama.com/download/Ollama-darwin.zip)
+[Windows](https://ollama.com/download/OllamaSetup.exe)
+Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+Docker
+The official Ollama Docker image ollama/ollama is available on Docker Hub.
+
+
 Curls to use the LLM api/generate route
+
+
 
 ## Proxy to OPENAI
 ```
@@ -33,23 +46,6 @@ curl -X POST "http://localhost:8000/LLM/generate-text/" \
   "frequency_penalty": 0,
   "presence_penalty": 0,
   "n": 1,
-  "stream": true
-}'
-```
-
-
-## Stream Ollama 
-```
-curl -X POST "http://localhost:11434/api/generate" \
--H "Content-Type: application/json" \
--d '{
-  "model": "llama3.2:1b",
-  "prompt": "Tell me how you can be my life autopilot and help me in various ways.",
-  "temperature": 0.7,
-  "max_tokens": 150,
-  "top_p": 1.0,
-  "frequency_penalty": 0,
-  "presence_penalty": 0,
   "stream": true
 }'
 ```

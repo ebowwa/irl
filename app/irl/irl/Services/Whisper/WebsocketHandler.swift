@@ -8,7 +8,7 @@ import Foundation
 
 class WebSocketHandler {
     static func connectWebSocket(audioUrl: String, task: TaskEnum, language: LanguageEnum, completion: @escaping (Result<WhisperOutput, Error>) -> Void) {
-        guard let url = URL(string: Constants.API.webSocketBaseURL + Constants.API.Paths.whisperTTS) else { return }
+        guard let url = URL(string: Constants.API.webSocketBaseURL + ConstantRoutes.API.Paths.whisperTTS) else { return }
         
         let urlSession = URLSession(configuration: .default)
         let webSocketTask = urlSession.webSocketTask(with: url)

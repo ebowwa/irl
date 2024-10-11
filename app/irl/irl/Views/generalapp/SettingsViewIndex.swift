@@ -20,12 +20,12 @@ struct SettingsView: View {
     @State private var baseDomain = Constants.baseDomain
     
     // State properties for API keys
-    @State private var openAIKey = Constants.APIKeys.openAI
-    @State private var humeAIKey = Constants.APIKeys.humeAI
-    @State private var anthropicAIKey = Constants.APIKeys.anthropicAI
-    @State private var gcpKey = Constants.APIKeys.gcp
-    @State private var falAPIKey = Constants.APIKeys.falAPI
-    @State private var deepgramKey = Constants.APIKeys.deepgram
+    @State private var openAIKey = ConstantAPIKeys.openAI
+    @State private var humeAIKey = ConstantAPIKeys.humeAI
+    @State private var anthropicAIKey = ConstantAPIKeys.anthropicAI
+    @State private var gcpKey = ConstantAPIKeys.gcp
+    @State private var falAPIKey = ConstantAPIKeys.falAPI
+    @State private var deepgramKey = ConstantAPIKeys.deepgram
 
     var body: some View {
         Form {
@@ -33,7 +33,7 @@ struct SettingsView: View {
                 AppearanceSettingsView()
             }
 
-            Section(header: Text("Language")) { // seems disabled now?
+            Section(header: Text("Language")) {
                 NavigationLink(destination: LanguageSettingsView(selectedLanguage: $appState.selectedLanguage)) {
                     HStack {
                         Text("Language")
@@ -49,8 +49,7 @@ struct SettingsView: View {
                 Toggle("Email Notifications", isOn: $isEmailNotificationsEnabled)
             }
 
-            Section(header: Text("Privacy")) { 
-                // seems disabled now?
+            Section(header: Text("Privacy")) {
                 NavigationLink(destination: PrivacySettingsView()) {
                     Text("Privacy Settings")
                 }
@@ -71,17 +70,17 @@ struct SettingsView: View {
                         
                         Group {
                             APIKeyField(title: "OpenAI", key: $openAIKey)
-                                .onChange(of: openAIKey) { Constants.APIKeys.openAI = $0 }
+                                .onChange(of: openAIKey) { ConstantAPIKeys.openAI = $0 }
                             APIKeyField(title: "Hume AI", key: $humeAIKey)
-                                .onChange(of: humeAIKey) { Constants.APIKeys.humeAI = $0 }
+                                .onChange(of: humeAIKey) { ConstantAPIKeys.humeAI = $0 }
                             APIKeyField(title: "Anthropic AI", key: $anthropicAIKey)
-                                .onChange(of: anthropicAIKey) { Constants.APIKeys.anthropicAI = $0 }
+                                .onChange(of: anthropicAIKey) { ConstantAPIKeys.anthropicAI = $0 }
                             APIKeyField(title: "GCP", key: $gcpKey)
-                                .onChange(of: gcpKey) { Constants.APIKeys.gcp = $0 }
+                                .onChange(of: gcpKey) { ConstantAPIKeys.gcp = $0 }
                             APIKeyField(title: "FAL API", key: $falAPIKey)
-                                .onChange(of: falAPIKey) { Constants.APIKeys.falAPI = $0 }
+                                .onChange(of: falAPIKey) { ConstantAPIKeys.falAPI = $0 }
                             APIKeyField(title: "Deepgram", key: $deepgramKey)
-                                .onChange(of: deepgramKey) { Constants.APIKeys.deepgram = $0 }
+                                .onChange(of: deepgramKey) { ConstantAPIKeys.deepgram = $0 }
                         }
                         
                         ForEach(customAPIKeys.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in

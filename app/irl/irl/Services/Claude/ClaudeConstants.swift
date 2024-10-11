@@ -9,7 +9,7 @@ import Foundation
 struct ClaudeConstants {
     struct API {
         static let baseURL = Constants.API.baseURL
-        static let messagesEndpoint = Constants.API.Paths.claudeMessages
+        static let messagesEndpoint = ConstantRoutes.API.Paths.claudeMessages
     }
     struct MessageRoles {
         static let user = "user"

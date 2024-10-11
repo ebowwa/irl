@@ -174,7 +174,7 @@ class FluxImageGenerationService: ObservableObject {
 
     // Step 1: Submit Image Generation Request
     private func submitImageGenerationRequest(requestBody: ImageGenerationRequestBody) async throws -> SubmitResponse {
-        guard let url = URL(string: Constants.API.baseURL + Constants.API.Paths.imageGenerationSubmit) else {
+        guard let url = URL(string: Constants.API.baseURL + ConstantRoutes.API.Paths.imageGenerationSubmit) else {
             throw URLError(.badURL)
         }
         var request = URLRequest(url: url)
@@ -205,7 +205,7 @@ class FluxImageGenerationService: ObservableObject {
     // Step 2: Check Request Status
     private func checkRequestStatus(requestId: String) async throws -> StatusResponse {
         // Construct the URL using Constants
-        let statusPath = Constants.API.Paths.imageGenerationStatus + requestId
+        let statusPath = ConstantRoutes.API.Paths.imageGenerationStatus + requestId
         guard let url = URL(string: baseURL + statusPath) else {
             throw URLError(.badURL)
         }
@@ -231,7 +231,7 @@ class FluxImageGenerationService: ObservableObject {
     // Step 3: Fetch the Result
     private func fetchResult(requestId: String) async throws -> ResultResponse {
         // Construct the URL using Constants
-        let resultPath = Constants.API.Paths.imageGenerationResult + requestId
+        let resultPath = ConstantRoutes.API.Paths.imageGenerationResult + requestId
         guard let url = URL(string: baseURL + resultPath) else {
             throw URLError(.badURL)
         }

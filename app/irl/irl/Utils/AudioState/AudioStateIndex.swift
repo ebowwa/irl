@@ -9,11 +9,14 @@ import Foundation
 import AVFoundation
 import Combine
 import Speech
+import UIKit // Import UIKit to use UIDevice
 
 // Singleton class responsible for managing the app's audio state, including recording, playback, and speech recognition.
 // This class persists data (e.g., recordings) between sessions and ensures that the audio state is shared across different views.
-class AudioState: NSObject, AudioStateProtocol {
-    static let shared = AudioState() // Singleton instance to ensure one central state for audio management.
+class AudioState: NSObject, AudioStateProtocol, AVAudioPlayerDelegate {
+
+    // Singleton instance to ensure one central state for audio management.
+    static let shared = AudioState()
 
     // Published properties allow SwiftUI views or other observers to reactively update when these values change.
     @Published var isRecording = false // Tracks if recording is in progress.
@@ -44,11 +47,11 @@ class AudioState: NSObject, AudioStateProtocol {
 
     private var cancellables: Set<AnyCancellable> = [] // Stores Combine subscriptions.
 
-    // Initializer sets up the audio session and loads any existing recordings from disk.
-    override init() {
+    // Private initializer to enforce singleton pattern.
+    private override init() {
         super.init()
-        setupAudioSession() // Prepares the app for recording and playback.
-        updateLocalRecordings() // Fetches stored recordings to ensure persistence between sessions.
+        setupAudioSession(caller: "AudioState.init") // Setup called once during initialization.
+        updateLocalRecordings() // Loads any existing recordings from disk.
     }
 
     // Assigns the WebSocket manager, enabling live audio streaming functionality.
@@ -58,15 +61,37 @@ class AudioState: NSObject, AudioStateProtocol {
 
     // MARK: - Audio Session Setup
 
-    // Configures the AVAudioSession to allow both playback and recording.
-    private func setupAudioSession() {
+    /// Configures the AVAudioSession to allow both playback and recording.
+    /// - Parameter caller: A string indicating who called this method, for logging purposes.
+    private func setupAudioSession(caller: String = #function) {
+        // Log device information
+        let device = UIDevice.current
+        let deviceInfo = "Device: \(device.model), OS: \(device.systemName) \(device.systemVersion)"
+        print("[DeviceInfo] Called by \(caller) - \(deviceInfo)")
+
+        recordingSession = AVAudioSession.sharedInstance()
+
+        // Check current session configuration
+        let currentCategory = recordingSession?.category ?? .ambient
+        let currentMode = recordingSession?.mode ?? .default
+        let currentOptions = recordingSession?.categoryOptions ?? []
+
+        if currentCategory == .playAndRecord &&
+            currentMode == .default &&
+            currentOptions.contains(.defaultToSpeaker) &&
+            currentOptions.contains(.allowBluetooth) {
+            print("[setupAudioSession] Called by \(caller) - Audio session already configured.")
+            return
+        }
+
         do {
-            recordingSession = AVAudioSession.sharedInstance()
-            try recordingSession?.setCategory(.playAndRecord, mode: .default)
+            try recordingSession?.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
             try recordingSession?.setActive(true)
+            print("[setupAudioSession] Called by \(caller) - Audio session successfully set up")
         } catch {
             DispatchQueue.main.async { [weak self] in
                 self?.errorMessage = "Failed to set up audio session: \(error.localizedDescription)"
+                print("[setupAudioSession] Called by \(caller) - Setup failed: \(error.localizedDescription)")
             }
         }
     }
@@ -84,10 +109,17 @@ class AudioState: NSObject, AudioStateProtocol {
 
     // Starts either live streaming or file-based recording depending on the presence of a WebSocketManager.
     func startRecording() {
+        if isRecording {
+            stopRecording()
+        }
+
+        // Remove redundant call to setupAudioSession()
+        // setupAudioSession(caller: "AudioState.startRecording")
+
         if webSocketManager != nil {
-            startLiveStreaming() // If WebSocketManager is available, start live streaming.
+            startLiveStreaming()
         } else {
-            startFileRecording() // Otherwise, start recording to a file.
+            startFileRecording()
         }
     }
 
@@ -170,7 +202,7 @@ class AudioState: NSObject, AudioStateProtocol {
         let audioFilename = AudioFileManager.shared.getDocumentsDirectory().appendingPathComponent("recording_\(Date().timeIntervalSince1970).m4a")
 
         // Audio settings for the recording session (AAC format, high-quality audio).
-        let settings = [
+        let settings: [String: Any] = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 44100,
             AVNumberOfChannelsKey: 2,
@@ -181,6 +213,7 @@ class AudioState: NSObject, AudioStateProtocol {
         do {
             audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
             audioRecorder?.isMeteringEnabled = true
+            audioRecorder?.delegate = self // Set the delegate to respond to recording events
             audioRecorder?.record()
 
             DispatchQueue.main.async { [weak self] in
@@ -270,7 +303,7 @@ class AudioState: NSObject, AudioStateProtocol {
             self?.localRecordings = updatedRecordings // Updates the local recordings array to reflect changes.
         }
     }
-    
+
     // Fetches the list of recordings, useful for reloading the list in the UI.
     func fetchRecordings() {
         updateLocalRecordings()
@@ -312,14 +345,14 @@ class AudioState: NSObject, AudioStateProtocol {
                 }
                 return
             }
-            
+
             guard let result = result else {
                 DispatchQueue.main.async {
                     completion(false)
                 }
                 return
             }
-            
+
             // Analyzes the speech transcription result and confidence to determine if speech is present.
             let isSpeechLikely = result.bestTranscription.formattedString.split(separator: " ").count > 1 &&
                                 (result.bestTranscription.segments.first?.confidence ?? 0 > 0.5)
@@ -353,6 +386,7 @@ class AudioState: NSObject, AudioStateProtocol {
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: recording.url)
             audioPlayer?.delegate = self // Set the delegate to respond to playback events.
+            audioPlayer?.prepareToPlay()
             audioPlayer?.play()
             DispatchQueue.main.async { [weak self] in
                 self?.isPlaying = true
@@ -386,16 +420,49 @@ class AudioState: NSObject, AudioStateProtocol {
     }
 }
 
+// MARK: - AVAudioRecorderDelegate
+
+extension AudioState: AVAudioRecorderDelegate {
+    // Called when recording finishes, either successfully or with an error.
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        if !flag {
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Recording failed to finish successfully."
+                self?.isRecording = false
+            }
+        }
+    }
+
+    // Called when recording encounters an encoding error.
+    func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
+        if let error = error {
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Recording encoding error: \(error.localizedDescription)"
+                self?.isRecording = false
+            }
+        }
+    }
+}
+
 // MARK: - AVAudioPlayerDelegate
 
-// Conforms to AVAudioPlayerDelegate to handle events like the end of playback.
-extension AudioState: AVAudioPlayerDelegate {
+extension AudioState {
     // Called when playback finishes, either successfully or with an error.
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         DispatchQueue.main.async { [weak self] in
             self?.isPlaying = false // Resets the isPlaying flag when playback is finished.
             if !flag {
                 self?.errorMessage = "Playback finished with an error"
+            }
+        }
+    }
+
+    // Called when playback encounters an error.
+    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
+        if let error = error {
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Playback decode error: \(error.localizedDescription)"
+                self?.isPlaying = false
             }
         }
     }

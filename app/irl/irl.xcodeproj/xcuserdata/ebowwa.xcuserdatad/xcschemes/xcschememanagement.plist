@@ -4,46 +4,35 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>SQLite (Playground) 1.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-			<key>orderHint</key>
-			<integer>4</integer>
-		</dict>
-		<key>SQLite (Playground) 2.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-			<key>orderHint</key>
-			<integer>5</integer>
-		</dict>
-		<key>SQLite (Playground).xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-			<key>orderHint</key>
-			<integer>3</integer>
-		</dict>
-		<key>friend-irl-addon.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>2</integer>
-		</dict>
-		<key>irl.xcscheme_^#shared#^_</key>
+		<key>IRL.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>watch-irl Watch App.xcscheme_^#shared#^_</key>
+		<key>external-friends.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>6</integer>
+			<integer>1</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>765E98B12C811FC500A6726B</key>
+		<key>763BA6A62CB644F4003A0CDB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>763BA6B62CB644F6003A0CDB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>763BA6C02CB644F6003A0CDB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>763BA6F62CB6476F003A0CDB</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -45,7 +45,7 @@ class HumeViewModel: ObservableObject {
     
     private var audioRecorder: AVAudioRecorder?
     private var webSocketTask: URLSessionWebSocketTask?
-    private let serverURL = URL(string: Constants.API.webSocketBaseURL + Constants.API.Paths.humeWebSocket)!
+    private let serverURL = URL(string: Constants.API.webSocketBaseURL + ConstantRoutes.API.Paths.humeWebSocket)!
     
     init() {
         connectWebSocket()

@@ -5,11 +5,6 @@
 
 import SwiftUI
 
-// Wrapper struct to make String identifiable
-struct IdentifiableString: Identifiable {
-    let id = UUID()
-    let value: String
-}
 
 struct ChatMessage: Identifiable, Codable {
     let id = UUID() // unique id for ForEach
@@ -56,7 +51,7 @@ struct LiveView: View {
                      if Constants.productionMode {
                      - first, local transcribe and show as how the demo data is now then
                      - second,
-                            (have live transcription locally) but also, 
+                            (have live transcription locally) but also,
                             batch or live send to backend for higher quality transcriptions to replace/merge with the local
                      
                      */

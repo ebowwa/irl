@@ -71,12 +71,12 @@ class SettingsViewModel: ObservableObject {
         self.isEmailNotificationsEnabled = UserDefaults.standard.bool(forKey: "isEmailNotificationsEnabled")
 
         self.baseDomain = UserDefaults.standard.string(forKey: "baseDomain") ?? Constants.baseDomain
-        self.openAIKey = UserDefaults.standard.string(forKey: "openAIKey") ?? Constants.APIKeys.openAI
-        self.humeAIKey = UserDefaults.standard.string(forKey: "humeAIKey") ?? Constants.APIKeys.humeAI
-        self.anthropicAIKey = UserDefaults.standard.string(forKey: "anthropicAIKey") ?? Constants.APIKeys.anthropicAI
-        self.gcpKey = UserDefaults.standard.string(forKey: "gcpKey") ?? Constants.APIKeys.gcp
-        self.falAPIKey = UserDefaults.standard.string(forKey: "falAPIKey") ?? Constants.APIKeys.falAPI
-        self.deepgramKey = UserDefaults.standard.string(forKey: "deepgramKey") ?? Constants.APIKeys.deepgram
+        self.openAIKey = UserDefaults.standard.string(forKey: "openAIKey") ?? ConstantAPIKeys.openAI
+        self.humeAIKey = UserDefaults.standard.string(forKey: "humeAIKey") ?? ConstantAPIKeys.humeAI
+        self.anthropicAIKey = UserDefaults.standard.string(forKey: "anthropicAIKey") ?? ConstantAPIKeys.anthropicAI
+        self.gcpKey = UserDefaults.standard.string(forKey: "gcpKey") ?? ConstantAPIKeys.gcp
+        self.falAPIKey = UserDefaults.standard.string(forKey: "falAPIKey") ?? ConstantAPIKeys.falAPI
+        self.deepgramKey = UserDefaults.standard.string(forKey: "deepgramKey") ?? ConstantAPIKeys.deepgram
 
         if let savedCustomAPIKeys = UserDefaults.standard.dictionary(forKey: "customAPIKeys") as? [String: String] {
             self.customAPIKeys = savedCustomAPIKeys

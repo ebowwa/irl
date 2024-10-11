@@ -100,63 +100,49 @@ class SpeechAnalysisService: NSObject, ObservableObject, SFSpeechRecognitionTask
             return
         }
         
+        // Cancel any existing recognition task
+        recognitionTask?.cancel()
+        recognitionTask = nil
+
         // Mark the analysis as started and clear any previous errors
         await MainActor.run {
             isAnalyzing = true
             errorMessage = nil
-            currentRecordingURL = recording.url  // Store the current audio URL being analyzed
+            currentRecordingURL = recording.url
         }
         
         // Ensure that the speech recognizer is available before proceeding
         guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
             await MainActor.run {
-                errorMessage = "Speech recognition is not available"  // Notify if speech recognition is unavailable
+                errorMessage = "Speech recognition is not available"
                 isAnalyzing = false
             }
             return
         }
         
-        let request = SFSpeechURLRecognitionRequest(url: recording.url)  // Create a recognition request using the recording's URL
-        
+        let request = SFSpeechURLRecognitionRequest(url: recording.url)
+        request.requiresOnDeviceRecognition = true // Use on-device recognition to avoid network errors
+
         // Perform the recognition asynchronously and handle errors
         do {
             let result: SFSpeechRecognitionResult = try await withCheckedThrowingContinuation { continuation in
                 recognitionTask = speechRecognizer.recognitionTask(with: request) { result, error in
                     if let error = error {
-                        // Ensure the continuation is resumed on the main thread
-                        DispatchQueue.main.async {
-                            continuation.resume(throwing: error)
-                        }
-                    } else if let result = result {
-                        if result.isFinal {
-                            // Ensure the continuation is resumed on the main thread
-                            DispatchQueue.main.async {
-                                continuation.resume(returning: result)
-                            }
-                        }
-                    } else {
-                        // No result and no error, possibly no speech detected
-                        let noSpeechError = NSError(domain: "SpeechAnalysisService", code: -1, userInfo: [NSLocalizedDescriptionKey: "No speech detected"])
-                        // Ensure the continuation is resumed on the main thread
-                        DispatchQueue.main.async {
-                            continuation.resume(throwing: noSpeechError)
-                        }
+                        continuation.resume(throwing: error)
+                    } else if let result = result, result.isFinal {
+                        continuation.resume(returning: result)
                     }
                 }
             }
-            await processResult(result)  // Process the speech recognition result
+            await processResult(result)
         } catch {
             await MainActor.run {
-                errorMessage = "Speech recognition failed: \(error.localizedDescription)"  // Handle speech recognition failure
-                isAnalyzing = false  // Reset analyzing state
-            }
-        }; finally: do {
-            // Ensure that isAnalyzing is set to false in all scenarios
-            await MainActor.run {
-                self.isAnalyzing = false
+                errorMessage = "Speech recognition failed: \(error.localizedDescription)"
+                isAnalyzing = false
             }
         }
     }
+
     
     // Loops through multiple audio recordings and analyzes each one sequentially
     func analyzeAllRecordings(_ recordings: [AudioRecording]) async {
