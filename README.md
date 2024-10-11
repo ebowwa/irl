@@ -40,20 +40,25 @@ We welcome contributions! Feel free to submit issues or pull requests to help im
 - [Backend Guide](docs/backend/main.md)
 - [App Guide](docs/app/main.md)
 
-## Special Thanks to the Open-Source Community!
-- [Omi formerly Friend](https://omi.me)
-- [Ollama](https://ollama.com)
-- [Meta Llama Releases](https://ai.meta.com)
-- [Python](https://www.python.org/)
-- [Pydantic](https://github.com/pydantic/pydantic)
-- [Fal AI](https://github.com/fal-ai)
-- [Stability AI](https://huggingface.co/stabilityai)
-- [Ngrok](https://ngrok.com)
-- [Black Forest Labs](https://blackforestlabs.ai/)
-- [Tailnet](https://tailscale.com/)
-- [Cerebral Valley](https://cerebralvalley.beehiiv.com/)
-- [Buildspace](https://buildspace.so)
-- [YCombinator](https://www.ycombinator.com/)
+## Special Thanks to the Open-Source Community
+
+We extend our gratitude to the following projects and organizations that have significantly contributed to our journey:
+
+- **[Omi (formerly Friend)](https://omi.me)** - For their innovative solutions in AI.
+- **[Ollama](https://ollama.com)** - For providing powerful AI tools.
+- **[Meta Llama Releases](https://ai.meta.com)** - For advancing AI research and development.
+- **[Python](https://www.python.org/)** - The backbone of our project.
+- **[Pydantic](https://github.com/pydantic/pydantic)** - For data validation and settings management.
+- **[Fal AI](https://github.com/fal-ai)** - For enhancing AI capabilities.
+- **[Stability AI](https://huggingface.co/stabilityai)** - For their contributions to image generative AI models.
+- **[Ngrok](https://ngrok.com)** - For facilitating secure tunnels to our local server.
+- **[Black Forest Labs](https://blackforestlabs.ai/)** - For their cutting-edge AI research in image generation.
+- **[Tailnet](https://tailscale.com/)** - For secure network connectivity solutions.
+- **[Cerebral Valley](https://cerebralvalley.beehiiv.com/)** - For insights and support in the AI landscape.
+- **[Buildspace](https://buildspace.so)** - For fostering a collaborative environment for builders.
+- **[Y Combinator](https://www.ycombinator.com/)** - For their invaluable support and resources for startups.
+
+Your contributions have been instrumental in shaping our project!
 
 ## Liability
 
