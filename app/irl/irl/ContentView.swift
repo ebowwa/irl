@@ -6,7 +6,7 @@ struct ContentView: View {
     // MARK: - Environment Objects
     @EnvironmentObject var globalState: GlobalState
     @EnvironmentObject var audioState: AudioState
-    @EnvironmentObject var backgroundAudio: BackgroundAudio
+    //@EnvironmentObject var backgroundAudio: BackgroundAudio
     @EnvironmentObject var settingsViewModel: SettingsViewModel
     
     // MARK: - State
@@ -94,9 +94,9 @@ struct ContentView: View {
         .edgesIgnoringSafeArea(.bottom)
         .onAppear {
             setupAppearance()
-            // Ensure that the background audio session is set up and recording starts automatically if enabled
-            if backgroundAudio.isBackgroundRecordingEnabled {
-                backgroundAudio.startRecording() // Automatically start recording
+            // Ensure that the audio session is set up and recording starts automatically if enabled
+            if audioState.isBackgroundRecordingEnabled {
+                audioState.startRecording() // Automatically start recording
             }
         }
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
@@ -152,4 +152,3 @@ extension Array {
         return indices.contains(index) ? self[index] : nil
     }
 }
-

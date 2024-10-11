@@ -1,11 +1,12 @@
 //
-//  AudioStateIndex.swift
+//  AudioState.swift
 //  irl
 //
 //  Created by Elijah Arbee on 8/29/24.
 //
 
 import Foundation
+import SwiftUI
 import AVFoundation
 import Combine
 import Speech
@@ -18,6 +19,8 @@ class AudioState: NSObject, AudioStateProtocol, AVAudioPlayerDelegate {
     // Singleton instance to ensure one central state for audio management.
     static let shared = AudioState()
 
+    // MARK: - Published Properties
+
     // Published properties allow SwiftUI views or other observers to reactively update when these values change.
     @Published var isRecording = false // Tracks if recording is in progress.
     @Published var isPlaying = false // Tracks if playback is in progress.
@@ -27,6 +30,10 @@ class AudioState: NSObject, AudioStateProtocol, AVAudioPlayerDelegate {
     @Published var isPlaybackAvailable = false // Indicates if playback can be started for the current recording.
     @Published var errorMessage: String? // Holds error messages related to recording, playback, or speech recognition.
     @Published var localRecordings: [AudioRecording] = [] // List of recordings fetched from local storage.
+
+    // Persistent storage for recording-related settings using @AppStorage, allowing the values to be stored and retrieved across app launches.
+    @AppStorage("isRecordingEnabled") private(set) var isRecordingEnabled = false
+    @AppStorage("isBackgroundRecordingEnabled") var isBackgroundRecordingEnabled = true // Default to true to enable background recording by default
 
     // AVFoundation components for handling audio recording and playback.
     private var audioRecorder: AVAudioRecorder?
@@ -47,12 +54,52 @@ class AudioState: NSObject, AudioStateProtocol, AVAudioPlayerDelegate {
 
     private var cancellables: Set<AnyCancellable> = [] // Stores Combine subscriptions.
 
+    // MARK: - Initializer
+
     // Private initializer to enforce singleton pattern.
     private override init() {
         super.init()
         setupAudioSession(caller: "AudioState.init") // Setup called once during initialization.
         updateLocalRecordings() // Loads any existing recordings from disk.
+        setupNotifications() // Setup app lifecycle notifications.
+
+        // Automatically start recording if background recording is enabled
+        if isBackgroundRecordingEnabled {
+            startRecording()
+        }
     }
+
+    // MARK: - Notification Setup
+
+    // Registers for system notifications related to the app's lifecycle.
+    private func setupNotifications() {
+        // Listen for when the app is about to go into the background (resign active).
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppBackgrounding), name: UIApplication.willResignActiveNotification, object: nil)
+        
+        // Listen for when the app is about to terminate.
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppTermination), name: UIApplication.willTerminateNotification, object: nil)
+    }
+
+    // Handles the app going into the background. If background recording is allowed, continue recording; otherwise, stop.
+    @objc private func handleAppBackgrounding() {
+        // If background recording is allowed, ensure the audio session is set up correctly.
+        if isBackgroundRecordingEnabled {
+            setupAudioSession()
+        } else {
+            // Otherwise, stop recording when the app is backgrounded.
+            stopRecording()
+        }
+    }
+
+    // Handles the app termination. Ensures that recording stops to prevent data loss or resource leaks.
+    @objc private func handleAppTermination() {
+        // If recording is active when the app is terminating, stop the recording process.
+        if isRecording {
+            stopRecording()
+        }
+    }
+
+    // MARK: - WebSocket Setup
 
     // Assigns the WebSocket manager, enabling live audio streaming functionality.
     func setupWebSocket(manager: WebSocketManagerProtocol) {
