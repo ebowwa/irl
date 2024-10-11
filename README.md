@@ -14,6 +14,7 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 - **Human Interpreter**: Provides contextual interpretations based on real-time input.
 - **Advocacy**: Acts as a digital advocate to assist users in navigating complex situations.
 - **AI Companion**: Serves as your personal AI assistant for various tasks.
+![EnhancingLife](irlweb/public/mermaid-diagram-2024-10-11-204535.svg)
 
 ## Get Started
 
