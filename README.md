@@ -1,12 +1,10 @@
 ---
 
-# IRL
+# IRL - the singularity is here
 
 ![IRL](irlweb/public/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
 
 ## About
-
-### **the singularity is here**
 
 IRL (In Real Life) is an AI-powered project that functions as an augmented memory assistant, human interpreter, advocate, and more. This app is designed to elevate human-AI interaction by providing real-time support and insights to users in various contexts.
 
