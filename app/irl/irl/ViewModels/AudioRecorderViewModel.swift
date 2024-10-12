@@ -13,7 +13,7 @@ class AudioRecorderViewModel: ObservableObject {
     // @Published properties change. This is the core of state management in this view model.
     
     @Published private(set) var audioState: AudioState // Holds shared audio state across the app (singleton).
-    @Published private(set) var speechAnalysisService: SpeechAnalysisService // Manages speech analysis service (singleton).
+    @Published private(set) var speechRecognitionManager: SpeechRecognitionManager // Manages speech recognition (singleton).
     @Published private(set) var recordings: [RecordingViewModel] = [] // Holds the list of recordings.
     @Published var currentRecording: RecordingViewModel? // Tracks the currently active recording.
     @Published var errorMessage: String? // Holds error messages that might be triggered during recording or playback.
@@ -21,12 +21,15 @@ class AudioRecorderViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>() // Used for managing Combine subscriptions.
 
     init() {
-        // Initializing singletons for AudioState and SpeechAnalysisService ensures state persistence across app views.
+        // Initializing singletons for AudioState and SpeechRecognitionManager ensures state persistence across app views.
         self.audioState = AudioState.shared
-        self.speechAnalysisService = SpeechAnalysisService.shared
-
+        self.speechRecognitionManager = SpeechRecognitionManager.shared
+        
         // Set up bindings to automatically update the UI when audio state changes or errors occur.
         setupBindings()
+        
+        // Optionally, request speech authorization when the view model initializes
+        self.speechRecognitionManager.requestSpeechAuthorization()
     }
 
     private func setupBindings() {
@@ -56,22 +59,33 @@ class AudioRecorderViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        // Also listening to error messages from the SpeechAnalysisService for speech analysis-related issues.
-        speechAnalysisService.$errorMessage
-            .sink { [weak self] message in
-                if let message = message {
-                    self?.errorMessage = message
+        // Listening to transcribed text updates from the SpeechRecognitionManager for speech recognition-related information.
+        speechRecognitionManager.$transcribedText
+            .sink { [weak self] transcribedText in
+                // Handle transcription updates if necessary
+                // For example, you might want to update the current recording's transcription
+                if let current = self?.currentRecording {
+                    current.transcribedText = transcribedText
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Listening to speech detection status to update error messages or UI elements.
+        speechRecognitionManager.$isSpeechDetected
+            .sink { [weak self] isDetected in
+                if !isDetected && self?.speechRecognitionManager.transcribedText.contains("Failed") == true {
+                    self?.errorMessage = self?.speechRecognitionManager.transcribedText
                 }
             }
             .store(in: &cancellables)
     }
 
     // Converts recordings fetched from AudioState into RecordingViewModel instances,
-    // which handle additional behavior like speech analysis.
+    // which handle additional behavior like speech recognition.
     private func updateRecordingViewModels(_ recordings: [AudioRecording]) {
         self.recordings = recordings.map { recording in
-            let viewModel = RecordingViewModel(recording: recording, speechAnalysisService: speechAnalysisService)
-            viewModel.startAnalysis() // Starts speech analysis for each recording immediately after fetching.
+            let viewModel = RecordingViewModel(recording: recording, speechRecognitionManager: speechRecognitionManager)
+            viewModel.startTranscription() // Starts transcription for each recording immediately after fetching.
             return viewModel
         }
     }
@@ -138,21 +152,37 @@ class AudioRecorderViewModel: ObservableObject {
 class RecordingViewModel: ObservableObject, Identifiable {
     let id: UUID // Unique identifier for each recording.
     let recording: AudioRecording // Holds the actual AudioRecording data.
-    @Published var speechProbability: Double? // Stores the result of the speech analysis for this recording.
+    @Published var transcribedText: String = "Transcription will appear here." // Stores the transcription result for this recording.
     
-    private let speechAnalysisService: SpeechAnalysisService // Reference to the shared SpeechAnalysisService.
-    private var cancellable: AnyCancellable? // Manages the subscription to the speech analysis probabilities.
+    private let speechRecognitionManager: SpeechRecognitionManager // Reference to the shared SpeechRecognitionManager.
+    private var cancellable: AnyCancellable? // Manages the subscription to the speech transcription updates.
 
-    init(recording: AudioRecording, speechAnalysisService: SpeechAnalysisService) {
+    init(recording: AudioRecording, speechRecognitionManager: SpeechRecognitionManager) {
         self.id = recording.id
         self.recording = recording
-        self.speechAnalysisService = speechAnalysisService
+        self.speechRecognitionManager = speechRecognitionManager
     }
 
-    // Starts analysis by subscribing to speech probability updates from the speech analysis service.
-    func startAnalysis() {
-        cancellable = speechAnalysisService.$analysisProbabilities
-            .map { $0[self.recording.url] }
-            .assign(to: \.speechProbability, on: self) // Updates speechProbability when analysis is complete.
+    // Starts transcription by subscribing to transcribed text updates from the speech recognition manager.
+    func startTranscription() {
+        // Assuming SpeechRecognitionManager can handle transcription of existing recordings.
+        // If SpeechRecognitionManager only handles live transcription, additional implementation is needed.
+        
+        // Example implementation:
+        // speechRecognitionManager.transcribeAudio(url: recording.url)
+        
+        // Subscribe to the transcribedText for this recording.
+        // This assumes SpeechRecognitionManager provides a way to transcribe specific audio files.
+        cancellable = speechRecognitionManager.$transcribedText
+            .sink { [weak self] text in
+                // Update the transcribedText if it corresponds to this recording
+                // This requires SpeechRecognitionManager to associate transcriptions with recordings
+                // For simplicity, assuming one transcription at a time
+                self?.transcribedText = text
+            }
+    }
+    
+    deinit {
+        cancellable?.cancel()
     }
 }

@@ -57,7 +57,4 @@ class DeviceManager: ObservableObject {
             device.stopRecording()
         }
     }
-
-    // MARK: - Playback Controls
-
 }

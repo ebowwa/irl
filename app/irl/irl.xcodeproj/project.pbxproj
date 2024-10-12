@@ -239,6 +239,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				763BA8112CB74E01003A0CDB /* XCRemoteSwiftPackageReference "swift-numerics" */,
+				7658CB9D2CBA6A32000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
+				7658CB9E2CBA6A3D000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 763BA6A82CB644F4003A0CDB /* Products */;
@@ -446,6 +448,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IRL/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to take photos.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide personalized services.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Uses the Microphone to collect audio for analysis and transforations";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Optimized usage for calling the analysis and user intents.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -478,6 +482,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IRL/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to take photos.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide personalized services.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Uses the Microphone to collect audio for analysis and transforations";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Optimized usage for calling the analysis and user intents.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -618,6 +624,22 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.2;
+			};
+		};
+		7658CB9D2CBA6A32000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-urlsession";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
+		7658CB9E2CBA6A3D000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-generator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-generator";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

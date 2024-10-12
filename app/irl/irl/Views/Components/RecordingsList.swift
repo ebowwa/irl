@@ -4,6 +4,7 @@
 //
 //  Created by Elijah Arbee on 9/7/24.
 //
+
 import SwiftUI
 
 struct AllRecordingsListView: View {
@@ -16,7 +17,7 @@ struct AllRecordingsListView: View {
                 showAllRecordings.toggle()
             }
             .padding(.top)
-
+            
             if showAllRecordings {
                 recordingsList
             }
@@ -53,18 +54,31 @@ struct RecordingInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(viewModel.recording.url.lastPathComponent).font(.subheadline)
+            Text(viewModel.recording.url.lastPathComponent)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            
             Text("Size: \(formattedFileSize(bytes: viewModel.recording.fileSize))")
-            Text("Created: \(viewModel.recording.creationDate, style: .date) \(viewModel.recording.creationDate, style: .time)")
-            if let speechProbability = viewModel.speechProbability {
-                Text("Speech: \(String(format: "%.2f", speechProbability))%")
-                    .foregroundColor(speechProbability > 50 ? .green : .red)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Text("Created: \(formattedDate(date: viewModel.recording.creationDate))")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            // Display Transcribed Text
+            if !viewModel.transcribedText.isEmpty && viewModel.transcribedText != "Transcription will appear here." {
+                Text("Transcription: \(viewModel.transcribedText)")
+                    .font(.body)
+                    .foregroundColor(.primary)
             } else {
-                Text("Analyzing...").foregroundColor(.gray)
+                Text("Transcribing...")
+                    .font(.body)
+                    .foregroundColor(.gray)
             }
         }
         .padding(8)
-        .background(Color.gray.opacity(0.1))
+        .background(Color.gray.opacity(0.05))
         .cornerRadius(8)
     }
     
@@ -73,5 +87,12 @@ struct RecordingInfoView: View {
         formatter.allowedUnits = [.useKB, .useMB, .useGB]
         formatter.countStyle = .file
         return formatter.string(fromByteCount: bytes)
+    }
+    
+    private func formattedDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }
