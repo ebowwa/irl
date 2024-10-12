@@ -4,7 +4,6 @@
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
-
 import SwiftUI
 import Speech
 import Combine
@@ -13,26 +12,16 @@ struct SimpleLocalTranscription: View {
     @StateObject private var speechManager = SpeechRecognitionManager()
     @ObservedObject private var audioState = AudioState.shared
 
+    @State private var transcriptionHistory: [String] = []
+    @State private var lastTranscribedText: String = ""
+
     var body: some View {
-        VStack(spacing: 32) {
-            // Removed the recording button as audio is always recording
-            
-            VStack(spacing: 8) {
-                Text("Speak")
-                    .font(.title)
-                    .fontWeight(.bold)
-                Text("Voice transcription is active")
-                    .foregroundColor(.secondary)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Transcription Output")
-                    .font(.headline)
-                ScrollView {
-                    Text(speechManager.transcribedText)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
+        VStack(spacing: 16) {
+            TranscriptionHeaderView()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    TranscriptionHistoryView(transcriptionHistory: transcriptionHistory, lastTranscribedText: lastTranscribedText)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -40,129 +29,307 @@ struct SimpleLocalTranscription: View {
             .background(Color.white)
             .cornerRadius(12)
             .shadow(radius: 5)
-            
-            // Optional: Display audio levels from AudioState
-            VStack(spacing: 8) {
-                Text("Audio Level")
-                    .font(.headline)
-                ProgressView(value: speechManager.currentAudioLevel, total: 1.0)
-                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                    .frame(height: 10)
+
+            if !speechManager.isBackgroundNoiseReady {
+                CalibrationStatusView()
+            } else {
+                AudioLevelView(audioLevel: $speechManager.currentAudioLevel)
             }
-            .padding()
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         .onAppear {
-            speechManager.requestSpeechAuthorization()
-            speechManager.startRecording()
-        }
-        .onReceive(audioState.audioLevelPublisher) { level in
-            let normalizedLevel = self.normalizeAudioLevel(level)
-            self.speechManager.currentAudioLevel = normalizedLevel
+            setupSpeechManager()
         }
         .onDisappear {
             speechManager.stopRecording()
         }
     }
-    
-    /// Normalizes the audio level from decibels to a value between 0 and 1.
-    private func normalizeAudioLevel(_ level: Float) -> Double {
-        let minDb: Float = -80.0
-        let maxDb: Float = 0.0
-        let clampedLevel = max(min(level, maxDb), minDb)
-        return Double((clampedLevel - minDb) / (maxDb - minDb))
+
+    private func setupSpeechManager() {
+        speechManager.requestSpeechAuthorization()
+        speechManager.startRecording()
+
+        speechManager.$transcribedText
+            .dropFirst()
+            .sink { newTranscription in
+                handleTranscriptionUpdate(newTranscription)
+            }
+            .store(in: &speechManager.cancellables)
+    }
+
+    private func handleTranscriptionUpdate(_ newTranscription: String) {
+        if newTranscription != lastTranscribedText && !newTranscription.isEmpty {
+            lastTranscribedText = newTranscription
+        } else if newTranscription == lastTranscribedText {
+            transcriptionHistory.append(lastTranscribedText)
+            lastTranscribedText = ""
+        }
     }
 }
 
+
+//
+//  TranscriptionHistoryView.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/6/24.
+//
+import SwiftUI
+
+struct TranscriptionHistoryView: View {
+    let transcriptionHistory: [String]
+    let lastTranscribedText: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(transcriptionHistory, id: \.self) { sentence in
+                MessageBubble(text: sentence)
+            }
+
+            if !lastTranscribedText.isEmpty {
+                GradientTextView(text: lastTranscribedText)
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+            }
+        }
+    }
+}
+
+//
+//  TranscriptionHeaderView.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/6/24.
+//
+import SwiftUI
+
+struct TranscriptionHeaderView: View {
+    var body: some View {
+        VStack(spacing: 8) {
+            Text("Speak")
+                .font(.title)
+                .fontWeight(.bold)
+            Text("Voice transcription is active")
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+
+//
+//  MessageBubble.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/6/24.
+//
+import SwiftUI
+
+struct MessageBubble: View {
+    let text: String
+
+    var body: some View {
+        HStack {
+            Text(text)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .clipShape(CustomBubbleShape())
+        }
+        .padding(.trailing, 60)
+    }
+}
+
+
+//
+//  CustomBubbleShape.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/6/24.
+//
+import SwiftUI
+
+struct CustomBubbleShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: [.topLeft, .bottomLeft, .bottomRight],
+            cornerRadii: CGSize(width: 20, height: 20)
+        )
+        return Path(path.cgPath)
+    }
+}
+
+//
+//  CalibrationStatusView.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/6/24.
+//
+import SwiftUI
+
+struct CalibrationStatusView: View {
+    var body: some View {
+        VStack(spacing: 8) {
+            ProgressView("Calibrating ambient noise levels...")
+                .progressViewStyle(CircularProgressViewStyle())
+                .padding()
+            Text("Please wait while we measure your environment...")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+        }
+        .padding()
+    }
+}
+
+//
+//  SpeechRecognitionManager.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/6/24.
+//
 import SwiftUI
 import Speech
 import Combine
+import AVFoundation
 
+// MARK: - Constants
+private enum SpeechRecognitionConstants {
+    static let locale = Locale(identifier: "en-US")
+    static let bufferSize: AVAudioFrameCount = 1024
+    static let backgroundNoiseCollectionDuration: TimeInterval = 10.0
+    static let emaAlpha: Double = 0.1
+    static let noiseChangeThreshold: Double = 0.05
+    static let calibrationCooldown: TimeInterval = 60.0
+}
+
+// MARK: - SpeechRecognitionManager
 class SpeechRecognitionManager: ObservableObject {
-    @Published var transcribedText = "Transcribed text will appear here."
-    @Published var transcriptionSegments: [String] = [] // New property for bubbles
-    @Published var currentAudioLevel: Double = 0.0
     
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))!
+    // MARK: - Published Properties
+    @Published var transcribedText = "Transcribed text will appear here."
+    @Published var transcriptionSegments: [String] = [] // This will hold recent segments in a streaming-like fashion
+    @Published var currentAudioLevel: Double = 0.0
+    @Published var averageBackgroundNoise: Double = 0.0
+    @Published var isBackgroundNoiseReady: Bool = false
+    @Published var isSpeechDetected: Bool = false // New flag for detecting if speech is detected
+    @Published var speechMetadata: [String: Any] = [:] // Dictionary to store additional metadata about speech
+    
+    // MARK: - Persistent AppStorage Properties
+    @AppStorage("isBackgroundNoiseCalibrated") private var isBackgroundNoiseCalibrated: Bool = false
+    @AppStorage("averageBackgroundNoisePersisted") private var averageBackgroundNoisePersisted: Double = 0.0
+    
+    // MARK: - Private Properties
+    private let speechRecognizer = SFSpeechRecognizer(locale: SpeechRecognitionConstants.locale)!
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
+    private var backgroundNoiseLevels: [Double] = []
+    private var isCollectingBackgroundNoise = false
+    private var backgroundNoiseTimer: Timer?
+    private var lastTranscription: String = ""
+    private var lastCalibrationTime: Date = .distantPast
+    var cancellables: Set<AnyCancellable> = []
     
-    // To keep track of processed segments
-    private var lastProcessedIndex: Int = 0
+    // MARK: - Streamed Properties
+    private let maxSegmentCount = 10 // Limit how many segments to hold in memory at once for better memory usage
     
+    // MARK: - Speech Authorization Request
     func requestSpeechAuthorization() {
         SFSpeechRecognizer.requestAuthorization { [weak self] authStatus in
             DispatchQueue.main.async {
-                switch authStatus {
-                case .authorized:
-                    break // Authorized
-                case .denied, .restricted, .notDetermined:
-                    self?.transcribedText = "Speech recognition not authorized."
-                @unknown default:
-                    self?.transcribedText = "Unknown authorization status."
-                }
+                self?.handleAuthorizationStatus(authStatus)
             }
         }
     }
     
+    private func handleAuthorizationStatus(_ authStatus: SFSpeechRecognizerAuthorizationStatus) {
+        switch authStatus {
+        case .authorized:
+            break
+        case .denied, .restricted, .notDetermined:
+            transcribedText = "Speech recognition not authorized."
+        @unknown default:
+            transcribedText = "Unknown authorization status."
+        }
+    }
+    
+    // MARK: - Recording Control
     func startRecording() {
         guard !audioEngine.isRunning else { return }
-        
-        if let recognitionTask = recognitionTask {
-            recognitionTask.cancel()
-            self.recognitionTask = nil
+        resetRecognitionTask()
+        setupAudioSession()
+        initializeRecognitionRequest()
+        startAudioEngine()
+        subscribeToAudioLevelUpdates()
+    }
+    
+    func stopRecording() {
+        if audioEngine.isRunning {
+            audioEngine.stop()
+            audioEngine.inputNode.removeTap(onBus: 0)
+            recognitionRequest?.endAudio()
         }
-        
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
+    }
+    
+    // MARK: - Recognition Task Reset
+    private func resetRecognitionTask() {
+        recognitionTask?.cancel()
+        recognitionTask = nil
+    }
+
+    // MARK: - Audio Session Setup
+    private func setupAudioSession() {
         let audioSession = AVAudioSession.sharedInstance()
         do {
-            // Configure the audio session for recording and playback
             try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
             transcribedText = "Failed to set up audio session: \(error.localizedDescription)"
-            return
         }
-        
+    }
+    
+    // MARK: - Recognition Request Initialization
+    private func initializeRecognitionRequest() {
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+        recognitionRequest?.shouldReportPartialResults = true
         
-        guard let recognitionRequest = recognitionRequest else {
-            fatalError("Unable to create SFSpeechAudioBufferRecognitionRequest.")
+        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest!) { [weak self] result, error in
+            self?.handleStreamingResult(result, error)
         }
-        
-        recognitionRequest.shouldReportPartialResults = true
-        
-        // Start the recognition task
-        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
-            guard let self = self else { return }
-            
-            if let result = result {
-                DispatchQueue.main.async {
-                    self.transcribedText = result.bestTranscription.formattedString
-                    self.updateTranscriptionSegments(from: result.bestTranscription)
-                }
-            }
-            
-            if error != nil || (result?.isFinal ?? false) {
-                self.audioEngine.stop()
-                self.audioEngine.inputNode.removeTap(onBus: 0)
-                self.recognitionRequest = nil
-                self.recognitionTask = nil
-                DispatchQueue.main.async {
-                    // Optionally handle UI updates on stop
-                }
-            }
+    }
+
+    // MARK: - Streaming Transcription Handling
+    private func handleStreamingResult(_ result: SFSpeechRecognitionResult?, _ error: Error?) {
+        guard let result = result else { return }
+        DispatchQueue.main.async {
+            // Streaming transcription: handle partial results in real-time
+            self.transcribedText = result.bestTranscription.formattedString
+            self.updateTranscriptionSegments(from: result.bestTranscription)
+            self.isSpeechDetected = !result.bestTranscription.formattedString.isEmpty // Update the speech detection flag
+            self.speechMetadata = [
+                "isFinal": result.isFinal,
+                "confidence": result.bestTranscription.segments.last?.confidence ?? 0.0,
+                // "duration": result.bestTranscription.duration,
+                "formattedStringLength": result.bestTranscription.formattedString.count
+            ]
         }
-        
+        if error != nil || result.isFinal {
+            stopRecording()
+        }
+    }
+
+    // MARK: - Audio Engine Control
+    private func startAudioEngine() {
         let recordingFormat = audioEngine.inputNode.outputFormat(forBus: 0)
-        
-        // Install a tap on the audio engine's input node to capture audio data
-        audioEngine.inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+        audioEngine.inputNode.installTap(onBus: 0, bufferSize: SpeechRecognitionConstants.bufferSize, format: recordingFormat) { buffer, _ in
             self.recognitionRequest?.append(buffer)
         }
-        
+
         do {
             audioEngine.prepare()
             try audioEngine.start()
@@ -172,34 +339,119 @@ class SpeechRecognitionManager: ObservableObject {
         } catch {
             transcribedText = "Audio Engine couldn't start: \(error.localizedDescription)"
         }
-        
-        //  Audio levels monitored using Combine and AudioState's audioLevelPublisher
+    }
 
-        // This part is optional and depends on how you want to display audio levels
-    }
-    
-    func stopRecording() {
-        if audioEngine.isRunning {
-            audioEngine.stop()
-            recognitionRequest?.endAudio()
-        }
-    }
-    
+    // MARK: - Transcription Segments Streaming Update
     private func updateTranscriptionSegments(from transcription: SFTranscription) {
-        // Ensure that we process only new segments
-        let newSegments = transcription.segments.dropFirst(lastProcessedIndex)
-        for segment in newSegments {
+        let newSegments = transcription.segments.dropFirst(transcriptionSegments.count)
+        newSegments.forEach { segment in
             let start = transcription.formattedString.index(transcription.formattedString.startIndex, offsetBy: segment.substringRange.location)
             let end = transcription.formattedString.index(start, offsetBy: segment.substringRange.length)
             let substring = String(transcription.formattedString[start..<end])
+            
+            // Append to segments but ensure we are not holding too many in memory
             transcriptionSegments.append(substring)
+            if transcriptionSegments.count > maxSegmentCount {
+                transcriptionSegments.removeFirst() // Remove old segments to free up memory
+            }
         }
-        lastProcessedIndex = transcription.segments.count
     }
-}
+    
+    // MARK: - Audio Level Subscriptions
+    private func subscribeToAudioLevelUpdates() {
+        AudioState.shared.audioLevelPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] level in
+                self?.handleAudioLevel(level)
+            }
+            .store(in: &cancellables)
+    }
 
-struct SimpleLocalTranscription_Previews: PreviewProvider {
-    static var previews: some View {
-        SimpleLocalTranscription()
+    // MARK: - Background Noise Handling
+    private func handleAudioLevel(_ level: Float) {
+        let normalizedLevel = AudioUtils.normalizeAudioLevel(level)
+        
+        if isUserSpeaking() {
+            resetBackgroundNoiseCollection()
+        } else {
+            backgroundNoiseLevels.append(normalizedLevel)
+            if !isBackgroundNoiseCalibrated {
+                startBackgroundNoiseCollection()
+            } else {
+                updateNoiseIfCalibrated(normalizedLevel)
+            }
+        }
+        
+        adjustCurrentAudioLevelIfReady(normalizedLevel)
+    }
+    
+    private func isUserSpeaking() -> Bool {
+        if transcribedText != lastTranscription && !transcribedText.isEmpty {
+            lastTranscription = transcribedText
+            return true
+        }
+        return false
+    }
+
+    private func startBackgroundNoiseCollection() {
+        guard !isCollectingBackgroundNoise else { return }
+        isCollectingBackgroundNoise = true
+        backgroundNoiseLevels.removeAll()
+        
+        backgroundNoiseTimer = Timer.scheduledTimer(withTimeInterval: SpeechRecognitionConstants.backgroundNoiseCollectionDuration, repeats: false) { [weak self] _ in
+            self?.computeAverageBackgroundNoise()
+            self?.isCollectingBackgroundNoise = false
+        }
+    }
+
+    private func resetBackgroundNoiseCollection() {
+        backgroundNoiseTimer?.invalidate()
+        backgroundNoiseTimer = nil
+        isCollectingBackgroundNoise = false
+        backgroundNoiseLevels.removeAll()
+        
+        if Date().timeIntervalSince(lastCalibrationTime) > SpeechRecognitionConstants.calibrationCooldown {
+            averageBackgroundNoise = 0.0
+            isBackgroundNoiseCalibrated = false
+            isBackgroundNoiseReady = false
+        }
+    }
+    
+    private func computeAverageBackgroundNoise() {
+        guard !backgroundNoiseLevels.isEmpty else { return }
+        let average = backgroundNoiseLevels.reduce(0, +) / Double(backgroundNoiseLevels.count)
+        DispatchQueue.main.async {
+            self.updateBackgroundNoise(average)
+        }
+    }
+
+    private func updateBackgroundNoise(_ average: Double) {
+        averageBackgroundNoise = average
+        averageBackgroundNoisePersisted = average
+        isBackgroundNoiseCalibrated = true
+        isBackgroundNoiseReady = true
+        lastCalibrationTime = Date()
+        print("Average Background Noise Updated: \(averageBackgroundNoisePersisted)")
+    }
+
+    private func updateNoiseIfCalibrated(_ normalizedLevel: Double) {
+        if Date().timeIntervalSince(lastCalibrationTime) > SpeechRecognitionConstants.calibrationCooldown {
+            let newEma = (SpeechRecognitionConstants.emaAlpha * averageBackgroundNoisePersisted) + ((1 - SpeechRecognitionConstants.emaAlpha) * normalizedLevel)
+            let change = abs(newEma - averageBackgroundNoisePersisted)
+            if change > SpeechRecognitionConstants.noiseChangeThreshold {
+                updateBackgroundNoise(newEma)
+            }
+        }
+    }
+
+    // Adjust the currentAudioLevel calculation
+    private func adjustCurrentAudioLevelIfReady(_ normalizedLevel: Double) {
+        let alpha: Double = 0.3 // Tweak this value to control noise influence
+        if isBackgroundNoiseReady {
+            let adjustedLevel = max(normalizedLevel - alpha * averageBackgroundNoisePersisted, 0.0)
+            currentAudioLevel = adjustedLevel / (1.0 - alpha * averageBackgroundNoisePersisted)
+        } else {
+            currentAudioLevel = normalizedLevel
+        }
     }
 }

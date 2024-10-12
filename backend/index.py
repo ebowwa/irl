@@ -1,8 +1,8 @@
 # File: backend/index.py **DO NOT OMIT ANYTHING**
 
-# i have all these router functions that i intend to call with my app, im not sure that i want to log anything as privacy is important and all data will mostly be stored on client, but maybe i need to so this is my question!   
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html  # Import Swagger UI
 from routers.socket import ping, whisper_tts
 from routers.post.llm_inference.claude import router as claude_router
 from routers.humeclient import router as hume_router
@@ -23,7 +23,11 @@ app = FastAPI(
     title="IRL Backend Service",
     description="A FastAPI backend acting as a proxy to leading AI models.",
     version="0.0.1",
+    openapi_url="/openapi.json",  # Default OpenAPI URL
+    docs_url=None,  # Disable default docs
+    redoc_url=None  # Disable default ReDoc
 )
+
 # Add CORS middleware to allow cross-origin requests
 app.add_middleware(
     CORSMiddleware,
@@ -33,23 +37,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Internal: Ping Route for Status Checks ** this is a websocket ** 
+# Internal: Ping Route for Status Checks ** this is a websocket **
 app.include_router(ping.router)
 
-# Whisper TTS Router ** this is a websocket ** 
+# Whisper TTS Router ** this is a websocket **
 app.include_router(whisper_tts.router)
-# maybe need to set up a post
 
-# Claude/OpenAI/Gemini LLM Router ** this is a post ** 
-# TODO: ADD OPENROUTER would like access to the Nous Models
+# Claude/OpenAI/Gemini LLM Router ** this is a post **
 app.include_router(claude_router, prefix="/v3/claude")
 
-# Hume AI Router ** this is a post, but websocket is available ** 
+# Hume AI Router ** this is a post, but websocket is available **
 app.include_router(hume_router, prefix="/api/v1/hume")
-# speech prosody
 
 # Embeddings Router ** this is a post **
-# small & large
 app.include_router(embeddings_router, prefix="/embeddings")
 
 # Image Generation Router ** new addition **
@@ -58,11 +58,22 @@ app.include_router(embeddings_router, prefix="/embeddings")
 # New router for fast-sdxl image generation
 app.include_router(sdxl_router, prefix="/api")
 
-# Include the new ChatGPT Share Chat router
-# app.include_router(chatgpt_router, prefix="/chatgpt")
-
 # New route for OpenAI GPT models (including GPT-4o-mini)
 app.include_router(openai_router, prefix="/LLM")
+
+# Serve OpenAPI schema at a separate route (optional, already available at /openapi.json)
+@app.get("/openapi.json", include_in_schema=False)
+async def get_openapi():
+    return app.openapi()
+
+# Serve the Swagger UI at /api/docs
+@app.get("/api/docs", include_in_schema=False)
+async def custom_swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="IRL Backend Service API Docs",
+        swagger_favicon_url="https://fastapi.tiangolo.com/img/favicon.png"  # Optional: Customize favicon
+    )
 
 if __name__ == "__main__":
     import uvicorn
