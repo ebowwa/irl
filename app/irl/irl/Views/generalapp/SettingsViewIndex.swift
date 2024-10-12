@@ -32,7 +32,7 @@ struct SettingsView: View {
             Section(header: Text("Appearance")) {
                 AppearanceSettingsView()
             }
-
+/**
             Section(header: Text("Language")) {
                 NavigationLink(destination: LanguageSettingsView(selectedLanguage: $appState.selectedLanguage)) {
                     HStack {
@@ -43,7 +43,7 @@ struct SettingsView: View {
                     }
                 }
             }
-
+ */
             Section(header: Text("Notifications")) {
                 Toggle("Push Notifications", isOn: $isPushNotificationsEnabled)
                 Toggle("Email Notifications", isOn: $isEmailNotificationsEnabled)

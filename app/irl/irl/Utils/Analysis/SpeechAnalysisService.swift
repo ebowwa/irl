@@ -21,7 +21,6 @@ private enum SpeechRecognitionConstants {
 
 // MARK: - SpeechRecognitionManager
 class SpeechRecognitionManager: ObservableObject {
-    
     static let shared = SpeechRecognitionManager()
 
     

@@ -4,47 +4,30 @@
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
-import SwiftUI
+// ViewModel: SimpleLocalTranscriptionViewModel.swift
+import Foundation
 import Speech
 import Combine
 
-struct SimpleLocalTranscription: View {
-    @StateObject private var speechManager = SpeechRecognitionManager()
-    @ObservedObject private var audioState = AudioState.shared
+class SimpleLocalTranscriptionViewModel: ObservableObject {
+    @Published var transcriptionHistory: [String] = []
+    @Published var lastTranscribedText: String = ""
+    @Published var currentAudioLevel: Float = 0.0
+    @Published var isBackgroundNoiseReady: Bool = false
 
-    @State private var transcriptionHistory: [String] = []
-    @State private var lastTranscribedText: String = ""
+    private let speechManager = SpeechRecognitionManager()
+    private var cancellables = Set<AnyCancellable>()
 
-    var body: some View {
-        VStack(spacing: 16) {
-            TranscriptionHeaderView()
+    init() {
+        setupSpeechManager()
+    }
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 8) {
-                    TranscriptionHistoryView(transcriptionHistory: transcriptionHistory, lastTranscribedText: lastTranscribedText)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(radius: 5)
+    func startRecording() {
+        speechManager.startRecording()
+    }
 
-            if !speechManager.isBackgroundNoiseReady {
-                CalibrationStatusView()
-            } else {
-                AudioLevelView(audioLevel: $speechManager.currentAudioLevel)
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
-        .onAppear {
-            setupSpeechManager()
-        }
-        .onDisappear {
-            speechManager.stopRecording()
-        }
+    func stopRecording() {
+        speechManager.stopRecording()
     }
 
     private func setupSpeechManager() {
@@ -53,10 +36,16 @@ struct SimpleLocalTranscription: View {
 
         speechManager.$transcribedText
             .dropFirst()
-            .sink { newTranscription in
-                handleTranscriptionUpdate(newTranscription)
+            .sink { [weak self] newTranscription in
+                self?.handleTranscriptionUpdate(newTranscription)
             }
-            .store(in: &speechManager.cancellables)
+            .store(in: &cancellables)
+
+        speechManager.$currentAudioLevel
+            .assign(to: &$currentAudioLevel)
+
+        speechManager.$isBackgroundNoiseReady
+            .assign(to: &$isBackgroundNoiseReady)
     }
 
     private func handleTranscriptionUpdate(_ newTranscription: String) {
@@ -65,6 +54,45 @@ struct SimpleLocalTranscription: View {
         } else if newTranscription == lastTranscribedText {
             transcriptionHistory.append(lastTranscribedText)
             lastTranscribedText = ""
+        }
+    }
+}
+
+// View: SimpleLocalTranscriptionView.swift
+import SwiftUI
+
+struct SimpleLocalTranscriptionView: View {
+    @StateObject private var viewModel = SimpleLocalTranscriptionViewModel()
+
+    var body: some View {
+        VStack(spacing: 16) {
+            TranscriptionHeaderView()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    TranscriptionHistoryView(transcriptionHistory: viewModel.transcriptionHistory, lastTranscribedText: viewModel.lastTranscribedText)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(radius: 5)
+
+            if !viewModel.isBackgroundNoiseReady {
+                CalibrationStatusView()
+            } else {
+                AudioLevelView(audioLevel: $viewModel.currentAudioLevel)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
+        .onAppear {
+            viewModel.startRecording()
+        }
+        .onDisappear {
+            viewModel.stopRecording()
         }
     }
 }

@@ -86,7 +86,7 @@ struct ContentView: View {
             title: "Live",
             icon: "waveform",
             selectedIcon: "waveform.fill",
-            content: { AnyView(SimpleLocalTranscription()) },  // Provide content closure
+            content: { AnyView(SimpleLocalTranscription()) },
             showButtons: true
         ),
         TabItem(

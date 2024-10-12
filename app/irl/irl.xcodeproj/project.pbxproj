@@ -10,7 +10,7 @@
 		763BA8132CB74E80003A0CDB /* ComplexModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8122CB74E80003A0CDB /* ComplexModule */; };
 		763BA8152CB74E80003A0CDB /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8142CB74E80003A0CDB /* Numerics */; };
 		763BA8172CB74E80003A0CDB /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8162CB74E80003A0CDB /* RealModule */; };
-		7658CA442CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7658CA422CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodeld */; };
+		7658CDCD2CBAF8FC000F33C6 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7658CDCC2CBAF8FC000F33C6 /* SQLite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,7 +47,6 @@
 		763BA6A72CB644F4003A0CDB /* IRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		763BA6B72CB644F6003A0CDB /* IRLTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IRLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		763BA6C12CB644F6003A0CDB /* IRLUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IRLUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7658CA432CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TranscriptionsModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -86,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7658CDCD2CBAF8FC000F33C6 /* SQLite in Frameworks */,
 				763BA8152CB74E80003A0CDB /* Numerics in Frameworks */,
 				763BA8132CB74E80003A0CDB /* ComplexModule in Frameworks */,
 				763BA8172CB74E80003A0CDB /* RealModule in Frameworks */,
@@ -112,7 +112,6 @@
 		763BA69E2CB644F4003A0CDB = {
 			isa = PBXGroup;
 			children = (
-				7658CA422CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodeld */,
 				763BA6A92CB644F4003A0CDB /* IRL */,
 				763BA6BA2CB644F6003A0CDB /* IRLTests */,
 				763BA6C42CB644F6003A0CDB /* IRLUITests */,
@@ -154,6 +153,7 @@
 				763BA8122CB74E80003A0CDB /* ComplexModule */,
 				763BA8142CB74E80003A0CDB /* Numerics */,
 				763BA8162CB74E80003A0CDB /* RealModule */,
+				7658CDCC2CBAF8FC000F33C6 /* SQLite */,
 			);
 			productName = IRL;
 			productReference = 763BA6A72CB644F4003A0CDB /* IRL.app */;
@@ -241,6 +241,7 @@
 				763BA8112CB74E01003A0CDB /* XCRemoteSwiftPackageReference "swift-numerics" */,
 				7658CB9D2CBA6A32000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
 				7658CB9E2CBA6A3D000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
+				7658CDCB2CBAF8FC000F33C6 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 763BA6A82CB644F4003A0CDB /* Products */;
@@ -283,7 +284,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7658CA442CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -642,6 +642,14 @@
 				minimumVersion = 1.3.1;
 			};
 		};
+		7658CDCB2CBAF8FC000F33C6 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -660,20 +668,12 @@
 			package = 763BA8112CB74E01003A0CDB /* XCRemoteSwiftPackageReference "swift-numerics" */;
 			productName = RealModule;
 		};
-/* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-		7658CA422CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				7658CA432CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodel */,
-			);
-			currentVersion = 7658CA432CBA34C2000F33C6 /* TranscriptionsModel.xcdatamodel */;
-			path = TranscriptionsModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
+		7658CDCC2CBAF8FC000F33C6 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7658CDCB2CBAF8FC000F33C6 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
 		};
-/* End XCVersionGroup section */
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 763BA69F2CB644F4003A0CDB /* Project object */;
 }

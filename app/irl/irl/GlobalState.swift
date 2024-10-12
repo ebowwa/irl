@@ -16,24 +16,27 @@ enum Theme: String {
 class GlobalState: ObservableObject {
     @Published var user: User?
     @Published var notifications: [Notification] = []
-    @Published var showTabBar: Bool = true // Add this line
+    @Published var showTabBar: Bool = true
 
     @AppStorage("currentTheme") var currentTheme: Theme = .light
-    @AppStorage("selectedLanguageCode") private var selectedLanguageCode: String = "en"
+    /**@AppStorage("selectedLanguageCodes") private var selectedLanguageCodes: [String] = ["en"]
 
-    var selectedLanguage: AppLanguage {
+    var selectedLanguages: [AppLanguage] {
         get {
-            LanguageManager.shared.language(forCode: selectedLanguageCode) ?? AppLanguage(
-                code: "en",
-                name: "English",
-                service: ["falwhisperSep2024", "anthropic-claude-3"]
-            )
+            selectedLanguageCodes.compactMap {
+                LanguageManager.shared.language(forCode: $0) ?? AppLanguage(
+                    code: "en",
+                    name: "English",
+                    service: ["falwhisperSep2024", "anthropic-claude-3"] // Optional [String]?
+                )
+            }
         }
         set {
-            selectedLanguageCode = newValue.code
+            selectedLanguageCodes = newValue.map { $0.code }
         }
     }
 
+*/
     private let userService: UserService
     private let notificationService: NotificationService
 
