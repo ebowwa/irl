@@ -12,7 +12,7 @@ import Combine
 class SimpleLocalTranscriptionViewModel: ObservableObject {
     @Published var transcriptionHistory: [String] = []
     @Published var lastTranscribedText: String = ""
-    @Published var currentAudioLevel: Float = 0.0
+    @Published var currentAudioLevel: Double = 0.0
     @Published var isBackgroundNoiseReady: Bool = false
 
     private let speechManager = SpeechRecognitionManager()
@@ -42,6 +42,7 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
             .store(in: &cancellables)
 
         speechManager.$currentAudioLevel
+            .map { Double($0) }
             .assign(to: &$currentAudioLevel)
 
         speechManager.$isBackgroundNoiseReady
@@ -61,7 +62,7 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
 // View: SimpleLocalTranscriptionView.swift
 import SwiftUI
 
-struct SimpleLocalTranscriptionView: View {
+struct SimpleLocalTranscription: View {
     @StateObject private var viewModel = SimpleLocalTranscriptionViewModel()
 
     var body: some View {
@@ -82,7 +83,7 @@ struct SimpleLocalTranscriptionView: View {
             if !viewModel.isBackgroundNoiseReady {
                 CalibrationStatusView()
             } else {
-                AudioLevelView(audioLevel: $viewModel.currentAudioLevel)
+                AudioLevelView(audioLevel: .constant(viewModel.currentAudioLevel))
             }
         }
         .padding()
@@ -96,8 +97,6 @@ struct SimpleLocalTranscriptionView: View {
         }
     }
 }
-
-
 //
 //  TranscriptionHistoryView.swift
 //  irl
