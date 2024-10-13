@@ -9,7 +9,7 @@ import Foundation
 
 struct Constants {
     // DO NOT INCLUDE https
-    @UserDefault(key: "baseDomain", defaultValue: "55d7-73-15-186-2.ngrok-free.app")
+    @UserDefault(key: "baseDomain", defaultValue: "26c8-2a01-4ff-f0-42e0-00-1.ngrok-free.app")
     static var baseDomain: String
     
     // Refracted but need to return to run tests not on production

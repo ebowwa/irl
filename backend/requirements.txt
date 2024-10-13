@@ -7,6 +7,7 @@ fastapi
 uvicorn 
 wsproto
 numpy 
+gunicorn
 
 # aioredis @removed for now
 beautifulsoup4 # retrieving existing oai shared chats
@@ -15,5 +16,5 @@ openai
 anthropic 
 fal-client # ai inference provider over image models
 tiktoken # counts tokens
-
+# gunicorn # in prod
 # firebase-admin @removed for now
