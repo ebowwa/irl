@@ -6,7 +6,9 @@ from typing import List, Optional
 from anthropic import Anthropic, AsyncAnthropic
 import logging
 import json
-from .env_config import ANTHROPIC_API_KEY
+# from .env_config import ANTHROPIC_API_KEY
+import os 
+import dotenv
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -15,8 +17,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Initialize Anthropic client
-anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
-async_anthropic = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+anthropic = Anthropic(api_key="ANTHROPIC_API_KEY" or os.getenv("ANTHROPIC_API_KEY"))
+async_anthropic = AsyncAnthropic(api_key="ANTHROPIC_API_KEY")
 
 class Message(BaseModel):
     role: str
