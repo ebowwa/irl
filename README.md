@@ -2,7 +2,7 @@
 
 # IRL - the singularity is here
 
-![IRL](irlweb/public/irlweb/public/output.mp4)
+![IRL](irlweb/public/irlweb/output.mp4)
 
 ## About
 
