@@ -66,7 +66,7 @@ app.include_router(openai_router, prefix="/LLM")
 async def get_openapi():
     return app.openapi()
 
-# Import the new diarization router
+# new diarization router
 from routers.post.pyannote_diarization import router as diarization_router
 
 # Add the diarization route
