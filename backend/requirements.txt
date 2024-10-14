@@ -18,3 +18,6 @@ fal-client # ai inference provider over image models
 tiktoken # counts tokens
 # gunicorn # in prod
 # firebase-admin @removed for now
+pyannote.audio 
+torch 
+torchaudio

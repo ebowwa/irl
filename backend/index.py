@@ -66,6 +66,13 @@ app.include_router(openai_router, prefix="/LLM")
 async def get_openapi():
     return app.openapi()
 
+# Import the new diarization router
+from routers.post.pyannote_diarization import router as diarization_router
+
+# Add the diarization route
+app.include_router(diarization_router, prefix="/api")
+
+
 # Serve the Swagger UI at /api/docs
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui():
@@ -77,4 +84,4 @@ async def custom_swagger_ui():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=9090)

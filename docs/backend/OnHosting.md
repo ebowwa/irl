@@ -25,5 +25,8 @@ To ensure that Gunicorn uses the correct environment, you can specify the full p
 Run Gunicorn with Full Path:
 i.e.
     ```
-    /root/irl/backend/PRODvenv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 index:app
+    cd backend
+    python3 -m venv venv
+    source venv/bin/activate
+    /root/irl/backend/PRODvenv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:9090 index:app
     ```

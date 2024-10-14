@@ -1,0 +1,25 @@
+MIT License
+
+Copyright (c) 2024 Elijah A.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use
+the Software for any purpose, subject to the following conditions:
+
+1. **Usage Rights**
+   - You are permitted to use, copy, and modify the Software for personal, educational, or commercial purposes.
+
+2. **Restrictions on Redistribution**
+   - You may **not** distribute, sublicense, or sell copies of the Software in its original form.
+   - You may **not** create, distribute, or offer for sale any product or service that is identical, cosmetically similar, or nearly similar to the original Software without explicit written permission from the copyright holder.
+
+3. **Contribution Guidelines**
+   - Contributions to the Software are welcomed. By contributing, you agree that your contributions will be licensed under the same terms as the original Software.
+   - All contributions must include a statement acknowledging the original Software and its license.
+
+4. **No Warranty**
+   - THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+   - IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+5. **Acceptance**
+   - By using the Software, you agree to be bound by the terms of this license.
