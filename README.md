@@ -26,7 +26,11 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 - [Privacy](docs/Privacy.md)
 
 ## What happens?
+
+### app overall flow
 ![AppFlow](irlweb/public/mermaid-diagram-2024-10-11-203323.svg)
+
+### ios-local audio handling
 ![AudioState](irlweb/public/audiostate-mermaid-diagram-2024-10-15-234903.svg)
 ## Contributing
 
