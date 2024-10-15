@@ -14,44 +14,55 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     @Published var lastTranscribedText: String = ""
     @Published var currentAudioLevel: Double = 0.0
     @Published var isBackgroundNoiseReady: Bool = false
-
+    
     private let speechManager = SpeechRecognitionManager()
     private var cancellables = Set<AnyCancellable>()
-
+    
     init() {
         setupSpeechManager()
     }
-
+    
     func startRecording() {
         speechManager.startRecording()
     }
-
+    
     func stopRecording() {
         speechManager.stopRecording()
     }
-
+    
     private func setupSpeechManager() {
         speechManager.requestSpeechAuthorization()
         speechManager.startRecording()
-
+        
         speechManager.$transcribedText
             .dropFirst()
             .sink { [weak self] newTranscription in
                 self?.handleTranscriptionUpdate(newTranscription)
             }
             .store(in: &cancellables)
-
+        
         speechManager.$currentAudioLevel
             .map { Double($0) }
             .assign(to: &$currentAudioLevel)
-
+        
         speechManager.$isBackgroundNoiseReady
             .assign(to: &$isBackgroundNoiseReady)
     }
-
-    private func handleTranscriptionUpdate(_ newTranscription: String) {
+    
+    // Logging function to measure real-world conditions
+    private func logTranscription(_ transcription: String, audioLevel: Double, noiseReady: Bool) {
+        print("Transcription: \(transcription)")
+        print("Current Audio Level: \(audioLevel)")
+        print("Background Noise Ready: \(noiseReady)")
+    }
+    
+    // Update the handleTranscriptionUpdate method to log the transcription and conditions
+    func handleTranscriptionUpdate(_ newTranscription: String) {
         if newTranscription != lastTranscribedText && !newTranscription.isEmpty {
             lastTranscribedText = newTranscription
+            TranscriptDB.shared.insertTranscription(newTranscription)
+            // Log transcription data
+            logTranscription(newTranscription, audioLevel: currentAudioLevel, noiseReady: isBackgroundNoiseReady)
         } else if newTranscription == lastTranscribedText {
             transcriptionHistory.append(lastTranscribedText)
             lastTranscribedText = ""

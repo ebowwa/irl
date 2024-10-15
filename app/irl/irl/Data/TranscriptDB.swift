@@ -7,7 +7,7 @@
 import Foundation
 import SQLite
 import Combine
-
+// TODO: add timestamps and optional additions for diarizartion and other variables later
 class TranscriptDB {
     static let shared = TranscriptDB()
     

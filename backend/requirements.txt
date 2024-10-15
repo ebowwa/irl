@@ -21,3 +21,4 @@ tiktoken # counts tokens
 pyannote.audio 
 torch 
 torchaudio
+ngrok

@@ -51,3 +51,4 @@ struct AudioRecording: Identifiable {
     var deviceInfo: DeviceInfo?           // Device information, including BLE/Audio devices
     var processedAt: Date?                // Optional timestamp for when transcription is completed
 }
+

@@ -19,6 +19,12 @@ load_dotenv()
 # New router for OpenAI API integration for GPT-4o-mini, dynamic models, and configuration
 from routers.post.llm_inference.openai_post import router as openai_router  # Import the new route
 
+# Ngrok integration
+import ngrok
+
+# Add boolean flag for Ngrok activation
+USE_NGROK = True  # Set this to True by default, can be toggled later
+
 app = FastAPI(
     title="IRL Backend Service",
     description="A FastAPI backend acting as a proxy to leading AI models.",
@@ -61,17 +67,17 @@ app.include_router(sdxl_router, prefix="/api")
 # New route for OpenAI GPT models (including GPT-4o-mini)
 app.include_router(openai_router, prefix="/LLM")
 
-# Serve OpenAPI schema at a separate route (optional, already available at /openapi.json)
-@app.get("/openapi.json", include_in_schema=False)
-async def get_openapi():
-    return app.openapi()
-
 # new diarization router
 from routers.post.pyannote_diarization import router as diarization_router
 
 # Add the diarization route
 app.include_router(diarization_router, prefix="/api")
 
+
+# Serve OpenAPI schema at a separate route (optional, already available at /openapi.json)
+@app.get("/openapi.json", include_in_schema=False)
+async def get_openapi():
+    return app.openapi()
 
 # Serve the Swagger UI at /api/docs
 @app.get("/api/docs", include_in_schema=False)
@@ -84,4 +90,10 @@ async def custom_swagger_ui():
 
 if __name__ == "__main__":
     import uvicorn
+
+    # Start Ngrok if the flag is True
+    if USE_NGROK:
+        listener = ngrok.forward("http://localhost:9090", authtoken=os.getenv("NGROK_AUTHTOKEN"))  # No authtoken required for now
+        print(f"Ingress established at: {listener.url()}")
+
     uvicorn.run(app, host="0.0.0.0", port=9090)

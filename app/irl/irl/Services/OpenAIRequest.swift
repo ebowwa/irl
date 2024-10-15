@@ -1,11 +1,11 @@
-//  OpenAIRequest.swift
+// OpenAIRequest.swift
 
 import Foundation
 
 // MARK: - ProxyAPIRequestConfig
 struct ProxyAPIRequestConfig: Codable {
-    let proxyApiUrl: String // not the request api but the proxy-to api url
-    let apiKey: String? // usually null as passed from the server
+    let proxyApiUrl: String // Not the request API but the proxy-to API URL
+    let apiKey: String? // Usually null as passed from the server
     let modelType: String
     let systemInstruction: String?
     let userPrompt: String?
@@ -24,7 +24,7 @@ struct ProxyAPIRequestConfig: Codable {
     let additionalParams: [String: CodableAny]?
     
     enum CodingKeys: String, CodingKey {
-        case proxyApiUrl = "api_url" // not the request api but the proxy-to api url
+        case proxyApiUrl = "api_url" // Not the request API but the proxy-to API URL
         case apiKey = "api_key"
         case modelType = "model"
         case systemInstruction = "system_prompt"
@@ -132,8 +132,8 @@ struct TextGenerationService {
         return AsyncThrowingStream<String, Error> { continuation in
             Task {
                 do {
-                    // Construct the full URL using the server's base URL
-                    let urlString = serverBaseUrl + "/LLM/generate-text/"
+                    // Construct the full URL using the constant route
+                    let urlString = serverBaseUrl + ConstantRoutes.API.Paths.generateText
                     print("Attempting to connect to URL: \(urlString)") // Debugging line
                     guard let url = URL(string: urlString) else {
                         continuation.finish(throwing: ProxyAPIError.malformedURL)
@@ -176,14 +176,44 @@ struct TextGenerationService {
                         return
                     }
                     
-                    // Process streaming data
+                    // Process streaming data with improved UTF-8 handling
                     var buffer = Data()
                     for try await byte in bytes {
                         buffer.append(byte)
-                        // Check for delimiter or specific chunking logic if necessary
-                        if let chunk = String(data: buffer, encoding: .utf8) {
+                        
+                        // Attempt to decode the current buffer
+                        let (decodedString, remainingData) = buffer.decodeValidUTF8()
+                        
+                        if let chunk = decodedString {
+                            // Check for stop sequences if any
+                            if let stopSequences = config.stopSequences {
+                                for stopSequence in stopSequences {
+                                    if chunk.contains(stopSequence) {
+                                        // Trim the chunk up to the stop sequence
+                                        if let range = chunk.range(of: stopSequence) {
+                                            let trimmedChunk = String(chunk[..<range.lowerBound])
+                                            if !trimmedChunk.isEmpty {
+                                                continuation.yield(trimmedChunk)
+                                            }
+                                        }
+                                        continuation.finish()
+                                        return
+                                    }
+                                }
+                            }
+                            
+                            // Yield the valid chunk
                             continuation.yield(chunk)
-                            buffer.removeAll(keepingCapacity: true)
+                        }
+                        
+                        // Update the buffer with any remaining incomplete data
+                        buffer = remainingData
+                    }
+                    
+                    // Handle any remaining buffer after the stream ends
+                    if !buffer.isEmpty {
+                        if let remainingChunk = String(data: buffer, encoding: .utf8) {
+                            continuation.yield(remainingChunk)
                         }
                     }
                     
@@ -204,8 +234,8 @@ struct TextGenerationService {
     ///   - config: The configuration for the Proxy API request.
     /// - Returns: A `ProxyAPIResponse` containing the result.
     func sendTextRequest(serverBaseUrl: String, config: ProxyAPIRequestConfig) async throws -> ProxyAPIResponse {
-        // Construct the full URL using the server's base URL
-        let urlString = serverBaseUrl + "/LLM/generate-text/"
+        // Construct the full URL using the constant route
+        let urlString = serverBaseUrl + ConstantRoutes.API.Paths.generateText
         guard let url = URL(string: urlString) else {
             throw ProxyAPIError.malformedURL
         }
@@ -245,3 +275,33 @@ struct TextGenerationService {
         return proxyAPIResponse
     }
 }
+
+
+// MARK: - Data Extension for UTF-8 Decoding
+extension Data {
+    /// Attempts to decode the data as a valid UTF-8 string.
+    /// Returns a tuple containing the decoded string (if any) and the remaining data.
+    func decodeValidUTF8() -> (decoded: String?, remaining: Data) {
+        // Attempt to decode the entire data
+        if let decodedString = String(data: self, encoding: .utf8) {
+            return (decodedString, Data())
+        }
+        
+        // If decoding fails, check for the last few bytes that might be part of an incomplete character
+        // and exclude them before attempting to decode again
+        // UTF-8 characters can be up to 4 bytes long
+        for i in 1...4 {
+            if self.count > i {
+                let validData = self.prefix(self.count - i)
+                if let decodedString = String(data: validData, encoding: .utf8) {
+                    let remainingData = self.suffix(i)
+                    return (decodedString, remainingData)
+                }
+            }
+        }
+        
+        // If no valid decoding could be performed, return nil and keep all data as remaining
+        return (nil, self)
+    }
+}
+

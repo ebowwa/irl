@@ -93,7 +93,7 @@ struct ContentView: View {
             title: "Arena",
             icon: "bubble.left.and.bubble.right",
             selectedIcon: "bubble.left.and.bubble.right.fill",
-            content: { AnyView(SocialViewB()) },  // Provide content closure
+            content: { AnyView(ChatProxyConfigView()) },  // Provide content closure
             showButtons: true
         )
     ]

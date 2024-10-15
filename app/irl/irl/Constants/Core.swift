@@ -8,8 +8,8 @@
 import Foundation
 
 struct Constants {
-    // DO NOT INCLUDE https
-    @UserDefault(key: "baseDomain", defaultValue: "26c8-2a01-4ff-f0-42e0-00-1.ngrok-free.app")
+    // DO NOT INCLUDE `https://`
+    @UserDefault(key: "baseDomain", defaultValue: "939c-74-93-21-246.ngrok-free.app")
     static var baseDomain: String
     
     // Refracted but need to return to run tests not on production
