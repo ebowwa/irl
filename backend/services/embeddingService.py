@@ -1,9 +1,7 @@
-# backend/routers/post/embeddings/index.py
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from openai import OpenAI
 import os
 import numpy as np
+from openai import OpenAI
+from fastapi import HTTPException
 from dotenv import load_dotenv
 import tiktoken
 
@@ -13,19 +11,11 @@ load_dotenv()
 # Initialize the OpenAI client
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# Initialize FastAPI Router
-router = APIRouter()
-
 # Define available models
 MODELS = {
     "small": "text-embedding-3-small",
     "large": "text-embedding-3-large"
 }
-
-# Define input model
-class EmbeddingInput(BaseModel):
-    input_text: str
-    normalize: bool = False
 
 # Function to normalize embeddings using L2 norm
 def normalize_l2(x):
@@ -46,11 +36,15 @@ def estimate_tokens(text, model):
     return len(encoding.encode(text))
 
 # Function to generate embeddings
-def generate_embedding(model, input_text, normalize):
+def generate_embedding(model_key: str, input_text: str, normalize: bool):
     """
     Generate embeddings using the specified model.
     Returns the embedding of the input text and metadata.
     """
+    model = MODELS.get(model_key)
+    if model is None:
+        raise HTTPException(status_code=400, detail=f"Model '{model_key}' not available")
+
     try:
         response = client.embeddings.create(
             model=model,
@@ -60,11 +54,11 @@ def generate_embedding(model, input_text, normalize):
         embedding = response.data[0].embedding
         if normalize:
             embedding = normalize_l2(embedding).tolist()
-        
+
         # Estimate token count
         token_count = estimate_tokens(input_text, model)
-        
-        # Calculate additional metadata
+
+        # Metadata
         metadata = {
             "model": model,
             "dimensions": len(embedding),
@@ -72,33 +66,7 @@ def generate_embedding(model, input_text, normalize):
             "input_char_count": len(input_text),
             "normalized": normalize
         }
-        
+
         return embedding, metadata
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# Route to generate embeddings for input text using text-embedding-3-small
-@router.post("/small")
-async def create_small_embedding(input_data: EmbeddingInput):
-    """
-    Generate embedding for the given input text using the text-embedding-3-small model.
-    """
-    model = MODELS["small"]
-    embedding, metadata = generate_embedding(model, input_data.input_text, input_data.normalize)
-    return {
-        "embedding": embedding,
-        "metadata": metadata
-    }
-
-# Route to generate embeddings for input text using text-embedding-3-large
-@router.post("/large")
-async def create_large_embedding(input_data: EmbeddingInput):
-    """
-    Generate embedding for the given input text using the text-embedding-3-large model.
-    """
-    model = MODELS["large"]
-    embedding, metadata = generate_embedding(model, input_data.input_text, input_data.normalize)
-    return {
-        "embedding": embedding,
-        "metadata": metadata
-    }
+        raise HTTPException(status_code=500, detail=f"Embedding generation failed: {str(e)}")

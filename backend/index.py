@@ -6,12 +6,15 @@ from fastapi.openapi.docs import get_swagger_ui_html  # Import Swagger UI
 from routers.socket import ping, whisper_tts
 from routers.post.llm_inference.claude import router as claude_router
 from routers.humeclient import router as hume_router
-from routers.post.embeddings.index import router as embeddings_router  # New import
+from routers.post.embeddingRouter.index import router as embeddings_router  # New import
 # from routers.post.image_generation.FLUXLORAFAL import router as fluxlora_router  # New import
 from routers.post.image_generation.fast_sdxl import router as sdxl_router  # New import for fast-sdxl model
 # from routers.post.getChatGPTShareChat.index import router as chatgpt_router  # Import the new router
 from dotenv import load_dotenv
 import os
+import socket
+import subprocess
+import signal
 
 # Load environment variables from .env file
 load_dotenv()
@@ -88,12 +91,54 @@ async def custom_swagger_ui():
         swagger_favicon_url="https://fastapi.tiangolo.com/img/favicon.png"  # Optional: Customize favicon
     )
 
+# Server Manager to kill existing processes on the port
+class ServerManager:
+    def __init__(self, port):
+        self.port = port
+
+    def find_and_kill_process(self):
+        try:
+            # Use lsof to find all PIDs using the port
+            pid_command = f"lsof -t -i:{self.port}"
+            pids = subprocess.check_output(pid_command, shell=True).decode().strip().split('\n')
+            if pids and pids != ['']:
+                print(f"Port {self.port} is in use by PIDs: {', '.join(pids)}. Attempting to kill them.")
+                for pid in pids:
+                    try:
+                        os.kill(int(pid), signal.SIGTERM)
+                        print(f"Process {pid} killed successfully.")
+                    except ProcessLookupError:
+                        print(f"Process {pid} does not exist or has already been terminated.")
+                    except Exception as e:
+                        print(f"Failed to kill process {pid}: {e}")
+                # Optional: Wait briefly to ensure processes are terminated
+                import time
+                time.sleep(1)
+            else:
+                print(f"Port {self.port} is not in use. No process to kill.")
+        except subprocess.CalledProcessError:
+            # lsof returns non-zero exit status if no process is found
+            print(f"No process found using port {self.port}.")
+        except Exception as e:
+            print(f"Error while finding/killing process: {e}")
+
 if __name__ == "__main__":
     import uvicorn
 
+    # Retrieve the port from environment variables or default to 9090
+    PORT = int(os.getenv("PORT", 9090))
+
+    # Initialize ServerManager with the specified port
+    server_manager = ServerManager(port=PORT)
+    server_manager.find_and_kill_process()
+
     # Start Ngrok if the flag is True
     if USE_NGROK:
-        listener = ngrok.forward("http://localhost:9090", authtoken=os.getenv("NGROK_AUTHTOKEN"))  # No authtoken required for now
+        listener = ngrok.forward(f"http://localhost:{PORT}", authtoken=os.getenv("NGROK_AUTHTOKEN"))  # No authtoken required for now
         print(f"Ingress established at: {listener.url()}")
 
-    uvicorn.run(app, host="0.0.0.0", port=9090)
+    # Run the FastAPI server
+    try:
+        uvicorn.run(app, host="0.0.0.0", port=PORT)
+    except Exception as e:
+        print(f"Failed to start the server: {e}")
