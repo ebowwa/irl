@@ -1827,6 +1827,5 @@ app/IRL/IRL.xcodeproj
 app/IRL/IRL.xcodeproj
 app/IRL-framework/IRL-framework.xcodeproj
 app/openapi-generator
-/Users/ebowwa/irl/app/IRL/IRL.xcodeproj
-/Users/ebowwa/irl/app/IRL-framework/IRL-framework.xcodeproj 
-https://github.com/ebowwa/irl/tree/f4fd774686260451ed349c390e6df990ca8fe802/app/irl/irl.xcodeproj
+irl/app/IRL/IRL.xcodeproj
+irl/app/IRL-framework/IRL-framework.xcodeproj 
