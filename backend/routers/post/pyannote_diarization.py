@@ -1,8 +1,10 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi.responses import StreamingResponse
 from pyannote.audio import Pipeline
-from typing import Dict
+from typing import AsyncGenerator
 import torchaudio
 import os
+import json
 
 # Ensure you've set your Hugging Face token in the environment variables
 HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_ACCESS_TOKEN")
@@ -15,13 +17,35 @@ pipeline = Pipeline.from_pretrained(
 
 router = APIRouter()
 
+import time
+
+async def process_diarization(waveform, sample_rate) -> AsyncGenerator[str, None]:
+    total_samples = waveform.size(1)
+    processed_samples = 0
+
+    try:
+        diarization_result = pipeline({"waveform": waveform, "sample_rate": sample_rate})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Diarization failed: {str(e)}")
+
+    for turn, _, speaker in diarization_result.itertracks(yield_label=True):
+        diarization_output = {
+            "start": turn.start,
+            "end": turn.end,
+            "speaker": speaker
+        }
+        processed_samples += int((turn.end - turn.start) * sample_rate)
+        progress_percentage = (processed_samples / total_samples) * 100
+
+        yield json.dumps({"diarization_output": diarization_output, "progress": progress_percentage}) + "\n"
+
+
 @router.post("/diarization")
-async def diarization(file: UploadFile = File(...)) -> Dict:
+async def diarization(file: UploadFile = File(...)) -> StreamingResponse:
     """
-    Endpoint for performing speaker diarization on an uploaded audio file.
+    Endpoint for performing speaker diarization on an uploaded audio file, streaming the results.
     Expects a mono audio file, sampled at 16kHz.
     """
-
     # Load audio file with torchaudio
     try:
         waveform, sample_rate = torchaudio.load(file.file)
@@ -32,19 +56,5 @@ async def diarization(file: UploadFile = File(...)) -> Dict:
     if sample_rate != 16000:
         raise HTTPException(status_code=400, detail="Audio must be sampled at 16kHz")
 
-    # Run the diarization pipeline on the loaded waveform
-    try:
-        diarization_result = pipeline({"waveform": waveform, "sample_rate": sample_rate})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Diarization failed: {str(e)}")
-
-    # Convert the result to a human-readable format (segments and speakers)
-    diarization_output = []
-    for turn, _, speaker in diarization_result.itertracks(yield_label=True):
-        diarization_output.append({
-            "start": turn.start,
-            "end": turn.end,
-            "speaker": speaker
-        })
-
-    return {"diarization": diarization_output}
+    # Stream the diarization process
+    return StreamingResponse(process_diarization(waveform, sample_rate), media_type="application/json")

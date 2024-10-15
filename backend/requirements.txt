@@ -22,3 +22,7 @@ pyannote.audio
 torch 
 torchaudio
 ngrok
+
+#hydra-core --upgrade
+#nemo_toolkit
+#--upgrade huggingface_hub

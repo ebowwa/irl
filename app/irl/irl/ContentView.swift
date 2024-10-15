@@ -62,7 +62,6 @@ struct ContentView: View {
     // MARK: - Environment Objects
     @EnvironmentObject var globalState: GlobalState
     @EnvironmentObject var audioState: AudioState
-    //@EnvironmentObject var backgroundAudio: BackgroundAudio
     @EnvironmentObject var settingsViewModel: SettingsViewModel
     
     // MARK: - State
