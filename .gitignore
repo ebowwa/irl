@@ -1869,3 +1869,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 backend/route/post/text/llm_inference/env_config.py
+.vscode
+/Users/ebowwa/irl/.vscode
