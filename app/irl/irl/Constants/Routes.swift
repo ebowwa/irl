@@ -11,13 +11,11 @@ struct ConstantRoutes {
         struct Paths {
             static let webSocketPing = "/ws/ping"
             static let testConnection = "/"
-             static let upload = "/upload"
+            static let upload = "/upload"
             static let whisperTTS = "/ws/WhisperTTS"
             static let humeWebSocket = "/ws/hume" // @deprecated need to add the new route it's not a websocket
             static let claudeMessages = "/v3/claude/messages" // TODO: add OpenRouter
-            static let embeddingSmall = "/embeddings/small" // Can probably cleaner add the small & large embedding endpoints to this constants definition
-            static let embeddingLarge = "/embeddings/large"
-            
+            static let embedding = "/embeddings" // Can probably cleaner add the small & large embedding endpoints to this constants definition
             // SDXL API Paths
             static let sdxlGenerate = "/api/sdxl/generate"
             static let sdxlStatus = "/api/sdxl/status/"

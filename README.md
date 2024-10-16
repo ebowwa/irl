@@ -2,7 +2,7 @@
 
 # IRL - the singularity is here
 
-![IRL](irlweb/public/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
+![IRL](public/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
 
 ## About
 
@@ -15,7 +15,7 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 - **Advocacy**: Acts as a digital advocate to assist users in navigating complex situations.
 - **AI Companion**: Serves as your personal AI assistant for various tasks.
 
-![EnhancingLife](irlweb/public/mermaid-diagram-2024-10-11-204535.svg)
+![EnhancingLife](public/mermaid-diagram-2024-10-11-204535.svg)
 
 ## Get Started
 
@@ -28,10 +28,10 @@ IRL (In Real Life) is an AI-powered project that functions as an augmented memor
 ## What happens?
 
 ### app overall flow
-![AppFlow](irlweb/public/mermaid-diagram-2024-10-11-203323.svg)
+![AppFlow](public/mermaid-diagram-2024-10-11-203323.svg)
 
 ### ios-local audio handling
-![AudioState](irlweb/public/audiostate-mermaid-diagram-2024-10-15-234903.svg)
+![AudioState](public/audiostate-mermaid-diagram-2024-10-15-234903.svg)
 ## Contributing
 
 We welcome contributions! Feel free to submit issues or pull requests to help improve the project.

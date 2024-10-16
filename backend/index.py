@@ -3,17 +3,19 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html  # Import Swagger UI
-from routers.socket import ping, whisper_tts
-from routers.post.llm_inference.claude import router as claude_router
-from routers.humeclient import router as hume_router
-from routers.post.textEmbeddingRouter.index import router as embeddings_router  # Embeddings import
+from route.socket import ping, whisper_tts
+from route.post.text.llm_inference.claude import router as claude_router
+from route.humeclient import router as hume_router
+from route.post.text.embedding.index import router as embeddings_router
+# from backend.examples.textEmbeddingRoutev1 import router as embeddings_router  # Embeddings import
 # from routers.post.image_generation.FLUXLORAFAL import router as fluxlora_router  # Disabled import
-from routers.post.image_generation.fast_sdxl import router as sdxl_router  # Fast-SDXL model router
-from routers.post.diarizationRouter.index import router as diarization_router  # Diarization router
-from routers.post.llm_inference.openai_post import router as openai_router  # OpenAI (GPT-4o-mini) router
-from routers.post.getChatGPTShareChat.index import router as share_oai_chats_router
-from routers.post.transcriptionRouter.falIndex import router as transcription_router
-from routers.post.mediaRouter.Index import router as media_router
+from route.post.media.image_generation.fast_sdxl import router as sdxl_router  # Fast-SDXL model router
+from route.post.audio.diarization.index import router as diarization_router  # Diarization router
+# from backend.examples.openai_post import router as openai_router  # OpenAI (GPT-4o-mini) router
+from route.post.text.llm_inference.OpenAIRoute import router as openai_router
+from route.post.text.chatgpt_share.index import router as share_oai_chats_router
+from route.post.audio.transcription.falIndex import router as transcription_router
+from route.post.media.upload.Index import router as media_router
 from utils.ngrokUtils import start_ngrok 
 import ngrok 
 from utils.serverManager import ServerManager  # sees If port is open if so closes the port so the server can init
@@ -63,18 +65,15 @@ app.include_router(claude_router, prefix="/v3/claude")  # LLM inference (Claude)
 app.include_router(hume_router, prefix="/api/v1/hume")
 
 # Embeddings route (vectorization for NLP tasks)
-app.include_router(embeddings_router, prefix="/embeddings")
+app.include_router(embeddings_router) # , prefix="/embeddings")
 
 # Image generation routes
 # app.include_router(fluxlora_router, prefix="/api")  # Disabled: FluxLora model
 app.include_router(sdxl_router, prefix="/api")  # Fast-SDXL image generation
 
 # Include the transcription router
-app.include_router(
-    transcription_router,
-    prefix="/api",  # Optional: prefix for all routes in the router
-    tags=["Transcription"]
-)
+app.include_router(transcription_router, prefix="/api",tags=["Transcription"])
+
 # OpenAI GPT model routes (GPT-4o-mini, configurable models)
 app.include_router(openai_router, prefix="/LLM")
 
@@ -85,6 +84,7 @@ app.include_router(diarization_router, prefix="/api")
 app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # New route for ChatGPT share conversations
 
 app.include_router(media_router, prefix="/media")  # <-- Include media router with a prefix
+
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately
