@@ -10,25 +10,17 @@
 		763BA8132CB74E80003A0CDB /* ComplexModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8122CB74E80003A0CDB /* ComplexModule */; };
 		763BA8152CB74E80003A0CDB /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8142CB74E80003A0CDB /* Numerics */; };
 		763BA8172CB74E80003A0CDB /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8162CB74E80003A0CDB /* RealModule */; };
+		76498BE82CC5C5E0001E159D /* WebSocketManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76498BE02CC5C5E0001E159D /* WebSocketManagerProtocol.swift */; };
+		76498BE92CC5C5E0001E159D /* SpeechRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76498BDF2CC5C5E0001E159D /* SpeechRecognition.swift */; };
+		76498BEA2CC5C5E0001E159D /* AudioFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76498BD92CC5C5E0001E159D /* AudioFileManager.swift */; };
+		76498BEB2CC5C5E0001E159D /* AudioState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76498BDA2CC5C5E0001E159D /* AudioState.swift */; };
+		76498BEC2CC5C5E0001E159D /* IRL_AudioCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76498BE22CC5C5E0001E159D /* IRL_AudioCoreTests.swift */; };
+		76498BED2CC5C5E0001E159D /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76498BDE2CC5C5E0001E159D /* Location.swift */; };
+		76498BEE2CC5C5E0001E159D /* IRL_AudioCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 76498BDD2CC5C5E0001E159D /* IRL_AudioCore.docc */; };
+		76498BEF2CC5C5E0001E159D /* AudioUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76498BDB2CC5C5E0001E159D /* AudioUtils.swift */; };
+		76498BF02CC5C5E0001E159D /* docs.md in Resources */ = {isa = PBXBuildFile; fileRef = 76498BDC2CC5C5E0001E159D /* docs.md */; };
 		7658CDCD2CBAF8FC000F33C6 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7658CDCC2CBAF8FC000F33C6 /* SQLite */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		763BA6B82CB644F6003A0CDB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 763BA69F2CB644F4003A0CDB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 763BA6A62CB644F4003A0CDB;
-			remoteInfo = IRL;
-		};
-		763BA6C22CB644F6003A0CDB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 763BA69F2CB644F4003A0CDB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 763BA6A62CB644F4003A0CDB;
-			remoteInfo = IRL;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		763BA70A2CB6476F003A0CDB /* Embed ExtensionKit Extensions */ = {
@@ -45,8 +37,16 @@
 
 /* Begin PBXFileReference section */
 		763BA6A72CB644F4003A0CDB /* IRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		763BA6B72CB644F6003A0CDB /* IRLTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IRLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		763BA6C12CB644F6003A0CDB /* IRLUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IRLUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		76498BD92CC5C5E0001E159D /* AudioFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileManager.swift; sourceTree = "<group>"; };
+		76498BDA2CC5C5E0001E159D /* AudioState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioState.swift; sourceTree = "<group>"; };
+		76498BDB2CC5C5E0001E159D /* AudioUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUtils.swift; sourceTree = "<group>"; };
+		76498BDC2CC5C5E0001E159D /* docs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = docs.md; sourceTree = "<group>"; };
+		76498BDD2CC5C5E0001E159D /* IRL_AudioCore.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = IRL_AudioCore.docc; sourceTree = "<group>"; };
+		76498BDE2CC5C5E0001E159D /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		76498BDF2CC5C5E0001E159D /* SpeechRecognition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognition.swift; sourceTree = "<group>"; };
+		76498BE02CC5C5E0001E159D /* WebSocketManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManagerProtocol.swift; sourceTree = "<group>"; };
+		76498BE22CC5C5E0001E159D /* IRL_AudioCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRL_AudioCoreTests.swift; sourceTree = "<group>"; };
+		76498BE42CC5C5E0001E159D /* IRL-AudioCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "IRL-AudioCore.xcodeproj"; sourceTree = "<group>"; };
 		766CA8B92CBE07FC00719600 /* IRL-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IRL-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -69,16 +69,6 @@
 			path = IRL;
 			sourceTree = "<group>";
 		};
-		763BA6BA2CB644F6003A0CDB /* IRLTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = IRLTests;
-			sourceTree = "<group>";
-		};
-		763BA6C42CB644F6003A0CDB /* IRLUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = IRLUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,20 +83,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		763BA6B42CB644F6003A0CDB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		763BA6BE2CB644F6003A0CDB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -115,9 +91,8 @@
 			children = (
 				766CA8B92CBE07FC00719600 /* IRL-Bridging-Header.h */,
 				763BA6A92CB644F4003A0CDB /* IRL */,
-				763BA6BA2CB644F6003A0CDB /* IRLTests */,
-				763BA6C42CB644F6003A0CDB /* IRLUITests */,
 				763BA6A82CB644F4003A0CDB /* Products */,
+				76498BE52CC5C5E0001E159D /* IRL-AudioCore */,
 			);
 			sourceTree = "<group>";
 		};
@@ -125,8 +100,46 @@
 			isa = PBXGroup;
 			children = (
 				763BA6A72CB644F4003A0CDB /* IRL.app */,
-				763BA6B72CB644F6003A0CDB /* IRLTests.xctest */,
-				763BA6C12CB644F6003A0CDB /* IRLUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		76498BE12CC5C5E0001E159D /* IRL-AudioCore */ = {
+			isa = PBXGroup;
+			children = (
+				76498BD92CC5C5E0001E159D /* AudioFileManager.swift */,
+				76498BDA2CC5C5E0001E159D /* AudioState.swift */,
+				76498BDB2CC5C5E0001E159D /* AudioUtils.swift */,
+				76498BDC2CC5C5E0001E159D /* docs.md */,
+				76498BDD2CC5C5E0001E159D /* IRL_AudioCore.docc */,
+				76498BDE2CC5C5E0001E159D /* Location.swift */,
+				76498BDF2CC5C5E0001E159D /* SpeechRecognition.swift */,
+				76498BE02CC5C5E0001E159D /* WebSocketManagerProtocol.swift */,
+			);
+			path = "IRL-AudioCore";
+			sourceTree = "<group>";
+		};
+		76498BE32CC5C5E0001E159D /* IRL-AudioCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				76498BE22CC5C5E0001E159D /* IRL_AudioCoreTests.swift */,
+			);
+			path = "IRL-AudioCoreTests";
+			sourceTree = "<group>";
+		};
+		76498BE52CC5C5E0001E159D /* IRL-AudioCore */ = {
+			isa = PBXGroup;
+			children = (
+				76498BE12CC5C5E0001E159D /* IRL-AudioCore */,
+				76498BE32CC5C5E0001E159D /* IRL-AudioCoreTests */,
+				76498BE42CC5C5E0001E159D /* IRL-AudioCore.xcodeproj */,
+			);
+			path = "IRL-AudioCore";
+			sourceTree = "<group>";
+		};
+		76498BE62CC5C5E0001E159D /* Products */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -161,52 +174,6 @@
 			productReference = 763BA6A72CB644F4003A0CDB /* IRL.app */;
 			productType = "com.apple.product-type.application";
 		};
-		763BA6B62CB644F6003A0CDB /* IRLTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 763BA6CE2CB644F6003A0CDB /* Build configuration list for PBXNativeTarget "IRLTests" */;
-			buildPhases = (
-				763BA6B32CB644F6003A0CDB /* Sources */,
-				763BA6B42CB644F6003A0CDB /* Frameworks */,
-				763BA6B52CB644F6003A0CDB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				763BA6B92CB644F6003A0CDB /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				763BA6BA2CB644F6003A0CDB /* IRLTests */,
-			);
-			name = IRLTests;
-			packageProductDependencies = (
-			);
-			productName = IRLTests;
-			productReference = 763BA6B72CB644F6003A0CDB /* IRLTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		763BA6C02CB644F6003A0CDB /* IRLUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 763BA6D12CB644F6003A0CDB /* Build configuration list for PBXNativeTarget "IRLUITests" */;
-			buildPhases = (
-				763BA6BD2CB644F6003A0CDB /* Sources */,
-				763BA6BE2CB644F6003A0CDB /* Frameworks */,
-				763BA6BF2CB644F6003A0CDB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				763BA6C32CB644F6003A0CDB /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				763BA6C42CB644F6003A0CDB /* IRLUITests */,
-			);
-			name = IRLUITests;
-			packageProductDependencies = (
-			);
-			productName = IRLUITests;
-			productReference = 763BA6C12CB644F6003A0CDB /* IRLUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -219,14 +186,6 @@
 				TargetAttributes = {
 					763BA6A62CB644F4003A0CDB = {
 						CreatedOnToolsVersion = 16.0;
-					};
-					763BA6B62CB644F6003A0CDB = {
-						CreatedOnToolsVersion = 16.0;
-						TestTargetID = 763BA6A62CB644F4003A0CDB;
-					};
-					763BA6C02CB644F6003A0CDB = {
-						CreatedOnToolsVersion = 16.0;
-						TestTargetID = 763BA6A62CB644F4003A0CDB;
 					};
 				};
 			};
@@ -248,11 +207,15 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 763BA6A82CB644F4003A0CDB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 76498BE62CC5C5E0001E159D /* Products */;
+					ProjectRef = 76498BE42CC5C5E0001E159D /* IRL-AudioCore.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				763BA6A62CB644F4003A0CDB /* IRL */,
-				763BA6B62CB644F6003A0CDB /* IRLTests */,
-				763BA6C02CB644F6003A0CDB /* IRLUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -262,20 +225,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		763BA6B52CB644F6003A0CDB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		763BA6BF2CB644F6003A0CDB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				76498BF02CC5C5E0001E159D /* docs.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,37 +236,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		763BA6B32CB644F6003A0CDB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		763BA6BD2CB644F6003A0CDB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				76498BE82CC5C5E0001E159D /* WebSocketManagerProtocol.swift in Sources */,
+				76498BE92CC5C5E0001E159D /* SpeechRecognition.swift in Sources */,
+				76498BEA2CC5C5E0001E159D /* AudioFileManager.swift in Sources */,
+				76498BEB2CC5C5E0001E159D /* AudioState.swift in Sources */,
+				76498BEC2CC5C5E0001E159D /* IRL_AudioCoreTests.swift in Sources */,
+				76498BED2CC5C5E0001E159D /* Location.swift in Sources */,
+				76498BEE2CC5C5E0001E159D /* IRL_AudioCore.docc in Sources */,
+				76498BEF2CC5C5E0001E159D /* AudioUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		763BA6B92CB644F6003A0CDB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 763BA6A62CB644F4003A0CDB /* IRL */;
-			targetProxy = 763BA6B82CB644F6003A0CDB /* PBXContainerItemProxy */;
-		};
-		763BA6C32CB644F6003A0CDB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 763BA6A62CB644F4003A0CDB /* IRL */;
-			targetProxy = 763BA6C22CB644F6003A0CDB /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		763BA6C92CB644F6003A0CDB /* Debug */ = {
@@ -516,78 +447,6 @@
 			};
 			name = Release;
 		};
-		763BA6CF2CB644F6003A0CDB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 42R8ZPM5N8;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ebowwa.IRLTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IRL.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IRL";
-			};
-			name = Debug;
-		};
-		763BA6D02CB644F6003A0CDB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 42R8ZPM5N8;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ebowwa.IRLTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IRL.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IRL";
-			};
-			name = Release;
-		};
-		763BA6D22CB644F6003A0CDB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 42R8ZPM5N8;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ebowwa.IRLUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = IRL;
-			};
-			name = Debug;
-		};
-		763BA6D32CB644F6003A0CDB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 42R8ZPM5N8;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ebowwa.IRLUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = IRL;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -605,24 +464,6 @@
 			buildConfigurations = (
 				763BA6CC2CB644F6003A0CDB /* Debug */,
 				763BA6CD2CB644F6003A0CDB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		763BA6CE2CB644F6003A0CDB /* Build configuration list for PBXNativeTarget "IRLTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				763BA6CF2CB644F6003A0CDB /* Debug */,
-				763BA6D02CB644F6003A0CDB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		763BA6D12CB644F6003A0CDB /* Build configuration list for PBXNativeTarget "IRLUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				763BA6D22CB644F6003A0CDB /* Debug */,
-				763BA6D32CB644F6003A0CDB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,14 +1,6 @@
 //
-//  SpeechRecognitionConstants.swift
+//  SpeechRecognition.swift
 //  IRL-AudioCore
-//
-//  Created by Elijah Arbee on 10/20/24.
-//
-
-
-//
-//  SpeechRecognitionManager.swift
-//  AudioFramework
 //
 //  Created by Elijah Arbee on 9/6/24.
 //

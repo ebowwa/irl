@@ -4,7 +4,7 @@
 //
 //  Created by Elijah Arbee on 9/7/24.
 //
-
+/**
 import Foundation
 import CoreLocation // For location handling
 
@@ -52,3 +52,4 @@ struct AudioRecording: Identifiable {
     var processedAt: Date?                // Optional timestamp for when transcription is completed
 }
 
+*/

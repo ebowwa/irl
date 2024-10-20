@@ -1,14 +1,6 @@
 //
-//  LocationData.swift
+//  Location.swift
 //  IRL-AudioCore
-//
-//  Created by Elijah Arbee on 10/20/24.
-//
-
-
-//
-//  LocationManager.swift
-//  AudioFramework
 //
 //  Created by Elijah Arbee on 10/14/24.
 //
