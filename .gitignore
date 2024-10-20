@@ -1865,6 +1865,7 @@ yarn-error.log*
 # vercel
 .vercel
 uploaded_audio
+backend/uploaded_audio
 # typescript
 *.tsbuildinfo
 next-env.d.ts
