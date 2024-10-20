@@ -10,8 +10,9 @@ struct TabItem: Identifiable {
     let icon: String
     let selectedIcon: String
     let content: () -> AnyView
-    let showButtons: Bool // Add a flag to indicate if the buttons should be shown
+    let showButtons: Bool // Indicates if buttons should be shown for this tab
 }
+
 // File 2: TabButton.swift
 
 import SwiftUI
@@ -52,7 +53,8 @@ struct TabButton: View {
         }
     }
 }
-// File 3: ContentView.swift (updated)
+
+// File 3: ContentView.swift
 
 import SwiftUI
 import Combine
@@ -62,10 +64,16 @@ struct ContentView: View {
     // MARK: - Environment Objects
     @EnvironmentObject var globalState: GlobalState
     @EnvironmentObject var audioState: AudioState
-    @EnvironmentObject var settingsViewModel: SettingsViewModel
     
     // MARK: - State
     @State private var selectedTab: Int = 0
+    @State private var areTabsVisible: Bool = true // State to control tab visibility
+    
+    // Moved States from SocialFeedView
+    @StateObject private var socialFeedViewModel = SocialFeedViewModel(posts: [])
+    @State private var isMenuOpen = false // Track if the menu is open
+    @State private var demoMode: Bool = true
+    @State private var showSettingsView = false // Track if settings should be shown
     
     // MARK: - Colors
     private let accentColor = Color("AccentColor")
@@ -79,23 +87,30 @@ struct ContentView: View {
         endPoint: .trailing
     )
     
-    // MARK: - Tabs Array
-    private let tabs: [TabItem] = [
-        TabItem(
-            title: "Live",
-            icon: "waveform",
-            selectedIcon: "waveform.fill",
-            content: { AnyView(SimpleLocalTranscription()) },
-            showButtons: true
-        ),
-        TabItem(
-            title: "Arena",
-            icon: "bubble.left.and.bubble.right",
-            selectedIcon: "bubble.left.and.bubble.right.fill",
-            content: { AnyView(ChatProxyConfigView()) },  // Provide content closure
-            showButtons: true
-        )
-    ]
+    // MARK: - Computed Tabs Array
+    private var tabs: [TabItem] {
+        [
+            TabItem(
+                title: "Live",
+                icon: "waveform",
+                selectedIcon: "waveform.badge.microphone",
+                content: { AnyView(GeminiChatView()) }, // SimpleLocalTranscription
+                showButtons: true
+            ),
+            TabItem(
+                title: "Social",
+                icon: "person.2",
+                selectedIcon: "person.2.fill",
+                content: { AnyView(SocialFeedView(
+                    viewModel: socialFeedViewModel,
+                    isMenuOpen: $isMenuOpen,
+                    demoMode: $demoMode,
+                    showSettingsView: $showSettingsView
+                )) },
+                showButtons: true
+            )
+        ]
+    }
     
     // MARK: - Body
     var body: some View {
@@ -112,8 +127,8 @@ struct ContentView: View {
             }
             Spacer()
             
-            // Bottom Tab Buttons - Conditional based on `showButtons` flag
-            if let currentTab = tabs[safe: selectedTab], currentTab.showButtons {
+            // Bottom Tab Buttons - Modular control over whether buttons should be visible
+            if shouldShowTabs(for: selectedTab) { // Modular control here
                 HStack(spacing: 4) { // Reduced spacing to make buttons nearly touch
                     ForEach(tabs.indices, id: \.self) { index in
                         let tab = tabs[index]
@@ -143,8 +158,13 @@ struct ContentView: View {
             if audioState.isBackgroundRecordingEnabled {
                 audioState.startRecording() // Automatically start recording
             }
+            // Load demo or real data based on demoMode
+            loadData()
         }
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
+        .sheet(isPresented: $showSettingsView) {
+            SettingsView() // Present SettingsView as a modal
+        }
     }
     
     // MARK: - Setup Appearance
@@ -152,7 +172,24 @@ struct ContentView: View {
         UITabBar.appearance().backgroundColor = UIColor(backgroundColor)
         UITabBar.appearance().unselectedItemTintColor = UIColor(inactiveColor)
     }
+    
+    // MARK: - Modular Approach for Tab Visibility
+    private func shouldShowTabs(for selectedIndex: Int) -> Bool {
+        // Use the model's `showButtons` to decide visibility
+        guard let currentTab = tabs[safe: selectedIndex] else { return false }
+        return currentTab.showButtons // You can expand this logic as needed
+    }
+    
+    // MARK: - Load Data Function
+    private func loadData() {
+        if demoMode {
+            socialFeedViewModel.loadDemoData() // Load demo data via ViewModel
+        } else {
+            // Load real data here
+        }
+    }
 }
+
 
 // MARK: - Array Safe Subscript Extension
 extension Array {

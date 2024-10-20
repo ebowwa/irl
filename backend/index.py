@@ -15,7 +15,9 @@ from route.post.audio.diarization.index import router as diarization_router  # D
 from route.post.text.llm_inference.OpenAIRoute import router as openai_router
 from route.post.text.chatgpt_share.index import router as share_oai_chats_router
 from route.post.audio.transcription.falIndex import router as transcription_router
+from route.post.geminiflash.index import router as gemini_router
 from route.post.media.upload.Index import router as media_router
+from route.post.geminiflash.gemini_socket import router as gemini_socket_router
 from utils.ngrokUtils import start_ngrok 
 import ngrok 
 from utils.serverManager import ServerManager  # sees If port is open if so closes the port so the server can init
@@ -85,6 +87,8 @@ app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # New route f
 
 app.include_router(media_router, prefix="/media")  # <-- Include media router with a prefix
 
+app.include_router(gemini_router, prefix="/api/gemini")  # <-- Added Gemini router with prefix
+app.include_router(gemini_socket_router, prefix="/api/gemini")
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately

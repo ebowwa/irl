@@ -18,3 +18,5 @@
 - [OpenAI](https://platform.openai.com/docs/api-reference)
 - [Ollama](https://github.com/ollama)
 - [Ngrok Docs](https://ngrok.com/docs/api/)
+
+https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com

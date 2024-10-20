@@ -1,29 +1,22 @@
 import SwiftUI
 
 struct AudioStateView: View {
-
-    // Access the shared audio state via environment object
-    @EnvironmentObject var audioState: AudioState  // Use EnvironmentObject wrapper to access shared state
+    @EnvironmentObject var audioState: AudioState
 
     var body: some View {
         VStack(spacing: 20) {
-            
-            // Recording status
             Text(audioState.isRecording ? "Recording in progress..." : "Not recording")
                 .font(.headline)
                 .foregroundColor(audioState.isRecording ? .red : .green)
             
-            // Display recording time
             Text("Recording Time: \(audioState.formattedRecordingTime)")
                 .font(.subheadline)
                 .foregroundColor(.primary)
             
-            // Show audio levels while recording
             if audioState.isRecording {
-                AudioLevelBar(level: audioState.audioLevelPublisher)
+                AudioLevelBar(level: audioState.audioLevelPublisher)  // Ensure this is AnyPublisher<Float, Never>
             }
             
-            // Playback availability
             if audioState.isPlaybackAvailable {
                 Button(action: {
                     audioState.togglePlayback()
@@ -37,14 +30,12 @@ struct AudioStateView: View {
                 }
             }
             
-            // Display error messages if any
             if let errorMessage = audioState.errorMessage {
                 Text("Error: \(errorMessage)")
                     .foregroundColor(.red)
                     .multilineTextAlignment(.center)
             }
             
-            // Control buttons for recording
             HStack(spacing: 40) {
                 Button(action: {
                     audioState.toggleRecording()
@@ -57,7 +48,7 @@ struct AudioStateView: View {
                 }
                 
                 Button(action: {
-                    audioState.fetchRecordings() // Fetch recordings from storage
+                    audioState.fetchRecordings()  // Ensure this method exists in AudioState
                 }) {
                     Text("Load Recordings")
                         .padding()
@@ -67,16 +58,15 @@ struct AudioStateView: View {
                 }
             }
             
-            // Display list of saved recordings
             if !audioState.localRecordings.isEmpty {
                 List(audioState.localRecordings) { recording in
                     HStack {
-                        Text("Recording \(recording.id)")  // Display recording info
+                        Text("Recording \(recording.id)")
                         Spacer()
                         Text(audioState.formattedFileSize(bytes: recording.fileSize))
                     }
                 }
-                .frame(height: 200)  // Optional: limit the frame height for the list
+                .frame(height: 200)
             }
         }
         .padding()

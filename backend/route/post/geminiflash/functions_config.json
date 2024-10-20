@@ -1,0 +1,10 @@
+[
+    {
+        "module": "multiply",
+        "file": "multiply.py"
+    },
+    {
+        "module": "find_theaters",
+        "file": "find_theaters.py"
+    }
+]

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <Group
+      location = "group:New Group 2"
+      name = "New Group 2">
+   </Group>
    <FileRef
       location = "self:">
    </FileRef>

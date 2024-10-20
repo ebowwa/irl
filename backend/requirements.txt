@@ -27,3 +27,5 @@ ngrok
 # nemo_toolkit
 # --upgrade huggingface_hub
 # moviepy
+google-generativeai
+aiofiles

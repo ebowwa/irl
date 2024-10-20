@@ -1,4 +1,4 @@
-//
+/**
 //  AudioStreamView.swift
 //  irl
 //
@@ -8,7 +8,7 @@ import SwiftUI
 import Combine
 
 struct AudioStreamView: View {
-    @EnvironmentObject var audioState: AudioState
+    @EnvironmentObject var audioState: AudioController
     @StateObject private var whisperService = WhisperService()
     @State private var transcription: String = ""
     @State private var selectedLanguage: AppLanguage?
@@ -119,3 +119,4 @@ struct AudioStreamView: View {
             .store(in: &whisperService.cancellables)
     }
 }
+*/

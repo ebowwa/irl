@@ -14,55 +14,44 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     @Published var lastTranscribedText: String = ""
     @Published var currentAudioLevel: Double = 0.0
     @Published var isBackgroundNoiseReady: Bool = false
-    
+
     private let speechManager = SpeechRecognitionManager()
     private var cancellables = Set<AnyCancellable>()
-    
+
     init() {
         setupSpeechManager()
     }
-    
+
     func startRecording() {
         speechManager.startRecording()
     }
-    
+
     func stopRecording() {
         speechManager.stopRecording()
     }
-    
+
     private func setupSpeechManager() {
         speechManager.requestSpeechAuthorization()
         speechManager.startRecording()
-        
+
         speechManager.$transcribedText
             .dropFirst()
             .sink { [weak self] newTranscription in
                 self?.handleTranscriptionUpdate(newTranscription)
             }
             .store(in: &cancellables)
-        
+
         speechManager.$currentAudioLevel
             .map { Double($0) }
             .assign(to: &$currentAudioLevel)
-        
+
         speechManager.$isBackgroundNoiseReady
             .assign(to: &$isBackgroundNoiseReady)
     }
-    
-    // Logging function to measure real-world conditions
-    private func logTranscription(_ transcription: String, audioLevel: Double, noiseReady: Bool) {
-        print("Transcription: \(transcription)")
-        print("Current Audio Level: \(audioLevel)")
-        print("Background Noise Ready: \(noiseReady)")
-    }
-    
-    // Update the handleTranscriptionUpdate method to log the transcription and conditions
-    func handleTranscriptionUpdate(_ newTranscription: String) {
+
+    private func handleTranscriptionUpdate(_ newTranscription: String) {
         if newTranscription != lastTranscribedText && !newTranscription.isEmpty {
             lastTranscribedText = newTranscription
-            TranscriptDB.shared.insertTranscription(newTranscription)
-            // Log transcription data
-            logTranscription(newTranscription, audioLevel: currentAudioLevel, noiseReady: isBackgroundNoiseReady)
         } else if newTranscription == lastTranscribedText {
             transcriptionHistory.append(lastTranscribedText)
             lastTranscribedText = ""
@@ -70,7 +59,12 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     }
 }
 
-// View: SimpleLocalTranscriptionView.swift
+//
+//  SimpleLocalTranscriptionView.swift
+//  irl
+//
+//  Created by Elijah Arbee on 9/6/24.
+//
 import SwiftUI
 
 struct SimpleLocalTranscription: View {
@@ -82,7 +76,10 @@ struct SimpleLocalTranscription: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
-                    TranscriptionHistoryView(transcriptionHistory: viewModel.transcriptionHistory, lastTranscribedText: viewModel.lastTranscribedText)
+                    TranscriptionHistoryView(
+                        transcriptionHistory: viewModel.transcriptionHistory,
+                        lastTranscribedText: viewModel.lastTranscribedText
+                    )
                 }
             }
             .frame(maxWidth: .infinity)
@@ -108,6 +105,7 @@ struct SimpleLocalTranscription: View {
         }
     }
 }
+
 //
 //  TranscriptionHistoryView.swift
 //  irl
@@ -156,7 +154,6 @@ struct TranscriptionHeaderView: View {
     }
 }
 
-
 //
 //  MessageBubble.swift
 //  irl
@@ -179,7 +176,6 @@ struct MessageBubble: View {
         .padding(.trailing, 60)
     }
 }
-
 
 //
 //  CustomBubbleShape.swift
@@ -217,6 +213,29 @@ struct CalibrationStatusView: View {
             Text("Please wait while we measure your environment...")
                 .font(.subheadline)
                 .foregroundColor(.gray)
+        }
+        .padding()
+    }
+}
+
+//
+//  AudioLevelView.swift
+//  IRL
+//
+//  Created by Elijah Arbee on 10/11/24.
+//
+import SwiftUI
+
+struct AudioLevelView: View {
+    @Binding var audioLevel: Double
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Text("Audio Level")
+                .font(.headline)
+            ProgressView(value: audioLevel, total: 1.0)
+                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                .frame(height: 10)
         }
         .padding()
     }

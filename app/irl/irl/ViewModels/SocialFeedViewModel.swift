@@ -66,3 +66,39 @@ class SocialFeedViewModel: ObservableObject {
         return nil
     }
 }
+
+// Models to decode JSON data
+struct DemoPosts: Codable {
+    let posts: [DemoPost]
+}
+struct DemoPost: Codable {
+    let id: String
+    let username: String
+    let isUser: Bool
+    let timeAgo: String
+    let imageName: String
+    let title: String
+    let shortDescription: String
+    let likeCount: Int
+    let dislikeCount: Int
+    let isLiked: Bool
+    let isDisliked: Bool
+    let hashtags: [String]
+    
+    func toSocialPost() -> SocialPost {
+        return SocialPost(
+            id: id,
+            username: username,
+            isUser: isUser,
+            timeAgo: timeAgo,
+            imageName: imageName,
+            title: title,
+            shortDescription: shortDescription,
+            likeCount: likeCount,
+            dislikeCount: dislikeCount,
+            isLiked: isLiked,
+            isDisliked: isDisliked,
+            hashtags: hashtags
+        )
+    }
+}

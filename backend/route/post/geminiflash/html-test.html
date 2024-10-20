@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Chat</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .chat-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+        #chatLog {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .message.user {
+            background-color: #e1f5fe;
+            margin-left: auto;
+        }
+        .message.gemini {
+            background-color: #f0f4c3;
+        }
+        .message.system {
+            background-color: #e8eaf6;
+            font-style: italic;
+        }
+        .input-area {
+            display: flex;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        #messageInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+        }
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="chatLog"></div>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Type your message..." />
+            <button id="sendButton" disabled>Send</button>
+        </div>
+        <div class="button-group">
+            <button id="recordButton" disabled>Record Audio</button>
+            <button id="stopButton" disabled>Stop Recording</button>
+            <button id="connectButton">Connect</button>
+            <button id="disconnectButton" disabled>Disconnect</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatLog = document.getElementById('chatLog');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const recordButton = document.getElementById('recordButton');
+        const stopButton = document.getElementById('stopButton');
+        const connectButton = document.getElementById('connectButton');
+        const disconnectButton = document.getElementById('disconnectButton');
+
+        // Variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let ws = null;
+
+        // Helper Functions
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender.toLowerCase());
+            messageElement.textContent = message;
+            chatLog.appendChild(messageElement);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function toggleButtons(connected) {
+            sendButton.disabled = !connected;
+            recordButton.disabled = !connected;
+            connectButton.disabled = connected;
+            disconnectButton.disabled = !connected;
+        }
+
+        // WebSocket Functions
+        function connectWebSocket() {
+            ws = new WebSocket('wss://e23e-50-247-127-70.ngrok-free.app/api/gemini/ws/chat');
+
+            ws.onopen = () => {
+                appendMessage('System', 'Connected to Gemini Chat.');
+                toggleButtons(true);
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.response) appendMessage('Gemini', data.response);
+                else if (data.error) appendMessage('System', `Error: ${data.error}`);
+                else if (data.info) appendMessage('System', data.info);
+            };
+
+            ws.onclose = () => {
+                appendMessage('System', 'Disconnected from Gemini Chat.');
+                toggleButtons(false);
+            };
+
+            ws.onerror = (error) => {
+                appendMessage('System', 'WebSocket error occurred.');
+                console.error('WebSocket Error:', error);
+            };
+        }
+
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        // Message Handling
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message === '' || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+            appendMessage('User', message);
+            ws.send(JSON.stringify({ role: "user", text: message, type: "text" }));
+            messageInput.value = '';
+        }
+
+        // Audio Recording
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.onstart = () => {
+                    audioChunks = [];
+                    recordButton.disabled = true;
+                    stopButton.disabled = false;
+                    appendMessage('System', 'Recording audio...');
+                };
+
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const reader = new FileReader();
+
+                    reader.onload = () => {
+                        const base64AudioMessage = reader.result.split(',')[1];
+                        ws.send(JSON.stringify({ role: "user", audio: base64AudioMessage, type: "audio" }));
+                        appendMessage('System', 'Audio message sent.');
+                    };
+
+                    reader.readAsDataURL(audioBlob);
+                };
+
+                mediaRecorder.start();
+            } catch (error) {
+                appendMessage('System', 'Audio recording is not supported in this browser.');
+                console.error('Audio Recording Error:', error);
+            }
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            recordButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        // Event Listeners
+        connectButton.onclick = connectWebSocket;
+        disconnectButton.onclick = disconnectWebSocket;
+        sendButton.onclick = sendMessage;
+        recordButton.onclick = startRecording;
+        stopButton.onclick = stopRecording;
+
+        messageInput.addEventListener("keyup", (event) => {
+            if (event.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
