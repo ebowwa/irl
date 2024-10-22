@@ -1,8 +1,10 @@
-import SwiftUI
+/**import SwiftUI
+import Combine
 
 struct AudioStateView: View {
     @EnvironmentObject var audioState: AudioState
-
+    @State private var audioLevel: Float = 0.0 // For real-time updates from publisher
+    
     var body: some View {
         VStack(spacing: 20) {
             Text(audioState.isRecording ? "Recording in progress..." : "Not recording")
@@ -13,10 +15,16 @@ struct AudioStateView: View {
                 .font(.subheadline)
                 .foregroundColor(.primary)
             
+            // Display audio level bar only if recording
             if audioState.isRecording {
-                AudioLevelBar(level: audioState.audioLevelPublisher)  // Ensure this is AnyPublisher<Float, Never>
+                AudioLevelBar(level: audioLevel)  // Bind real-time level to audioLevel state
+                    .frame(height: 10)
+                    .onReceive(audioState.audioLevelPublisher) { level in
+                        audioLevel = level // Receive audio level updates from publisher
+                    }
             }
             
+            // Playback controls
             if audioState.isPlaybackAvailable {
                 Button(action: {
                     audioState.togglePlayback()
@@ -30,15 +38,17 @@ struct AudioStateView: View {
                 }
             }
             
+            // Display error message, if any
             if let errorMessage = audioState.errorMessage {
                 Text("Error: \(errorMessage)")
                     .foregroundColor(.red)
                     .multilineTextAlignment(.center)
             }
             
+            // Buttons for recording and fetching recordings
             HStack(spacing: 40) {
                 Button(action: {
-                    audioState.toggleRecording()
+                    audioState.toggleRecording(manual: true) // Pass true for manual recording
                 }) {
                     Text(audioState.isRecording ? "Stop Recording" : "Start Recording")
                         .padding()
@@ -48,7 +58,7 @@ struct AudioStateView: View {
                 }
                 
                 Button(action: {
-                    audioState.fetchRecordings()  // Ensure this method exists in AudioState
+                    audioState.fetchRecordings()  // Load local recordings
                 }) {
                     Text("Load Recordings")
                         .padding()
@@ -58,6 +68,7 @@ struct AudioStateView: View {
                 }
             }
             
+            // List of recordings
             if !audioState.localRecordings.isEmpty {
                 List(audioState.localRecordings) { recording in
                     HStack {
@@ -72,9 +83,6 @@ struct AudioStateView: View {
         .padding()
     }
 }
-
-
-
 
 import SwiftUI
 import Combine
@@ -100,3 +108,4 @@ struct AudioLevelBar: View {
         }
     }
 }
+*/

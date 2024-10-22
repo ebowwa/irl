@@ -75,6 +75,13 @@ struct ContentView: View {
     @State private var demoMode: Bool = true
     @State private var showSettingsView = false // Track if settings should be shown
     
+    // Speech Recognition Manager
+    @StateObject private var speechRecognitionManager = SpeechRecognitionManager.shared
+    
+    // Modal State Variables
+    @State private var showModelStatusAlert: Bool = false
+    @State private var modelStatusMessage: String = ""
+    
     // MARK: - Colors
     private let accentColor = Color("AccentColor")
     private let inactiveColor = Color.gray.opacity(0.6)
@@ -94,7 +101,7 @@ struct ContentView: View {
                 title: "Live",
                 icon: "waveform",
                 selectedIcon: "waveform.badge.microphone",
-                content: { AnyView(GeminiChatView()) }, // SimpleLocalTranscription
+                content: { AnyView(SimpleLocalTranscription()) }, // SimpleLocalTranscription //GeminiChatView
                 showButtons: true
             ),
             TabItem(
@@ -156,14 +163,28 @@ struct ContentView: View {
             setupAppearance()
             // Ensure that the audio session is set up and recording starts automatically if enabled
             if audioState.isBackgroundRecordingEnabled {
-                audioState.startRecording() // Automatically start recording
+                audioState.startRecording(manual: false) // Automatically start recording
             }
             // Load demo or real data based on demoMode
             loadData()
+            
+            // Request speech recognition authorization
+            speechRecognitionManager.requestSpeechAuthorization()
         }
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
         .sheet(isPresented: $showSettingsView) {
             SettingsView() // Present SettingsView as a modal
+        }
+        // Listen to changes in the speech recognition state
+        .onReceive(speechRecognitionManager.$isSpeechDetected) { isDetected in
+            updateModelStatus(isActive: isDetected)
+        }
+        // Present the alert when needed
+        .alert(isPresented: $showModelStatusAlert) {
+            Alert(
+                title: Text(modelStatusMessage),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
     
@@ -188,7 +209,19 @@ struct ContentView: View {
             // Load real data here
         }
     }
+    
+    // MARK: - Update Model Status
+    
+    private func updateModelStatus(isActive: Bool) {
+        if isActive {
+            modelStatusMessage = "Speech Recognition Active"
+        } else {
+            modelStatusMessage = "Speech Recognition Not Active"
+        }
+        showModelStatusAlert = true
+    }
 }
+
 
 
 // MARK: - Array Safe Subscript Extension

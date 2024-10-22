@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:IRL-AudioCore copy"
+      name = "IRL-AudioCore copy">
+      <FileRef
+         location = "group:Location.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Engine.swift">
+      </FileRef>
+      <FileRef
+         location = "group:AudioFileManager.swift">
+      </FileRef>
+      <FileRef
+         location = "group:AudioRecordingModel.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Protocols.swift">
+      </FileRef>
+      <FileRef
+         location = "group:SpeechRecognition.swift">
+      </FileRef>
+      <FileRef
+         location = "group:IRL_AudioCore.docc">
+      </FileRef>
+      <FileRef
+         location = "group:docs.md">
+      </FileRef>
+      <FileRef
+         location = "group:SoundMeasurement.swift">
+      </FileRef>
+      <FileRef
+         location = "group:socketmanager.swift">
+      </FileRef>
+      <FileRef
+         location = "group:AudioState.swift">
+      </FileRef>
+   </Group>
+</Workspace>

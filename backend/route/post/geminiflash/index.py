@@ -155,7 +155,7 @@ async def generate_content(
         "top_p": top_p,
         "max_output_tokens": max_output_tokens,
         "candidate_count": candidate_count,
-        "response_mime_type": "application/json"
+        "response_mime_type": "application/json" # additionally available 'text/plain' and 'enum
     }
 
     # Safety settings (empty for this example, customize as needed)

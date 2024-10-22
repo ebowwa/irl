@@ -4,8 +4,9 @@
 //
 //  Created by Elijah Arbee on 10/10/24.
 //
-// Device.swift
+
 import Foundation
+import AVFoundation
 
 protocol Device: AnyObject {
     var identifier: UUID { get }
@@ -18,9 +19,6 @@ protocol Device: AnyObject {
     func startRecording()
     func stopRecording()
 }
-
-import Foundation
-import AVFoundation
 
 class AudioDevice: Device {
     let identifier: UUID
@@ -49,7 +47,7 @@ class AudioDevice: Device {
 
     func startRecording() {
         guard isConnected else { return }
-        audioState.startRecording()
+        audioState.startRecording(manual: true) // Pass the 'manual' parameter here
         isRecording = true
         print("Recording started on \(name).")
     }

@@ -4,7 +4,8 @@
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
-// ViewModel: SimpleLocalTranscriptionViewModel.swift
+//
+
 import Foundation
 import Speech
 import Combine
@@ -15,11 +16,13 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     @Published var currentAudioLevel: Double = 0.0
     @Published var isBackgroundNoiseReady: Bool = false
 
-    private let speechManager = SpeechRecognitionManager()
+    // Use singleton instances
+    private let speechManager = SpeechRecognitionManager.shared
+    private let soundManager = SoundMeasurementManager.shared
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        setupSpeechManager()
+        setupManagers()
     }
 
     func startRecording() {
@@ -30,10 +33,12 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
         speechManager.stopRecording()
     }
 
-    private func setupSpeechManager() {
+    private func setupManagers() {
+        // Request authorization and start recording
         speechManager.requestSpeechAuthorization()
         speechManager.startRecording()
 
+        // Subscribe to transcribed text updates
         speechManager.$transcribedText
             .dropFirst()
             .sink { [weak self] newTranscription in
@@ -41,23 +46,31 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        speechManager.$currentAudioLevel
-            .map { Double($0) }
-            .assign(to: &$currentAudioLevel)
+        // Subscribe to audio level updates from SoundMeasurementManager
+        soundManager.$currentAudioLevel
+            .sink { [weak self] level in
+                self?.currentAudioLevel = level
+            }
+            .store(in: &cancellables)
 
-        speechManager.$isBackgroundNoiseReady
-            .assign(to: &$isBackgroundNoiseReady)
+        // Subscribe to background noise readiness from SoundMeasurementManager
+        soundManager.$isBackgroundNoiseReady
+            .sink { [weak self] isReady in
+                self?.isBackgroundNoiseReady = isReady
+            }
+            .store(in: &cancellables)
     }
 
     private func handleTranscriptionUpdate(_ newTranscription: String) {
         if newTranscription != lastTranscribedText && !newTranscription.isEmpty {
             lastTranscribedText = newTranscription
-        } else if newTranscription == lastTranscribedText {
+        } else if newTranscription == lastTranscribedText && !lastTranscribedText.isEmpty {
             transcriptionHistory.append(lastTranscribedText)
             lastTranscribedText = ""
         }
     }
 }
+
 
 //
 //  SimpleLocalTranscriptionView.swift
