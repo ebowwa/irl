@@ -42,3 +42,4 @@ SUPPORTED_LANGUAGES = [
 ]
 
 SUPPORTED_RESPONSE_MIME_TYPES = ["application/json", "text/plain", "text/x.enum"]
+

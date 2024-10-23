@@ -9,7 +9,8 @@ import json
 
 from dotenv import load_dotenv
 from route.post.gemini_flash_series.gemini_series_config import MODEL_VARIANTS, SUPPORTED_LANGUAGES, SUPPORTED_RESPONSE_MIME_TYPES
-
+from fastapi.responses import HTMLResponse
+import aiofiles
 # ------------------ Load Environment Variables --------------------
 load_dotenv()
 
@@ -155,3 +156,42 @@ async def list_languages():
     List all supported languages.
     """
     return {"languages": SUPPORTED_LANGUAGES}
+
+
+
+
+
+
+
+
+### --------------------DEMO-VIEW----------------------- ###
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse, FileResponse
+import os
+
+
+# Serve the HTML file
+@router.get("/test", response_class=HTMLResponse)
+async def serve_html():
+    file_path = os.path.join(os.path.dirname(__file__), "gemini-socket-html-test.html")
+    
+    # Check if the HTML file exists
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Test HTML file not found.")
+    
+    # Read and return the HTML content
+    with open(file_path, "r", encoding="utf-8") as f:
+        html_content = f.read()
+    
+    return HTMLResponse(content=html_content, media_type="text/html")
+
+# Serve the CSS file
+@router.get("/gemini-chat.css")
+async def serve_css():
+    css_path = os.path.join(os.path.dirname(__file__), "gemini-chat.css")
+    
+    # Check if the CSS file exists
+    if not os.path.exists(css_path):
+        raise HTTPException(status_code=404, detail="CSS file not found.")
+    
+    return FileResponse(css_path)

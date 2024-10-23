@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Chat</title>
+    <!-- Link to the CSS file from the same directory -->
+    <link rel="stylesheet" href="gemini-chat.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div id="chatLog"></div>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Type your message..." />
+            <button id="sendButton" disabled>Send</button>
+        </div>
+        <div class="button-group">
+            <button id="recordButton" disabled>Record Audio</button>
+            <button id="stopButton" disabled>Stop Recording</button>
+            <button id="connectButton">Connect</button>
+            <button id="disconnectButton" disabled>Disconnect</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatLog = document.getElementById('chatLog');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const recordButton = document.getElementById('recordButton');
+        const stopButton = document.getElementById('stopButton');
+        const connectButton = document.getElementById('connectButton');
+        const disconnectButton = document.getElementById('disconnectButton');
+
+        // Variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let ws = null;
+
+        // Helper Functions
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender.toLowerCase());
+            messageElement.textContent = message;
+            chatLog.appendChild(messageElement);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function toggleButtons(connected) {
+            sendButton.disabled = !connected;
+            recordButton.disabled = !connected;
+            connectButton.disabled = connected;
+            disconnectButton.disabled = !connected;
+        }
+
+        // WebSocket Functions
+        function connectWebSocket() {
+            ws = new WebSocket('wss://4d9b-76-78-246-141.ngrok-free.app/api/gemini/ws/chat');
+
+            ws.onopen = () => {
+                appendMessage('System', 'Connected to Gemini Chat.');
+                toggleButtons(true);
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.response) appendMessage('Gemini', data.response);
+                else if (data.error) appendMessage('System', `Error: ${data.error}`);
+                else if (data.info) appendMessage('System', data.info);
+            };
+
+            ws.onclose = () => {
+                appendMessage('System', 'Disconnected from Gemini Chat.');
+                toggleButtons(false);
+            };
+
+            ws.onerror = (error) => {
+                appendMessage('System', 'WebSocket error occurred.');
+                console.error('WebSocket Error:', error);
+            };
+        }
+
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        // Message Handling
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message === '' || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+            appendMessage('User', message);
+            ws.send(JSON.stringify({ role: "user", text: message, type: "text" }));
+            messageInput.value = '';
+        }
+
+        // Audio Recording
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.onstart = () => {
+                    audioChunks = [];
+                    recordButton.disabled = true;
+                    stopButton.disabled = false;
+                    appendMessage('System', 'Recording audio...');
+                };
+
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const reader = new FileReader();
+
+                    reader.onload = () => {
+                        const base64AudioMessage = reader.result.split(',')[1];
+                        ws.send(JSON.stringify({ role: "user", audio: base64AudioMessage, type: "audio" }));
+                        appendMessage('System', 'Audio message sent.');
+                    };
+
+                    reader.readAsDataURL(audioBlob);
+                };
+
+                mediaRecorder.start();
+            } catch (error) {
+                appendMessage('System', 'Audio recording is not supported in this browser.');
+                console.error('Audio Recording Error:', error);
+            }
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            recordButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        // Event Listeners
+        connectButton.onclick = connectWebSocket;
+        disconnectButton.onclick = disconnectWebSocket;
+        sendButton.onclick = sendMessage;
+        recordButton.onclick = startRecording;
+        stopButton.onclick = stopRecording;
+
+        messageInput.addEventListener("keyup", (event) => {
+            if (event.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
