@@ -1873,3 +1873,12 @@ backend/route/post/text/llm_inference/env_config.py
 .vscode
 /.vscode
 .vscode/launch.json
+app/irl-main.xcworkspace
+app/irl-main2.xcworkspace
+app/irl.xcworkspace
+app/Untitled.xcworkspace
+app/openaudiostandard
+/workspaces/irl/app/irl.xcworkspace
+/workspaces/irl/app/irl-main2.xcworkspace
+/workspaces/irl/app/irl-main.xcworkspace
+/workspaces/irl/app/Untitled.xcworkspace
