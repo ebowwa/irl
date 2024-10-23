@@ -45,25 +45,29 @@ Handle the following in your CLI terminal:
 
 ## Running the App
 
-1. Start the FastAPI server with Uvicorn in development mode:
+1. Navigate to the backend directory
+   ```
+   cd backend
+   ```
+2. Start the FastAPI server with Uvicorn in development mode:
    ```bash
-   uvicorn index:app --reload
+   uvicorn index:app --reload --port 9090
    ```
    This will start the FastAPI server on your local machine, enabling automatic reloading during development.
 
-2. Install ngrok if you don't have it already:
+3. Install ngrok if you don't have it already:
    ```bash
    brew install --cask ngrok
    ```
    Alternatively, you can download it from [ngrok's website](https://ngrok.com/download).
 
-3. Expose your local server to the internet using ngrok:
+4. Expose your local server to the internet using ngrok:
    ```bash
    ngrok http 8000
    ```
    This will generate a public URL for your local server, which can be accessed externally.
 
-4. Build and Run the iOS App
+5. Build and Run the iOS App
 
     Open Xcode.
     Build and run the app.
