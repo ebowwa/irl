@@ -8,7 +8,7 @@ import os
 import json
 
 from dotenv import load_dotenv
-from route.post.gemini_flash_series.gemini_series_config import MODEL_VARIANTS, SUPPORTED_LANGUAGES, SUPPORTED_RESPONSE_MIME_TYPES
+from route.gemini_flash_series.gemini_series_config import MODEL_VARIANTS, SUPPORTED_LANGUAGES, SUPPORTED_RESPONSE_MIME_TYPES
 from fastapi.responses import HTMLResponse
 import aiofiles
 # ------------------ Load Environment Variables --------------------
