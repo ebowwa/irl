@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 import os
 import mimetypes
 import tempfile
-from utils.audioUtils import process_audio_upload, cleanup_tempfile  # Your existing utility functions
+from backend.utils.audio_utils import process_audio_upload, cleanup_tempfile  # Your existing utility functions
 
 # Create the APIRouter instance
 router = APIRouter()

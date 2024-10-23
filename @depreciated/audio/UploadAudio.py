@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
-from utils.audioUtils import process_audio_upload, cleanup_tempfile
+from backend.utils.audio_utils import process_audio_upload, cleanup_tempfile
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Query
 from fastapi.responses import StreamingResponse
-from utils.audioUtils import process_audio_upload, cleanup_tempfile
+from backend.utils.audio_utils import process_audio_upload, cleanup_tempfile
 from services.diarizationService import load_audio, process_diarization, sliding_window_diarization
 
 router = APIRouter()

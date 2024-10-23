@@ -1,7 +1,7 @@
 # backend/routers/post/embeddingRouter/index.py
 from fastapi import APIRouter
 from pydantic import BaseModel
-from services.embeddingService import generate_embedding
+from backend.services.embeddingService import generate_embedding
 
 # Initialize FastAPI Router
 router = APIRouter()

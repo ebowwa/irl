@@ -3,6 +3,7 @@
 //  AudioFramework
 //
 //  Created by Elijah Arbee on 8/29/24.
+//  
 //
 
 import Foundation
@@ -49,7 +50,6 @@ public class AudioState: NSObject, AudioStateProtocol {
     
     private var audioRecorder: AVAudioRecorder?
     private var audioPlayer: AVAudioPlayer?
-    private var recordingSession: AVAudioSession?
     private var recordingTimer: Timer? // Timer for tracking recording duration.
     
     // MARK: - Managers
@@ -74,7 +74,7 @@ public class AudioState: NSObject, AudioStateProtocol {
 
     private override init() {
         super.init()
-        setupAudioSession(caller: "AudioState.init") // Setup called once during initialization.
+        setupAudioSession(caller: "AudioState.init") // Centralized audio session setup
         setupNotifications() // Setup app lifecycle notifications.
         setupSpeechRecognitionManager() // Setup speech detection callbacks
         setupBindings() // Setup bindings with SoundMeasurementManager and AudioEngineManager
@@ -87,6 +87,43 @@ public class AudioState: NSObject, AudioStateProtocol {
     }
     
     // MARK: - Setup Methods
+    
+    /// Configures the AVAudioSession.
+    /// - Parameter caller: A string indicating who called this method, for logging purposes.
+    private func setupAudioSession(caller: String = #function) {
+        let session = AVAudioSession.sharedInstance()
+        
+        // Desired configuration
+        let desiredCategory: AVAudioSession.Category = .playAndRecord
+        let desiredMode: AVAudioSession.Mode = .default
+        let desiredOptions: AVAudioSession.CategoryOptions = [.defaultToSpeaker, .allowBluetooth]
+        
+        // Check current session configuration
+        let currentCategory = session.category
+        let currentMode = session.mode
+        let currentOptions = session.categoryOptions
+        
+        // Determine if the session is already configured as desired
+        let isCategoryEqual = currentCategory == desiredCategory
+        let isModeEqual = currentMode == desiredMode
+        let hasAllDesiredOptions = desiredOptions.isSubset(of: currentOptions)
+        
+        if isCategoryEqual && isModeEqual && hasAllDesiredOptions {
+            print("[AudioState] Called by \(caller) - Audio session already configured.")
+            return
+        }
+        
+        do {
+            try session.setCategory(desiredCategory, mode: desiredMode, options: desiredOptions)
+            try session.setActive(true, options: .notifyOthersOnDeactivation)
+            print("[AudioState] Called by \(caller) - Audio session successfully configured.")
+        } catch {
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Failed to set up audio session: \(error.localizedDescription)"
+                print("[AudioState] Called by \(caller) - Setup failed: \(error.localizedDescription)")
+            }
+        }
+    }
     
     /// Sets up bindings to receive audio levels from SoundMeasurementManager.
     private func setupBindings() {
@@ -143,6 +180,9 @@ public class AudioState: NSObject, AudioStateProtocol {
         
         // Listen for when the app is about to terminate.
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTermination), name: UIApplication.willTerminateNotification, object: nil)
+        
+        // Listen for audio session interruptions
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAudioSessionInterrupted(_:)), name: AVAudioSession.interruptionNotification, object: AVAudioSession.sharedInstance())
     }
     
     // MARK: - Notification Handlers
@@ -153,7 +193,7 @@ public class AudioState: NSObject, AudioStateProtocol {
         if isBackgroundRecordingEnabled {
             setupAudioSession(caller: "handleAppBackgrounding")
             // Start audio engine if needed
-            if !AudioEngineManager.shared.isEngineRunning {
+            if let engine = AudioEngineManager.shared, !engine.isEngineRunning {
                 AudioEngineManager.shared.startEngine()
             }
         } else {
@@ -170,49 +210,53 @@ public class AudioState: NSObject, AudioStateProtocol {
         }
     }
     
-    // MARK: - WebSocket Setup
-    
-    /// Assigns the WebSocket manager, enabling live audio streaming functionality.
-    public func setupWebSocket(manager: WebSocketManagerProtocol) {
-        self.webSocketManager = manager
-        AudioEngineManager.shared.assignWebSocketManager(manager: manager) // Assign WebSocket manager to AudioEngineManager
-    }
-    
-    // MARK: - Audio Session Setup
-    
-    /// Configures the AVAudioSession to allow both playback and recording.
-    /// - Parameter caller: A string indicating who called this method, for logging purposes.
-    private func setupAudioSession(caller: String = #function) {
-        // Log device information
-        let device = UIDevice.current
-        let deviceInfo = "Device: \(device.model), OS: \(device.systemName) \(device.systemVersion)"
-        print("[DeviceInfo] Called by \(caller) - \(deviceInfo)")
-        
-        recordingSession = AVAudioSession.sharedInstance()
-        
-        // Check current session configuration
-        let currentCategory = recordingSession?.category ?? .ambient
-        let currentMode = recordingSession?.mode ?? .default
-        let currentOptions = recordingSession?.categoryOptions ?? []
-        
-        if currentCategory == .playAndRecord &&
-            currentMode == .default &&
-            currentOptions.contains(.defaultToSpeaker) &&
-            currentOptions.contains(.allowBluetooth) {
-            print("[setupAudioSession] Called by \(caller) - Audio session already configured.")
+    /// Handles audio session interruptions.
+    /// - Parameter notification: The notification containing interruption details.
+    @objc private func handleAudioSessionInterrupted(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
             return
         }
         
-        do {
-            try recordingSession?.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
-            try recordingSession?.setActive(true, options: .notifyOthersOnDeactivation)
-            print("[setupAudioSession] Called by \(caller) - Audio session successfully set up")
-        } catch {
-            DispatchQueue.main.async { [weak self] in
-                self?.errorMessage = "Failed to set up audio session: \(error.localizedDescription)"
-                print("[setupAudioSession] Called by \(caller) - Setup failed: \(error.localizedDescription)")
+        switch type {
+        case .began:
+            print("[AudioState] Audio session interruption began.")
+            // Pause or stop audio-related tasks
+            if isRecording {
+                stopRecording()
             }
+            if isPlaying {
+                pausePlayback()
+            }
+            
+        case .ended:
+            print("[AudioState] Audio session interruption ended.")
+            // Optionally, reactivate the session and resume tasks
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+                print("[AudioState] Audio session reactivated after interruption.")
+                // Resume recording if background recording is enabled
+                if isBackgroundRecordingEnabled && !isRecording {
+                    startRecording(manual: false)
+                }
+            } catch {
+                print("[AudioState] Failed to reactivate audio session after interruption: \(error.localizedDescription)")
+                errorMessage = "Failed to reactivate audio session after interruption."
+            }
+            
+        @unknown default:
+            print("[AudioState] Unknown audio session interruption type.")
         }
+    }
+    
+    // MARK: - WebSocket Setup
+    
+    /// Assigns the WebSocket manager, enabling live audio streaming functionality.
+    /// - Parameter manager: An object conforming to `WebSocketManagerProtocol`.
+    public func setupWebSocket(manager: WebSocketManagerProtocol) {
+        self.webSocketManager = manager
+        AudioEngineManager.shared.assignWebSocketManager(manager: manager) // Assign WebSocket manager to AudioEngineManager
     }
     
     // MARK: - Recording Controls
@@ -491,13 +535,10 @@ public class AudioState: NSObject, AudioStateProtocol {
         AudioFileManager.shared.formattedFileSize(bytes: bytes)
     }
     
-    // MARK: - AudioLevelPublisher
+    // MARK: - Cleanup
     
-    /// Publisher that emits the current audio level (normalized between 0.0 and 1.0).
-    public var audioLevelPublisher: AnyPublisher<Float, Never> {
-        soundMeasurementManager.$currentAudioLevel
-            .map { Float($0) }
-            .eraseToAnyPublisher()
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 

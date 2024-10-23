@@ -3,24 +3,26 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html  # Import Swagger UI
-from route.socket import ping, whisper_tts
+from route.dev import ping
+from route.socket import whisper_tts
 from route.post.text.llm_inference.claude import router as claude_router
 from route.humeclient import router as hume_router
 from route.post.text.embedding.index import router as embeddings_router
 # from backend.examples.textEmbeddingRoutev1 import router as embeddings_router  # Embeddings import
 # from routers.post.image_generation.FLUXLORAFAL import router as fluxlora_router  # Disabled import
-from route.post.media.image_generation.fast_sdxl import router as sdxl_router  # Fast-SDXL model router
-from route.post.audio.diarization.index import router as diarization_router  # Diarization router
+from route.post.image_generation.fast_sdxl import router as sdxl_router  # Fast-SDXL model router
+# from route.post.audio.diarization.index import router as diarization_router  # rm 4 gemini
 # from backend.examples.openai_post import router as openai_router  # OpenAI (GPT-4o-mini) router
 from route.post.text.llm_inference.OpenAIRoute import router as openai_router
 from route.post.text.chatgpt_share.index import router as share_oai_chats_router
-from route.post.audio.transcription.falIndex import router as transcription_router
-from route.post.geminiflash.index import router as gemini_router
-from route.post.media.upload.Index import router as media_router
-from route.post.geminiflash.gemini_socket import router as gemini_socket_router
-from utils.ngrokUtils import start_ngrok 
+# from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
+from route.post.gemini_flash_series.gemini_index import router as gemini_router
+# from route.post.media.upload.Index import router as media_router unneeded
+from route.post.gemini_flash_series.gemini_socket import router as gemini_socket_router
+from route.dev.cat_dir import router as cat_directory_router
+from utils.ngrok_utils import start_ngrok 
 import ngrok 
-from utils.serverManager import ServerManager  # sees If port is open if so closes the port so the server can init
+from utils.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
 from dotenv import load_dotenv  # Load environment variables from .env
 import os
 import socket
@@ -56,12 +58,14 @@ app.add_middleware(
 )
 
 # ------------------ API Routes -------------------------------------
+
 # Socket-based routes (ping, whisper-tts)
 app.include_router(ping.router)  # Ping route for WebSocket health check
+
 app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 
 # Claude/OpenAI LLM routes
-app.include_router(claude_router, prefix="/v3/claude")  # LLM inference (Claude)
+app.include_router(claude_router, prefix="/v3/claude") 
 
 # Hume AI route (speech prosody, emotional analysis)
 app.include_router(hume_router, prefix="/api/v1/hume")
@@ -74,21 +78,24 @@ app.include_router(embeddings_router) # , prefix="/embeddings")
 app.include_router(sdxl_router, prefix="/api")  # Fast-SDXL image generation
 
 # Include the transcription router
-app.include_router(transcription_router, prefix="/api",tags=["Transcription"])
+# app.include_router(transcription_router, prefix="/api",tags=["Transcription"])
 
 # OpenAI GPT model routes (GPT-4o-mini, configurable models)
 app.include_router(openai_router, prefix="/LLM")
 
 # Diarization route (speaker separation)
-app.include_router(diarization_router, prefix="/api")
+# app.include_router(diarization_router, prefix="/api")
 
 # ChatGPT share conversation route
 app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # New route for ChatGPT share conversations
 
-app.include_router(media_router, prefix="/media")  # <-- Include media router with a prefix
+# app.include_router(media_router, prefix="/media")  # <-- Include media router with a prefix
 
 app.include_router(gemini_router, prefix="/api/gemini")  # <-- Added Gemini router with prefix
+
 app.include_router(gemini_socket_router, prefix="/api/gemini")
+
+app.include_router(cat_directory_router)
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately

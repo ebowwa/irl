@@ -1,5 +1,5 @@
 //
-//  SpeechRecognition.swift
+//  SpeechRecognitionManager.swift
 //  IRL-AudioCore
 //
 //  Created by Elijah Arbee on 9/6/24.
@@ -32,6 +32,9 @@ public class SpeechRecognitionManager: ObservableObject {
     
     // **New Published Property for Authorization Status**
     @Published public var isAuthorized: Bool = false
+    
+    // **New Published Property for Active State**
+    @Published public var isSpeechRecognitionActive: Bool = false
     
     // MARK: - Speech Detection Callbacks
     public var onSpeechStart: (() -> Void)?
@@ -86,6 +89,7 @@ public class SpeechRecognitionManager: ObservableObject {
         setupSpeechRecognition()
         subscribeToAudioBuffers()
         audioEngineManager.startEngine()
+        isSpeechRecognitionActive = true // Update active state
     }
     
     /// Stops the speech recognition recording.
@@ -96,6 +100,7 @@ public class SpeechRecognitionManager: ObservableObject {
         }
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()
+        isSpeechRecognitionActive = false // Update active state
     }
     
     // MARK: - Recognition Task Reset

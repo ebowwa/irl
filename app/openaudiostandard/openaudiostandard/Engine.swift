@@ -3,11 +3,11 @@
 //  IRL-AudioCore
 //  Created by Elijah Arbee on 10/21/24.
 //
+//
 
 import Foundation
 import Combine
 import AVFoundation
-
 
 // MARK: - AudioEngineManager
 
@@ -43,19 +43,7 @@ public class AudioEngineManager: NSObject, AudioEngineManagerProtocol {
     
     public override init() {
         super.init()
-        setupAudioSession()
-    }
-    
-    /// Sets up the AVAudioSession for the audio engine.
-    private func setupAudioSession() {
-        let recordingSession = AVAudioSession.sharedInstance()
-        do {
-            try recordingSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
-            try recordingSession.setActive(true)
-            print("[AudioEngineManager] Audio session successfully set up.")
-        } catch {
-            print("[AudioEngineManager] Failed to set up audio session: \(error.localizedDescription)")
-        }
+        // Removed setupAudioSession as AudioState handles it
     }
     
     /// Assigns the WebSocket manager for live streaming.
