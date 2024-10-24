@@ -40,7 +40,7 @@ async def generate_content(
     text: Optional[str] = Form(None, description="Input text prompt"),
     language: Optional[str] = Form("en", description="Language code", example="en"),
     candidate_count: int = Form(1, description="Number of candidate responses", ge=1, le=5),
-    max_output_tokens: int = Form(500, description="Maximum number of tokens in the output", ge=1, le=8192),
+    max_output_tokens: int = Form(8192, description="Maximum number of tokens in the output", ge=1, le=8192),
     temperature: float = Form(0.95, description="Sampling temperature", ge=0.0, le=2.0),
     top_p: float = Form(0.9, description="Nucleus sampling parameter", ge=0.0, le=1.0),
     response_mime_type: str = Form("application/json", description="Response MIME type", example="application/json"),
@@ -78,8 +78,13 @@ async def generate_content(
         "response_mime_type": response_mime_type
     }
 
-    # Safety settings (empty for this example, customize as needed)
-    safety_settings = {}
+    # Safety settings TODO: make more complete with customizable(on client request)by predefined options(server)
+    safety_settings={
+        'HATE': 'BLOCK_NONE',
+        'HARASSMENT': 'BLOCK_NONE',
+        'SEXUAL': 'BLOCK_NONE',
+        'DANGEROUS': 'BLOCK_NONE'
+    }
 
     try:
         # Initialize the generative model
