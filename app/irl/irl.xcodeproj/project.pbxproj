@@ -10,19 +10,6 @@
 		763BA8132CB74E80003A0CDB /* ComplexModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8122CB74E80003A0CDB /* ComplexModule */; };
 		763BA8152CB74E80003A0CDB /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8142CB74E80003A0CDB /* Numerics */; };
 		763BA8172CB74E80003A0CDB /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8162CB74E80003A0CDB /* RealModule */; };
-		764859352CC703C00067CB1B /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764859262CC703C00067CB1B /* Engine.swift */; };
-		764859362CC703C00067CB1B /* socketmanager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7648592B2CC703C00067CB1B /* socketmanager.swift */; };
-		764859372CC703C00067CB1B /* openaudiostandard.docc in Sources */ = {isa = PBXBuildFile; fileRef = 764859292CC703C00067CB1B /* openaudiostandard.docc */; };
-		764859382CC703C00067CB1B /* SpeechRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7648592D2CC703C00067CB1B /* SpeechRecognition.swift */; };
-		764859392CC703C00067CB1B /* openaudiostandardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7648592F2CC703C00067CB1B /* openaudiostandardTests.swift */; };
-		7648593A2CC703C00067CB1B /* AudioRecordingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764859232CC703C00067CB1B /* AudioRecordingModel.swift */; };
-		7648593B2CC703C00067CB1B /* AudioFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764859222CC703C00067CB1B /* AudioFileManager.swift */; };
-		7648593C2CC703C00067CB1B /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764859282CC703C00067CB1B /* Location.swift */; };
-		7648593D2CC703C00067CB1B /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7648592A2CC703C00067CB1B /* Protocols.swift */; };
-		7648593E2CC703C00067CB1B /* SoundMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7648592C2CC703C00067CB1B /* SoundMeasurement.swift */; };
-		7648593F2CC703C00067CB1B /* IRL_AudioCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 764859272CC703C00067CB1B /* IRL_AudioCore.docc */; };
-		764859402CC703C00067CB1B /* AudioState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764859242CC703C00067CB1B /* AudioState.swift */; };
-		764859412CC703C00067CB1B /* docs.md in Resources */ = {isa = PBXBuildFile; fileRef = 764859252CC703C00067CB1B /* docs.md */; };
 		764859882CC708540067CB1B /* Package.swift in Resources */ = {isa = PBXBuildFile; fileRef = 764859872CC708540067CB1B /* Package.swift */; };
 		7658CDCD2CBAF8FC000F33C6 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7658CDCC2CBAF8FC000F33C6 /* SQLite */; };
 /* End PBXBuildFile section */
@@ -52,20 +39,6 @@
 
 /* Begin PBXFileReference section */
 		763BA6A72CB644F4003A0CDB /* IRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		764859222CC703C00067CB1B /* AudioFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileManager.swift; sourceTree = "<group>"; };
-		764859232CC703C00067CB1B /* AudioRecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingModel.swift; sourceTree = "<group>"; };
-		764859242CC703C00067CB1B /* AudioState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioState.swift; sourceTree = "<group>"; };
-		764859252CC703C00067CB1B /* docs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = docs.md; sourceTree = "<group>"; };
-		764859262CC703C00067CB1B /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
-		764859272CC703C00067CB1B /* IRL_AudioCore.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = IRL_AudioCore.docc; sourceTree = "<group>"; };
-		764859282CC703C00067CB1B /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
-		764859292CC703C00067CB1B /* openaudiostandard.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = openaudiostandard.docc; sourceTree = "<group>"; };
-		7648592A2CC703C00067CB1B /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
-		7648592B2CC703C00067CB1B /* socketmanager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = socketmanager.swift; sourceTree = "<group>"; };
-		7648592C2CC703C00067CB1B /* SoundMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundMeasurement.swift; sourceTree = "<group>"; };
-		7648592D2CC703C00067CB1B /* SpeechRecognition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognition.swift; sourceTree = "<group>"; };
-		7648592F2CC703C00067CB1B /* openaudiostandardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = openaudiostandardTests.swift; sourceTree = "<group>"; };
-		764859312CC703C00067CB1B /* openaudiostandard.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = openaudiostandard.xcodeproj; sourceTree = "<group>"; };
 		764859872CC708540067CB1B /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,6 +59,11 @@
 				7658C8DA2CB83D07000F33C6 /* Exceptions for "IRL" folder in "IRL" target */,
 			);
 			path = IRL;
+			sourceTree = "<group>";
+		};
+		7672F3A42CC998FA002B64C2 /* openaudiostandard */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = openaudiostandard;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -123,56 +101,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7648592E2CC703C00067CB1B /* openaudiostandard */ = {
-			isa = PBXGroup;
-			children = (
-				764859222CC703C00067CB1B /* AudioFileManager.swift */,
-				764859232CC703C00067CB1B /* AudioRecordingModel.swift */,
-				764859242CC703C00067CB1B /* AudioState.swift */,
-				764859252CC703C00067CB1B /* docs.md */,
-				764859262CC703C00067CB1B /* Engine.swift */,
-				764859272CC703C00067CB1B /* IRL_AudioCore.docc */,
-				764859282CC703C00067CB1B /* Location.swift */,
-				764859292CC703C00067CB1B /* openaudiostandard.docc */,
-				7648592A2CC703C00067CB1B /* Protocols.swift */,
-				7648592B2CC703C00067CB1B /* socketmanager.swift */,
-				7648592C2CC703C00067CB1B /* SoundMeasurement.swift */,
-				7648592D2CC703C00067CB1B /* SpeechRecognition.swift */,
-			);
-			path = openaudiostandard;
-			sourceTree = "<group>";
-		};
-		764859302CC703C00067CB1B /* openaudiostandardTests */ = {
-			isa = PBXGroup;
-			children = (
-				7648592F2CC703C00067CB1B /* openaudiostandardTests.swift */,
-			);
-			path = openaudiostandardTests;
-			sourceTree = "<group>";
-		};
-		764859322CC703C00067CB1B /* openaudiostandard */ = {
-			isa = PBXGroup;
-			children = (
-				7648592E2CC703C00067CB1B /* openaudiostandard */,
-				764859302CC703C00067CB1B /* openaudiostandardTests */,
-				764859312CC703C00067CB1B /* openaudiostandard.xcodeproj */,
-			);
-			path = openaudiostandard;
-			sourceTree = "<group>";
-		};
 		764859622CC703DC0067CB1B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				764859322CC703C00067CB1B /* openaudiostandard */,
+				7672F3A42CC998FA002B64C2 /* openaudiostandard */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		7648597F2CC704030067CB1B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -194,6 +128,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				763BA6A92CB644F4003A0CDB /* IRL */,
+				7672F3A42CC998FA002B64C2 /* openaudiostandard */,
 			);
 			name = IRL;
 			packageProductDependencies = (
@@ -239,12 +174,6 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 763BA6A82CB644F4003A0CDB /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 7648597F2CC704030067CB1B /* Products */;
-					ProjectRef = 764859312CC703C00067CB1B /* openaudiostandard.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				763BA6A62CB644F4003A0CDB /* IRL */,
@@ -258,7 +187,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				764859882CC708540067CB1B /* Package.swift in Resources */,
-				764859412CC703C00067CB1B /* docs.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,18 +197,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				764859352CC703C00067CB1B /* Engine.swift in Sources */,
-				764859362CC703C00067CB1B /* socketmanager.swift in Sources */,
-				764859372CC703C00067CB1B /* openaudiostandard.docc in Sources */,
-				764859382CC703C00067CB1B /* SpeechRecognition.swift in Sources */,
-				764859392CC703C00067CB1B /* openaudiostandardTests.swift in Sources */,
-				7648593A2CC703C00067CB1B /* AudioRecordingModel.swift in Sources */,
-				7648593B2CC703C00067CB1B /* AudioFileManager.swift in Sources */,
-				7648593C2CC703C00067CB1B /* Location.swift in Sources */,
-				7648593D2CC703C00067CB1B /* Protocols.swift in Sources */,
-				7648593E2CC703C00067CB1B /* SoundMeasurement.swift in Sources */,
-				7648593F2CC703C00067CB1B /* IRL_AudioCore.docc in Sources */,
-				764859402CC703C00067CB1B /* AudioState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

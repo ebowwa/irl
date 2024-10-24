@@ -7,7 +7,7 @@
 
 import Foundation
 import Combine
-import AVFoundation  // Ensure this import is present
+import AVFoundation
 
 // MARK: - WebSocketManagerProtocol
 
@@ -43,6 +43,19 @@ public protocol AudioEngineManagerProtocol: AnyObject {
     
     /// Stops recording audio to a file.
     func stopRecording()
+}
+
+// MARK: - RecordingManagerProtocol
+
+public protocol RecordingManagerProtocol: AnyObject {
+    var isRecording: AnyPublisher<Bool, Never> { get }
+    var recordingTime: AnyPublisher<TimeInterval, Never> { get }
+    var recordingProgress: AnyPublisher<Double, Never> { get }
+    var errorMessage: AnyPublisher<String?, Never> { get }
+    
+    func startRecording()
+    func stopRecording()
+    func currentRecordingURL() -> URL?
 }
 
 // MARK: - AudioStateProtocol
@@ -86,4 +99,8 @@ public protocol AudioStateProtocol: ObservableObject {
     
     // Utility
     func formattedFileSize(bytes: Int64) -> String
+    
+    // Additional Recording Methods
+    func startRecording(manual: Bool)
+    func currentRecordingURL() -> URL?
 }

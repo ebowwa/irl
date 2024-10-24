@@ -1,9 +1,5 @@
-//
-//  AudioState.swift
-//  openaudiostandard
-//
-//  Created by Elijah Arbee on 10/23/24.
-//
+// AudioState.swift
+// openaudiostandard
 
 import Foundation
 import AVFoundation
@@ -68,7 +64,20 @@ public class AudioState: NSObject, AudioStateProtocol {
     // MARK: - Publishers
     
     private var cancellables: Set<AnyCancellable> = []
-    private var audioEngineCancellables: Set<AnyCancellable> = []
+    
+    // MARK: - Audio Level Publisher
+    
+    public var audioLevelPublisher: AnyPublisher<Float, Never> {
+        soundMeasurementManager.$currentAudioLevel
+            .map { Float($0) }
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Error Message Publisher
+    
+    public var errorMessagePublisher: AnyPublisher<String?, Never> {
+        $errorMessage.eraseToAnyPublisher()
+    }
     
     // MARK: - Initialization
 
@@ -96,7 +105,7 @@ public class AudioState: NSObject, AudioStateProtocol {
             .sink { [weak self] level in
                 self?.recordingProgress = level
             }
-            .store(in: &audioEngineCancellables)
+            .store(in: &cancellables)
         
         // Subscribe to speech detection updates if needed
         // Additional bindings can be added here
@@ -228,7 +237,7 @@ public class AudioState: NSObject, AudioStateProtocol {
         
         if webSocketManager != nil {
             // Start live streaming via AudioEngineManager
-            AudioEngineManager.shared.startEngine()
+            audioEngineManager.startEngine()
             // Start file recording
             startFileRecording()
             DispatchQueue.main.async { [weak self] in
@@ -251,7 +260,7 @@ public class AudioState: NSObject, AudioStateProtocol {
         
         if webSocketManager != nil {
             // Stop live streaming via AudioEngineManager
-            AudioEngineManager.shared.stopEngine()
+            audioEngineManager.stopEngine()
         }
         
         // Stop file recording
@@ -301,7 +310,6 @@ public class AudioState: NSObject, AudioStateProtocol {
                 self?.errorMessage = "Could not start recording: \(error.localizedDescription)"
             }
         }
-
     }
     
     // MARK: - Recording Timer
@@ -390,8 +398,9 @@ public class AudioState: NSObject, AudioStateProtocol {
     }
     
     /// Fetches the list of recordings, useful for reloading the list in the UI.
-    public func fetchRecordings() {
+    public func fetchRecordings() -> [AudioRecording] {
         updateLocalRecordings()
+        return localRecordings
     }
     
     /// Deletes a recording file from local storage and updates the list of recordings.
@@ -481,20 +490,8 @@ public class AudioState: NSObject, AudioStateProtocol {
         AudioFileManager.shared.formattedFileSize(bytes: bytes)
     }
     
-    // MARK: - AudioLevelPublisher
+    // MARK: - AVAudioRecorderDelegate
     
-    /// Publisher that emits the current audio level (normalized between 0.0 and 1.0).
-    public var audioLevelPublisher: AnyPublisher<Float, Never> {
-        soundMeasurementManager.$currentAudioLevel
-            .map { Float($0) }
-            .eraseToAnyPublisher()
-    }
-}
-
-// MARK: - AVAudioRecorderDelegate
-
-extension AudioState: AVAudioRecorderDelegate {
-    // Called when recording finishes, either successfully or with an error.
     public func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
             DispatchQueue.main.async { [weak self] in
@@ -504,7 +501,6 @@ extension AudioState: AVAudioRecorderDelegate {
         }
     }
     
-    // Called when recording encounters an encoding error.
     public func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
         if let error = error {
             DispatchQueue.main.async { [weak self] in
@@ -513,12 +509,9 @@ extension AudioState: AVAudioRecorderDelegate {
             }
         }
     }
-}
-
-// MARK: - AVAudioPlayerDelegate
-
-extension AudioState: AVAudioPlayerDelegate {
-    // Called when playback finishes, either successfully or with an error.
+    
+    // MARK: - AVAudioPlayerDelegate
+    
     public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         DispatchQueue.main.async { [weak self] in
             self?.isPlaying = false // Resets the isPlaying flag when playback is finished.
@@ -528,7 +521,6 @@ extension AudioState: AVAudioPlayerDelegate {
         }
     }
     
-    // Called when playback encounters an error.
     public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         if let error = error {
             DispatchQueue.main.async { [weak self] in

@@ -4,6 +4,8 @@
 //
 //  Created by Elijah Arbee on 10/23/24.
 //
+// AudioPlaybackManager.swift
+// openaudiostandard
 
 import Foundation
 import AVFoundation
@@ -11,19 +13,30 @@ import Combine
 
 public class AudioPlaybackManager: NSObject, AVAudioPlayerDelegate, ObservableObject {
     
-    // Published properties
+    // MARK: - Singleton Instance
+    
+    /// Shared instance of AudioPlaybackManager for global access.
+    public static let shared = AudioPlaybackManager()
+    
+    // MARK: - Published Properties
+    
     @Published public private(set) var isPlaying: Bool = false
     @Published public var errorMessage: String?
     
-    // Private properties
+    // MARK: - Private Properties
+    
     private var audioPlayer: AVAudioPlayer?
     
-    // Initialization
+    // MARK: - Initialization
+    
     public override init() {
         super.init()
     }
     
-    // Start Playback
+    // MARK: - Public Methods
+    
+    /// Starts playback for a given audio file URL.
+    /// - Parameter url: The URL of the audio file to play.
     public func startPlayback(for url: URL?) {
         guard let url = url else {
             errorMessage = "Invalid audio URL."
@@ -42,25 +55,30 @@ public class AudioPlaybackManager: NSObject, AVAudioPlayerDelegate, ObservableOb
         }
     }
     
-    // Pause Playback
+    /// Pauses the current audio playback.
     public func pausePlayback() {
         guard isPlaying else { return }
         audioPlayer?.pause()
         isPlaying = false
     }
     
-    // AVAudioPlayerDelegate Methods
+    // MARK: - AVAudioPlayerDelegate Methods
+    
     public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        isPlaying = false
-        if !flag {
-            errorMessage = "Playback did not finish successfully."
+        DispatchQueue.main.async { [weak self] in
+            self?.isPlaying = false
+            if !flag {
+                self?.errorMessage = "Playback did not finish successfully."
+            }
         }
     }
     
     public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         if let error = error {
-            errorMessage = "Playback decode error: \(error.localizedDescription)"
-            isPlaying = false
+            DispatchQueue.main.async { [weak self] in
+                self?.errorMessage = "Playback decode error: \(error.localizedDescription)"
+                self?.isPlaying = false
+            }
         }
     }
 }

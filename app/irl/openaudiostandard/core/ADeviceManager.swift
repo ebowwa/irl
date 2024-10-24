@@ -1,14 +1,9 @@
-//
-//  ADeviceManager.swift
-//  openaudiostandard
-//
-//  Created by Elijah Arbee on 10/23/24.
-//
+// DeviceManager.swift
 
 import Foundation
 import AVFoundation
 
-protocol Device: AnyObject {
+public protocol Device: AnyObject {
     var identifier: UUID { get }
     var name: String { get }
     var isConnected: Bool { get set }
@@ -20,39 +15,39 @@ protocol Device: AnyObject {
     func stopRecording()
 }
 
-class AudioDevice: Device {
-    let identifier: UUID
-    let name: String
-    var isConnected: Bool = false
-    var isRecording: Bool = false
-    var isPlaying: Bool = false
+public class AudioDevice: Device {
+    public let identifier: UUID
+    public let name: String
+    public var isConnected: Bool = false
+    public var isRecording: Bool = false
+    public var isPlaying: Bool = false
 
     private var audioState: AudioState
 
-    init(name: String, audioState: AudioState = .shared) {
+    public init(name: String, audioState: AudioState = .shared) {
         self.identifier = UUID()
         self.name = name
         self.audioState = audioState
     }
 
-    func connect() {
+    public func connect() {
         isConnected = true
         print("\(name) connected.")
     }
 
-    func disconnect() {
+    public func disconnect() {
         isConnected = false
         print("\(name) disconnected.")
     }
 
-    func startRecording() {
+    public func startRecording() {
         guard isConnected else { return }
-        audioState.startRecording(manual: true) // Pass the 'manual' parameter here
+        audioState.startRecording(manual: true)
         isRecording = true
         print("Recording started on \(name).")
     }
 
-    func stopRecording() {
+    public func stopRecording() {
         guard isConnected else { return }
         audioState.stopRecording()
         isRecording = false
@@ -60,42 +55,24 @@ class AudioDevice: Device {
     }
 }
 
-//
-//  DeviceManager.swift
-//  IRL
-//
-//  Created by Elijah Arbee on 10/23/24.
-//
-
-
-//
-//  DeviceManager.swift
-//  IRL
-//
-//  Created by Elijah Arbee on 10/10/24.
-//
-
-
-import Foundation
-
-class DeviceManager: ObservableObject {
-    @Published private(set) var connectedDevices: [Device] = []
+public class DeviceManager: ObservableObject {
+    @Published private(set) public var connectedDevices: [Device] = []
 
     // Singleton instance for global access.
-    static let shared = DeviceManager()
+    public static let shared = DeviceManager()
 
     private init() {}
 
     // MARK: - Device Management
-    
+
     /// Adds a new device to the manager and connects it.
-    func addDevice(_ device: Device) {
+    public func addDevice(_ device: Device) {
         connectedDevices.append(device)
         device.connect()
     }
 
     /// Removes a device from the manager and disconnects it.
-    func removeDevice(_ device: Device) {
+    public func removeDevice(_ device: Device) {
         device.disconnect()
         if let index = connectedDevices.firstIndex(where: { $0.identifier == device.identifier }) {
             connectedDevices.remove(at: index)
@@ -103,26 +80,26 @@ class DeviceManager: ObservableObject {
     }
 
     // MARK: - Recording Controls
-    
+
     /// Starts recording on a specific device.
-    func startRecording(on device: Device) {
+    public func startRecording(on device: Device) {
         device.startRecording()
     }
 
     /// Stops recording on a specific device.
-    func stopRecording(on device: Device) {
+    public func stopRecording(on device: Device) {
         device.stopRecording()
     }
 
     /// Starts recording on all connected devices.
-    func startRecordingOnAllDevices() {
+    public func startRecordingOnAllDevices() {
         for device in connectedDevices where device.isConnected {
             device.startRecording()
         }
     }
 
     /// Stops recording on all connected devices.
-    func stopRecordingOnAllDevices() {
+    public func stopRecordingOnAllDevices() {
         for device in connectedDevices where device.isConnected {
             device.stopRecording()
         }

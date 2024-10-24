@@ -54,8 +54,6 @@ struct TabButton: View {
     }
 }
 
-// File 3: ContentView.swift
-
 import SwiftUI
 import Combine
 import Foundation
@@ -69,7 +67,7 @@ struct ContentView: View {
     @State private var selectedTab: Int = 0
     @State private var areTabsVisible: Bool = true // State to control tab visibility
     
-    // Moved States from SocialFeedView
+    // States from SocialFeedView
     @StateObject private var socialFeedViewModel = SocialFeedViewModel(posts: [])
     @State private var isMenuOpen = false // Track if the menu is open
     @State private var demoMode: Bool = true
@@ -101,7 +99,7 @@ struct ContentView: View {
                 title: "Live",
                 icon: "waveform",
                 selectedIcon: "waveform.badge.microphone",
-                content: { AnyView(SimpleLocalTranscription()) }, // SimpleLocalTranscription //GeminiChatView
+                content: { AnyView(SimpleLocalTranscription()) },
                 showButtons: true
             ),
             TabItem(
@@ -135,8 +133,8 @@ struct ContentView: View {
             Spacer()
             
             // Bottom Tab Buttons - Modular control over whether buttons should be visible
-            if shouldShowTabs(for: selectedTab) { // Modular control here
-                HStack(spacing: 4) { // Reduced spacing to make buttons nearly touch
+            if shouldShowTabs(for: selectedTab) {
+                HStack(spacing: 4) {
                     ForEach(tabs.indices, id: \.self) { index in
                         let tab = tabs[index]
                         TabButton(
@@ -161,10 +159,12 @@ struct ContentView: View {
         .edgesIgnoringSafeArea(.bottom)
         .onAppear {
             setupAppearance()
-            // Ensure that the audio session is set up and recording starts automatically if enabled
+            
+            // Ensure the audio session is set up and recording starts automatically
             if audioState.isBackgroundRecordingEnabled {
-                audioState.startRecording(manual: false) // Automatically start recording
+                audioState.startRecording(manual: false)
             }
+            
             // Load demo or real data based on demoMode
             loadData()
             
@@ -173,13 +173,11 @@ struct ContentView: View {
         }
         .preferredColorScheme(globalState.currentTheme == .dark ? .dark : .light)
         .sheet(isPresented: $showSettingsView) {
-            SettingsView() // Present SettingsView as a modal
+            SettingsView()
         }
-        // Listen to changes in the speech recognition state
         .onReceive(speechRecognitionManager.$isSpeechDetected) { isDetected in
             updateModelStatus(isActive: isDetected)
         }
-        // Present the alert when needed
         .alert(isPresented: $showModelStatusAlert) {
             Alert(
                 title: Text(modelStatusMessage),
@@ -196,15 +194,14 @@ struct ContentView: View {
     
     // MARK: - Modular Approach for Tab Visibility
     private func shouldShowTabs(for selectedIndex: Int) -> Bool {
-        // Use the model's `showButtons` to decide visibility
         guard let currentTab = tabs[safe: selectedIndex] else { return false }
-        return currentTab.showButtons // You can expand this logic as needed
+        return currentTab.showButtons
     }
     
     // MARK: - Load Data Function
     private func loadData() {
         if demoMode {
-            socialFeedViewModel.loadDemoData() // Load demo data via ViewModel
+            socialFeedViewModel.loadDemoData()
         } else {
             // Load real data here
         }
@@ -213,16 +210,10 @@ struct ContentView: View {
     // MARK: - Update Model Status
     
     private func updateModelStatus(isActive: Bool) {
-        if isActive {
-            modelStatusMessage = "Speech Recognition Active"
-        } else {
-            modelStatusMessage = "Speech Recognition Not Active"
-        }
+        modelStatusMessage = isActive ? "Speech Recognition Active" : "Speech Recognition Not Active"
         showModelStatusAlert = true
     }
 }
-
-
 
 // MARK: - Array Safe Subscript Extension
 extension Array {

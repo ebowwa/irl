@@ -21,7 +21,7 @@ public class OpenAudioSDK {
     // MARK: - Private Properties
     
     private let audioEngineManager: AudioEngineManagerProtocol
-    private let audioState: AudioStateProtocol
+    private let audioState: any AudioStateProtocol
     private let audioFileManager: AudioFileManager
     private let deviceManager: DeviceManager
     private let soundMeasurementManager: SoundMeasurementManager
@@ -63,9 +63,9 @@ public class OpenAudioSDK {
     /// Publisher that emits errors encountered within the SDK.
     public var errorPublisher: AnyPublisher<String?, Never> {
         Publishers.MergeMany(
-            audioState.$errorMessage,
-            audioPlaybackManager.$errorMessage,
-            webSocketManager.receivedDataPublisher.map { _ in nil } // Placeholder for WebSocket errors
+            audioState.errorMessagePublisher,
+            audioPlaybackManager.$errorMessage.eraseToAnyPublisher()
+            // Add other error publishers as needed
         )
         .eraseToAnyPublisher()
     }
@@ -162,14 +162,20 @@ public class OpenAudioSDK {
     
     /// Starts monitoring audio levels and speech detection.
     public func startMonitoring() {
-        soundMeasurementManager.handleAudioLevel = { level in
-            // Handle audio level updates if needed
-        }
+        // Subscribe to audio levels if additional handling is needed
+        audioLevelPublisher
+            .sink { [weak self] level in
+                // Handle audio level updates
+                print("Current Audio Level: \(level) dB")
+                // For example, update UI or trigger events based on level
+            }
+            .store(in: &cancellables)
     }
     
     /// Stops monitoring audio levels and speech detection.
     public func stopMonitoring() {
-        // Implement if necessary
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
     }
     
     // MARK: - Private Methods
@@ -179,18 +185,32 @@ public class OpenAudioSDK {
         // Example: Update audio state based on device connections
         deviceManager.$connectedDevices
             .sink { [weak self] devices in
-                // Handle connected devices
-                // Example: Start recording on all connected devices
-                self?.audioState.startRecordingOnAllDevices()
+                guard let self = self else { return }
+                if !devices.isEmpty {
+                    self.deviceManager.startRecordingOnAllDevices()
+                } else {
+                    self.deviceManager.stopRecordingOnAllDevices()
+                }
             }
             .store(in: &cancellables)
         
         // Subscribe to error messages and propagate them through the SDK's errorPublisher
-        audioState.$errorMessage
+        audioState.errorMessagePublisher
             .sink { [weak self] error in
                 if let error = error {
                     // Handle or log the error as needed
+                    print("AudioState Error: \(error)")
+                    // Optionally, propagate the error to consumers
                 }
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to audio level updates if additional handling is needed
+        audioLevelPublisher
+            .sink { [weak self] level in
+                // Handle audio level updates
+                print("Current Audio Level: \(level) dB")
+                // For example, update UI or trigger events based on level
             }
             .store(in: &cancellables)
     }

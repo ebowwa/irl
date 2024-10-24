@@ -1,9 +1,5 @@
-//
-//  SpeechRecognitionManager.swift
-//  openaudiostandard
-//
-//  Created by Elijah Arbee on 9/6/24.
-//
+// SpeechRecognition.swift
+// openaudiostandard
 
 import Foundation
 import Speech
@@ -47,9 +43,6 @@ public class SpeechRecognitionManager: ObservableObject {
     private var lastTranscription: String = ""
     private var cancellables: Set<AnyCancellable> = []
     
-    // MARK: - Streamed Properties
-    private let maxSegmentCount = 10
-    
     // MARK: - Initialization
     
     public init(audioEngineManager: AudioEngineManagerProtocol = AudioEngineManager.shared) {
@@ -84,6 +77,11 @@ public class SpeechRecognitionManager: ObservableObject {
     
     /// Starts the speech recognition recording.
     public func startRecording() {
+        guard isAuthorized else {
+            transcribedText = "Speech recognition not authorized."
+            return
+        }
+        
         guard !audioEngineManager.isEngineRunning else { return }
         resetRecognitionTask()
         setupSpeechRecognition()
@@ -206,4 +204,8 @@ public class SpeechRecognitionManager: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+    // MARK: - Streamed Properties
+    
+    private let maxSegmentCount = 10
 }

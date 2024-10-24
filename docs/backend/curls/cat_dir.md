@@ -173,7 +173,7 @@ curl -X POST "https://4d9b-76-78-246-141.ngrok-free.app/concatenate" \
 ```bash
 curl -X POST "https://4d9b-76-78-246-141.ngrok-free.app/concatenate/custom" \
 -H "Content-Type: application/json" \
--d '{"directory_path": "/Users/ebowwa/irl/backend/route/gemini_flash_series"}' \
+-d '{"directory_path": "/Users/ebowwa/irl/app/IRL/openaudiostandard"}' \
 -o output_custom.json
 ```
 

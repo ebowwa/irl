@@ -4,6 +4,7 @@
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
+// TODO: refractor to make this use RecordingScript
 
 import Foundation
 import Speech

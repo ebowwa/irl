@@ -8,6 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		764858F72CC702E20067CB1B /* openaudiostandard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 764858EC2CC702E20067CB1B /* openaudiostandard.framework */; };
+		7672F4172CC9BFFC002B64C2 /* AProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F40F2CC9BFFC002B64C2 /* AProtocols.swift */; };
+		7672F4182CC9BFFC002B64C2 /* AFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F40D2CC9BFFC002B64C2 /* AFiles.swift */; };
+		7672F4192CC9BFFC002B64C2 /* SpeechRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F4152CC9BFFC002B64C2 /* SpeechRecognition.swift */; };
+		7672F41A2CC9BFFC002B64C2 /* ALocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F40E2CC9BFFC002B64C2 /* ALocation.swift */; };
+		7672F41B2CC9BFFC002B64C2 /* AudioPlaybackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F4122CC9BFFC002B64C2 /* AudioPlaybackManager.swift */; };
+		7672F41C2CC9BFFC002B64C2 /* SocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F4142CC9BFFC002B64C2 /* SocketManager.swift */; };
+		7672F41D2CC9BFFC002B64C2 /* ARecordingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F4102CC9BFFC002B64C2 /* ARecordingModel.swift */; };
+		7672F41E2CC9BFFC002B64C2 /* AudioState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F4132CC9BFFC002B64C2 /* AudioState.swift */; };
+		7672F41F2CC9BFFC002B64C2 /* ASoundMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F4112CC9BFFC002B64C2 /* ASoundMeasurement.swift */; };
+		7672F4202CC9BFFC002B64C2 /* ADeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F40B2CC9BFFC002B64C2 /* ADeviceManager.swift */; };
+		7672F4212CC9BFFC002B64C2 /* AEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F40C2CC9BFFC002B64C2 /* AEngine.swift */; };
+		7672F4222CC9BFFC002B64C2 /* AConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F40A2CC9BFFC002B64C2 /* AConverter.swift */; };
+		7672F4272CC9C2DA002B64C2 /* OpenAudioSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7672F4262CC9C2DA002B64C2 /* OpenAudioSDK.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,14 +36,22 @@
 /* Begin PBXFileReference section */
 		764858EC2CC702E20067CB1B /* openaudiostandard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = openaudiostandard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		764858F62CC702E20067CB1B /* openaudiostandardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = openaudiostandardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7672F40A2CC9BFFC002B64C2 /* AConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AConverter.swift; sourceTree = "<group>"; };
+		7672F40B2CC9BFFC002B64C2 /* ADeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ADeviceManager.swift; sourceTree = "<group>"; };
+		7672F40C2CC9BFFC002B64C2 /* AEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEngine.swift; sourceTree = "<group>"; };
+		7672F40D2CC9BFFC002B64C2 /* AFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFiles.swift; sourceTree = "<group>"; };
+		7672F40E2CC9BFFC002B64C2 /* ALocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALocation.swift; sourceTree = "<group>"; };
+		7672F40F2CC9BFFC002B64C2 /* AProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AProtocols.swift; sourceTree = "<group>"; };
+		7672F4102CC9BFFC002B64C2 /* ARecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARecordingModel.swift; sourceTree = "<group>"; };
+		7672F4112CC9BFFC002B64C2 /* ASoundMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASoundMeasurement.swift; sourceTree = "<group>"; };
+		7672F4122CC9BFFC002B64C2 /* AudioPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackManager.swift; sourceTree = "<group>"; };
+		7672F4132CC9BFFC002B64C2 /* AudioState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioState.swift; sourceTree = "<group>"; };
+		7672F4142CC9BFFC002B64C2 /* SocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketManager.swift; sourceTree = "<group>"; };
+		7672F4152CC9BFFC002B64C2 /* SpeechRecognition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognition.swift; sourceTree = "<group>"; };
+		7672F4262CC9C2DA002B64C2 /* OpenAudioSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAudioSDK.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		764858EE2CC702E20067CB1B /* openaudiostandard */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = openaudiostandard;
-			sourceTree = "<group>";
-		};
 		764858FA2CC702E20067CB1B /* openaudiostandardTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = openaudiostandardTests;
@@ -60,9 +81,9 @@
 		764858E22CC702E20067CB1B = {
 			isa = PBXGroup;
 			children = (
-				764858EE2CC702E20067CB1B /* openaudiostandard */,
 				764858FA2CC702E20067CB1B /* openaudiostandardTests */,
 				764858ED2CC702E20067CB1B /* Products */,
+				7672F4162CC9BFFC002B64C2 /* openaudiostandard */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,6 +94,50 @@
 				764858F62CC702E20067CB1B /* openaudiostandardTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7672F4162CC9BFFC002B64C2 /* openaudiostandard */ = {
+			isa = PBXGroup;
+			children = (
+				7672F4262CC9C2DA002B64C2 /* OpenAudioSDK.swift */,
+				7672F4252CC9C0EE002B64C2 /* controls */,
+				7672F4242CC9C0D1002B64C2 /* features */,
+				7672F4232CC9C0B3002B64C2 /* core */,
+			);
+			path = openaudiostandard;
+			sourceTree = "<group>";
+		};
+		7672F4232CC9C0B3002B64C2 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				7672F40D2CC9BFFC002B64C2 /* AFiles.swift */,
+				7672F40C2CC9BFFC002B64C2 /* AEngine.swift */,
+				7672F40B2CC9BFFC002B64C2 /* ADeviceManager.swift */,
+				7672F4132CC9BFFC002B64C2 /* AudioState.swift */,
+				7672F4142CC9BFFC002B64C2 /* SocketManager.swift */,
+				7672F40F2CC9BFFC002B64C2 /* AProtocols.swift */,
+				7672F4102CC9BFFC002B64C2 /* ARecordingModel.swift */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		7672F4242CC9C0D1002B64C2 /* features */ = {
+			isa = PBXGroup;
+			children = (
+				7672F4112CC9BFFC002B64C2 /* ASoundMeasurement.swift */,
+				7672F4152CC9BFFC002B64C2 /* SpeechRecognition.swift */,
+				7672F40A2CC9BFFC002B64C2 /* AConverter.swift */,
+				7672F40E2CC9BFFC002B64C2 /* ALocation.swift */,
+			);
+			path = features;
+			sourceTree = "<group>";
+		};
+		7672F4252CC9C0EE002B64C2 /* controls */ = {
+			isa = PBXGroup;
+			children = (
+				7672F4122CC9BFFC002B64C2 /* AudioPlaybackManager.swift */,
+			);
+			path = controls;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -100,9 +165,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				764858EE2CC702E20067CB1B /* openaudiostandard */,
 			);
 			name = openaudiostandard;
 			packageProductDependencies = (
@@ -146,6 +208,7 @@
 				TargetAttributes = {
 					764858EB2CC702E20067CB1B = {
 						CreatedOnToolsVersion = 16.0;
+						LastSwiftMigration = 1600;
 					};
 					764858F52CC702E20067CB1B = {
 						CreatedOnToolsVersion = 16.0;
@@ -194,6 +257,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7672F4172CC9BFFC002B64C2 /* AProtocols.swift in Sources */,
+				7672F4182CC9BFFC002B64C2 /* AFiles.swift in Sources */,
+				7672F4192CC9BFFC002B64C2 /* SpeechRecognition.swift in Sources */,
+				7672F41A2CC9BFFC002B64C2 /* ALocation.swift in Sources */,
+				7672F41B2CC9BFFC002B64C2 /* AudioPlaybackManager.swift in Sources */,
+				7672F41C2CC9BFFC002B64C2 /* SocketManager.swift in Sources */,
+				7672F41D2CC9BFFC002B64C2 /* ARecordingModel.swift in Sources */,
+				7672F41E2CC9BFFC002B64C2 /* AudioState.swift in Sources */,
+				7672F41F2CC9BFFC002B64C2 /* ASoundMeasurement.swift in Sources */,
+				7672F4272CC9C2DA002B64C2 /* OpenAudioSDK.swift in Sources */,
+				7672F4202CC9BFFC002B64C2 /* ADeviceManager.swift in Sources */,
+				7672F4212CC9BFFC002B64C2 /* AEngine.swift in Sources */,
+				7672F4222CC9BFFC002B64C2 /* AConverter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,6 +295,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -243,6 +320,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -252,6 +330,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

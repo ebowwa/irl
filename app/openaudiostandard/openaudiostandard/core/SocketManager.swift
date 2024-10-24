@@ -1,9 +1,5 @@
-//
-//  socketmanager.swift
-//  openaudiostandard
-//
-//  Created by Elijah Arbee on 10/20/24.
-//
+// SocketManager.swift
+// openaudiostandard
 
 import Foundation
 import Combine

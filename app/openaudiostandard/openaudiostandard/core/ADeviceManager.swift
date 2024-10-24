@@ -60,69 +60,61 @@ class AudioDevice: Device {
     }
 }
 
-//
-//  DeviceManager.swift
-//  IRL
-//
-//  Created by Elijah Arbee on 10/23/24.
-//
-
-
-//
-//  DeviceManager.swift
-//  IRL
-//
-//  Created by Elijah Arbee on 10/10/24.
-//
-
+// DeviceManager.swift
+// openaudiostandard
 
 import Foundation
+import Combine
 
-class DeviceManager: ObservableObject {
-    @Published private(set) var connectedDevices: [Device] = []
-
+public class DeviceManager: ObservableObject {
+    @Published public private(set) var connectedDevices: [Device] = []
+    
     // Singleton instance for global access.
-    static let shared = DeviceManager()
-
+    public static let shared = DeviceManager()
+    
     private init() {}
-
+    
     // MARK: - Device Management
     
     /// Adds a new device to the manager and connects it.
-    func addDevice(_ device: Device) {
+    /// - Parameter device: The `Device` instance to add.
+    public func addDevice(_ device: Device) {
         connectedDevices.append(device)
         device.connect()
     }
-
+    
     /// Removes a device from the manager and disconnects it.
-    func removeDevice(_ device: Device) {
+    /// - Parameter device: The `Device` instance to remove.
+    public func removeDevice(_ device: Device) {
         device.disconnect()
         if let index = connectedDevices.firstIndex(where: { $0.identifier == device.identifier }) {
             connectedDevices.remove(at: index)
         }
     }
-
+    
     // MARK: - Recording Controls
     
     /// Starts recording on a specific device.
-    func startRecording(on device: Device) {
+    /// - Parameter device: The `Device` instance to start recording on.
+    public func startRecording(on device: Device) {
         device.startRecording()
     }
-
+    
     /// Stops recording on a specific device.
-    func stopRecording(on device: Device) {
+    /// - Parameter device: The `Device` instance to stop recording on.
+    public func stopRecording(on device: Device) {
         device.stopRecording()
     }
-
+    
     /// Starts recording on all connected devices.
-    func startRecordingOnAllDevices() {
+    public func startRecordingOnAllDevices() {
         for device in connectedDevices where device.isConnected {
             device.startRecording()
         }
     }
-
+    
     /// Stops recording on all connected devices.
-    func stopRecordingOnAllDevices() {
+    public func stopRecordingOnAllDevices() {
         for device in connectedDevices where device.isConnected {
             device.stopRecording()
         }

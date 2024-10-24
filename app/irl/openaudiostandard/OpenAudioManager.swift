@@ -5,7 +5,6 @@
 //  Created by Elijah Arbee on 10/23/24.
 //
 
-
 import Foundation
 import Combine
 import AVFoundation
@@ -59,7 +58,6 @@ public class OpenAudioManager: NSObject {
     public func setupWebSocket(url: URL) {
         let webSocketManager = WebSocketManager(url: url)
         audioState.setupWebSocket(manager: webSocketManager)
+        audioEngineManager.assignWebSocketManager(manager: webSocketManager)
     }
-
-    // Add more methods as needed to expose functionality
 }
