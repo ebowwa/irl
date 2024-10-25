@@ -4,10 +4,8 @@
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
-//
 
 import Foundation
-import Speech
 import Combine
 
 class SimpleLocalTranscriptionViewModel: ObservableObject {
@@ -17,7 +15,6 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     @Published var isBackgroundNoiseReady: Bool = false
 
     // Use singleton instances
-    private let speechManager = SpeechRecognitionManager.shared
     private let soundManager = SoundMeasurementManager.shared
     private var cancellables = Set<AnyCancellable>()
 
@@ -26,25 +23,15 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     }
 
     func startRecording() {
-        speechManager.startRecording()
+        // Removed speechManager references
     }
 
     func stopRecording() {
-        speechManager.stopRecording()
+        // Removed speechManager references
     }
 
     private func setupManagers() {
-        // Request authorization and start recording
-        speechManager.requestSpeechAuthorization()
-        speechManager.startRecording()
-
-        // Subscribe to transcribed text updates
-        speechManager.$transcribedText
-            .dropFirst()
-            .sink { [weak self] newTranscription in
-                self?.handleTranscriptionUpdate(newTranscription)
-            }
-            .store(in: &cancellables)
+        // Removed speechManager setup
 
         // Subscribe to audio level updates from SoundMeasurementManager
         soundManager.$currentAudioLevel
@@ -62,12 +49,7 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     }
 
     private func handleTranscriptionUpdate(_ newTranscription: String) {
-        if newTranscription != lastTranscribedText && !newTranscription.isEmpty {
-            lastTranscribedText = newTranscription
-        } else if newTranscription == lastTranscribedText && !lastTranscribedText.isEmpty {
-            transcriptionHistory.append(lastTranscribedText)
-            lastTranscribedText = ""
-        }
+        // Removed transcription handling
     }
 }
 
@@ -111,14 +93,13 @@ struct SimpleLocalTranscription: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         .onAppear {
-            viewModel.startRecording()
+            // Removed startRecording
         }
         .onDisappear {
-            viewModel.stopRecording()
+            // Removed stopRecording
         }
     }
 }
-
 //
 //  TranscriptionHistoryView.swift
 //  irl

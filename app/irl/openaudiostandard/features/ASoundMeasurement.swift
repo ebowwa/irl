@@ -38,7 +38,6 @@ public class SoundMeasurementManager: ObservableObject {
     @Published public var currentAudioLevel: Double = 0.0
     @Published public var averageBackgroundNoise: Double = 0.0
     @Published public var isBackgroundNoiseReady: Bool = false
-    @Published public var isSpeechDetected: Bool = false // Linked with SpeechRecognitionManager
     
     // MARK: - Persistent Storage Properties
     private let userDefaults = UserDefaults.standard
@@ -61,9 +60,6 @@ public class SoundMeasurementManager: ObservableObject {
     private var isRecalibrating: Bool = false
     private var cancellables: Set<AnyCancellable> = []
     
-    // Reference to SpeechRecognitionManager
-    private let speechRecognitionManager = SpeechRecognitionManager.shared
-    
     // MARK: - Initialization
     
     public init() {
@@ -82,16 +78,7 @@ public class SoundMeasurementManager: ObservableObject {
             }
             .store(in: &cancellables)
         
-        // Subscribe to speech detection updates from SpeechRecognitionManager
-        speechRecognitionManager.$isSpeechDetected
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isDetected in
-                self?.isSpeechDetected = isDetected
-                if isDetected {
-                    self?.resetBackgroundNoiseCollection()
-                }
-            }
-            .store(in: &cancellables)
+        // Removed subscription to SpeechRecognitionManager's isSpeechDetected
     }
     
     // MARK: - Load Persisted Noise
@@ -113,14 +100,12 @@ public class SoundMeasurementManager: ObservableObject {
     public func handleAudioLevel(_ level: Float) {
         let normalizedLevel = AudioUtils.normalizeAudioLevel(level)
         
-        if !isSpeechDetected {
-            backgroundNoiseLevels.append(normalizedLevel)
-            if !isBackgroundNoiseCalibrated {
-                computeAverageBackgroundNoise()
-            } else {
-                updateNoiseIfCalibrated(normalizedLevel)
-                detectNoiseSpikes(normalizedLevel)
-            }
+        backgroundNoiseLevels.append(normalizedLevel)
+        if !isBackgroundNoiseCalibrated {
+            computeAverageBackgroundNoise()
+        } else {
+            updateNoiseIfCalibrated(normalizedLevel)
+            detectNoiseSpikes(normalizedLevel)
         }
         
         adjustCurrentAudioLevelIfReady(normalizedLevel)
@@ -131,7 +116,7 @@ public class SoundMeasurementManager: ObservableObject {
         spikeStartTime = nil
         // Do not reset averageBackgroundNoise
         isRecalibrating = false
-        print("Background noise collection reset due to speech detection.")
+        print("Background noise collection reset.")
     }
     
     private func computeAverageBackgroundNoise() {

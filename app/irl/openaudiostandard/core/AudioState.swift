@@ -9,7 +9,6 @@ import Foundation
 import AVFoundation
 import Combine
 import UIKit
-import Speech
 
 // MARK: - AudioState Class
 
@@ -30,7 +29,7 @@ public class AudioState: NSObject, AudioStateProtocol {
     @Published public var currentRecording: AudioRecording?
     
     // MARK: - Persistent Storage Properties
-    
+    // Persistent user preferences for background recording and manual recording controls
     private let userDefaults = UserDefaults.standard
     private let isRecordingEnabledKey = "isRecordingEnabled"
     private let isBackgroundRecordingEnabledKey = "isBackgroundRecordingEnabled"
@@ -47,48 +46,41 @@ public class AudioState: NSObject, AudioStateProtocol {
     
     // MARK: - Managers
     
-    private let speechRecognitionManager = SpeechRecognitionManager.shared
+    // Manages sound levels for real-time analysis
     private let soundMeasurementManager = SoundMeasurementManager.shared
+    // Recording manager following the protocol, facilitating clean substitution if needed
     private let recordingManager: RecordingManagerProtocol
+    // Handles audio playback
+    private let playbackManager: AudioPlaybackManager = AudioPlaybackManager()
     
     // MARK: - WebSocket Manager
-    
-    private var webSocketManager: WebSocketManagerProtocol? // WebSocket manager for live audio streaming
+    // WebSocket manager for live audio streaming—injectable to allow flexibility in implementation
+    private var webSocketManager: WebSocketManagerProtocol?
     
     // MARK: - Recording Control Flags
-    
-    private var isManualRecording: Bool = false // Indicates if the current recording was started manually.
+    // Flag to differentiate manual and automatic recording starts
+    private var isManualRecording: Bool = false
     
     // MARK: - Publishers
     
     private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Recording Properties
-    private var audioRecorder: AVAudioRecorder?
-    private var recordingTimer: Timer?
-    
-    // MARK: - Debounce and Stability Tracking
-    private var stableBufferCount = 0
-    private let stableBufferThreshold = 5 // Number of consecutive stable buffers required
-    private let minimumSpeechThreshold: Double = 0.3 // Threshold to consider as speech
-    private var speechStartDebounceTimer: Timer?
-    private let speechStartDebounceInterval: TimeInterval = 0.5 // 0.5 seconds debounce
+    private var recordingTimer: Timer? // Timer for updating recording progress
     
     // MARK: - Initialization
 
-    private override init() {
-        // Initialize RecordingScript and assign to recordingManager
-        self.recordingManager = RecordingScript()
-        
+    public override init() { // Changed to 'public' to align with class access level
+        self.recordingManager = RecordingScript() // Default recording manager implementation
         super.init()
         
-        setupAudioSession(caller: "AudioState.init") // Setup called once during initialization.
-        setupNotifications() // Setup app lifecycle notifications.
-        setupSpeechRecognitionManager() // Setup speech detection callbacks
-        setupBindings() // Setup bindings with SoundMeasurementManager and RecordingManager
-        updateLocalRecordings() // Loads any existing recordings from disk.
+        // Initial setup tasks
+        setupAudioSession(caller: "AudioState.init")
+        setupNotifications() // Set up observers for app backgrounding and termination
+        setupBindings() // Bind published properties for real-time updates
+        updateLocalRecordings() // Load initial recordings
         
-        // Automatically start recording if background recording is enabled
+        // Automatically start background recording if enabled
         if isBackgroundRecordingEnabled {
             startRecording(manual: false)
         }
@@ -96,134 +88,110 @@ public class AudioState: NSObject, AudioStateProtocol {
     
     // MARK: - Setup Methods
     
-    /// Sets up bindings to receive audio levels from SoundMeasurementManager and RecordingManager.
+    // Sets up the data bindings between managers and state
     private func setupBindings() {
-        // Subscribe to audio level updates from SoundMeasurementManager
+        // Bind SoundMeasurementManager's audio level to recordingProgress
         soundMeasurementManager.$currentAudioLevel
             .receive(on: DispatchQueue.main)
             .sink { [weak self] level in
-                self?.recordingProgress = level
+                self?.recordingProgress = level // Update UI with real-time audio level
             }
             .store(in: &cancellables)
         
-        // Subscribe to RecordingManager's published properties
+        // Bind RecordingManager's published properties to AudioState's properties
         recordingManager.isRecording
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isRecording in
-                self?.isRecording = isRecording
+                self?.isRecording = isRecording // Sync recording state
             }
             .store(in: &cancellables)
         
         recordingManager.recordingTime
             .receive(on: DispatchQueue.main)
             .sink { [weak self] time in
-                self?.recordingTime = time
+                self?.recordingTime = time // Update recording time for UI display
             }
             .store(in: &cancellables)
         
         recordingManager.recordingProgress
             .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
-                self?.recordingProgress = progress
+                self?.recordingProgress = progress // Sync recording progress
             }
             .store(in: &cancellables)
         
         recordingManager.errorMessage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
-                self?.errorMessage = error
+                self?.errorMessage = error // Sync error message for UI alerts
             }
             .store(in: &cancellables)
         
-        // Additional bindings can be added here
+        // Bind PlaybackManager's isPlaying to AudioState's isPlaying
+        playbackManager.$isPlaying
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isPlaying in
+                self?.isPlaying = isPlaying // Sync playback state
+            }
+            .store(in: &cancellables)
+        
+        // Bind PlaybackManager's errorMessage to AudioState's errorMessage
+        playbackManager.$errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let error = error {
+                    self?.errorMessage = error // Handle playback errors
+                }
+            }
+            .store(in: &cancellables)
     }
     
-    /// Sets up speech detection callbacks.
-    private func setupSpeechRecognitionManager() {
-        // Set up speech detection handlers
-        speechRecognitionManager.onSpeechStart = { [weak self] in
-            guard let self = self else { return }
-            if self.isRecordingEnabled && !self.isRecording && !self.isManualRecording {
-                self.startRecording(manual: false)
-            }
-        }
-        
-        speechRecognitionManager.onSpeechEnd = { [weak self] in
-            guard let self = self else { return }
-            if self.isRecordingEnabled && self.isRecording && !self.isManualRecording {
-                self.stopRecording()
-            }
-        }
-        
-        // **Remove subscription to $isAuthorized**
-        // The SpeechRecognitionManager now handles authorization internally
-        
-        // **Remove requestSpeechAuthorization()**
-        // Authorization is now managed by SpeechAuthorizationManager and SpeechRecognitionManager
-    }
-    
-    /// Registers for system notifications related to the app's lifecycle.
+    // Sets up notification observers for handling app state transitions (backgrounding, termination)
     private func setupNotifications() {
-        // Listen for when the app is about to go into the background (resign active).
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppBackgrounding), name: UIApplication.willResignActiveNotification, object: nil)
-        
-        // Listen for when the app is about to terminate.
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTermination), name: UIApplication.willTerminateNotification, object: nil)
     }
     
     // MARK: - Notification Handlers
-    
-    // Handles the app going into the background. If background recording is allowed, continue recording; otherwise, stop.
+    // Handles app backgrounding, resumes or stops recording based on settings
     @objc private func handleAppBackgrounding() {
-        // If background recording is allowed, ensure the audio session is set up correctly.
         if isBackgroundRecordingEnabled {
-            setupAudioSession(caller: "handleAppBackgrounding")
-            // Start audio engine if needed
+            setupAudioSession(caller: "handleAppBackgrounding") // Ensure session is active
             if !AudioEngineManager.shared.isEngineRunning {
-                AudioEngineManager.shared.startEngine()
+                AudioEngineManager.shared.startEngine() // Restart engine if not running
             }
         } else {
-            // Otherwise, stop recording when the app is backgrounded.
-            stopRecording()
+            stopRecording() // Stop recording if background recording isn't enabled
         }
     }
     
-    // Handles the app termination. Ensures that recording stops to prevent data loss or resource leaks.
+    // Handles app termination, ensuring any ongoing recording is properly stopped
     @objc private func handleAppTermination() {
-        // If recording is active when the app is terminating, stop the recording process.
         if isRecording {
-            stopRecording()
+            stopRecording() // Stop recording on app exit
         }
     }
     
     // MARK: - WebSocket Setup
-    
-    /// Assigns the WebSocket manager, enabling live audio streaming functionality.
+    // Allows for injecting a WebSocket manager to handle live audio streaming
     public func setupWebSocket(manager: WebSocketManagerProtocol) {
         self.webSocketManager = manager
-        AudioEngineManager.shared.assignWebSocketManager(manager: manager) // Assign WebSocket manager to AudioEngineManager
+        AudioEngineManager.shared.assignWebSocketManager(manager: manager) // Connect WebSocket to engine
     }
     
     // MARK: - Audio Session Setup
-    
-    /// Configures the AVAudioSession to allow both playback and recording.
-    /// - Parameter caller: A string indicating who called this method, for logging purposes.
+    // Sets up the audio session for recording and playback
     private func setupAudioSession(caller: String = #function) {
-        // Log device information
         let device = UIDevice.current
         let deviceInfo = "Device: \(device.model), OS: \(device.systemName) \(device.systemVersion)"
         print("[DeviceInfo] Called by \(caller) - \(deviceInfo)")
         
-        // Delegate audio session setup to RecordingManager
-        // Assuming RecordingManager has a method to set up the audio session
-        // If not, you can retain the setup logic here
-        // recordingManager.setupAudioSession(caller: caller) // Uncomment if implemented
+        // Uncomment the following if the RecordingManager handles audio session setup
+        // recordingManager.setupAudioSession(caller: caller)
     }
     
     // MARK: - Recording Controls
-    
-    /// Toggles between starting and stopping a recording session.
-    /// - Parameter manual: Indicates if the recording is manually initiated by the user.
+    // Toggles recording state based on whether it's already recording
     public func toggleRecording(manual: Bool) {
         if isRecording {
             stopRecording()
@@ -232,117 +200,91 @@ public class AudioState: NSObject, AudioStateProtocol {
         }
     }
     
-    /// Starts either live streaming or file-based recording depending on the presence of a WebSocketManager.
-    /// - Parameter manual: Indicates if the recording is manually initiated by the user.
+    // Starts recording, optionally with a manual control flag
     public func startRecording(manual: Bool) {
-        if isRecording {
-            return
-        }
+        if isRecording { return } // Prevent redundant recording start attempts
         
         isManualRecording = manual
         
         if webSocketManager != nil {
-            // Start live streaming via AudioEngineManager
-            AudioEngineManager.shared.startEngine()
-            // Start file recording
-            recordingManager.startRecording()
-            DispatchQueue.main.async { [weak self] in
-                self?.isRecording = true
-                self?.recordingTime = 0
-                self?.recordingProgress = 0
-                self?.errorMessage = nil
-            }
+            AudioEngineManager.shared.startEngine() // Start the audio engine for WebSocket
+            recordingManager.startRecording() // Begin recording
         } else {
             recordingManager.startRecording()
         }
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.isRecording = true
+            self?.recordingTime = 0
+            self?.recordingProgress = 0
+            self?.errorMessage = nil
+        }
     }
     
-    /// Stops the current recording, whether live-streaming or file-based, and updates the UI and local recordings.
+    // Stops recording and updates relevant states
     public func stopRecording() {
-        if !isRecording {
-            return
-        }
+        if !isRecording { return } // Prevent redundant stop attempts
         
         if webSocketManager != nil {
-            // Stop live streaming via AudioEngineManager
-            AudioEngineManager.shared.stopEngine()
+            AudioEngineManager.shared.stopEngine() // Stop the audio engine if WebSocket was active
         }
         
-        // Stop file recording
-        recordingManager.stopRecording()
+        recordingManager.stopRecording() // Stop the recording manager
         
         DispatchQueue.main.async { [weak self] in
             self?.isRecording = false
-            self?.updateCurrentRecording() // Save the recorded file and update the list of recordings.
+            self?.updateCurrentRecording() // Update the list of local recordings
             self?.updateLocalRecordings()
-            self?.isPlaybackAvailable = true // After recording is stopped, playback becomes available.
+            self?.isPlaybackAvailable = true
             self?.isManualRecording = false
         }
     }
     
-    // MARK: - File Management
-    
-    /// Saves the current recording and updates the list of local recordings.
-    private func updateCurrentRecording() {
-        guard let url = recordingManager.currentRecordingURL() else { return }
-        let fileManager = AudioFileManager.shared
-        let recordings = fileManager.updateLocalRecordings()
-        currentRecording = recordings.first { $0.url == url }
-        
-        // Perform speech likelihood analysis using SpeechRecognitionManager
-        if let recording = currentRecording {
-            speechRecognitionManager.determineSpeechLikelihood(for: recording.url) { [weak self] isSpeechLikely in
-                DispatchQueue.main.async {
-                    self?.currentRecording?.isSpeechLikely = isSpeechLikely
-                    self?.updateLocalRecordings()
-                }
-            }
+    // MARK: - Playback Controls
+    // Toggles playback or pauses it based on the current state
+    public func togglePlayback() {
+        if isPlaying {
+            playbackManager.pausePlayback()
+        } else if let recordingURL = currentRecording?.url {
+            playbackManager.startPlayback(for: recordingURL) // Start playback if a recording is available
+        } else {
+            errorMessage = "No recording available to play." // Error if no recording is present
         }
     }
     
-    /// Updates the list of local recordings by querying the file system for saved recordings.
+    // MARK: - File Management
+    // Updates the current recording by checking for the latest recorded file
+    private func updateCurrentRecording() {
+        guard let url = recordingManager.currentRecordingURL() else { return }
+        let recordings = AudioFileManager.shared.updateLocalRecordings()
+        currentRecording = recordings.first { $0.url == url } // Set current recording based on file URL
+    }
+    
+    // Refreshes the list of local recordings
     public func updateLocalRecordings() {
         let updatedRecordings = AudioFileManager.shared.updateLocalRecordings()
         
-        // For each recording, if speech likelihood has not been determined, initiate speech analysis.
-        for recording in updatedRecordings {
-            if recording.isSpeechLikely == nil {
-                speechRecognitionManager.determineSpeechLikelihood(for: recording.url) { [weak self] isSpeechLikely in
-                    DispatchQueue.main.async {
-                        guard let self = self else { return }
-                        if let index = self.localRecordings.firstIndex(where: { $0.url == recording.url }) {
-                            self.localRecordings[index].isSpeechLikely = isSpeechLikely // Updates likelihood result.
-                        }
-                    }
-                }
-            }
-        }
-        
         DispatchQueue.main.async { [weak self] in
-            self?.localRecordings = updatedRecordings // Updates the local recordings array to reflect changes.
+            self?.localRecordings = updatedRecordings
         }
     }
     
-    /// Fetches the list of recordings, useful for reloading the list in the UI.
+    // Retrieves recordings from local storage
     public func fetchRecordings() {
         updateLocalRecordings()
     }
     
-    /// Deletes a recording file from local storage and updates the list of recordings.
+    // Deletes a specific recording and updates the list
     public func deleteRecording(_ recording: AudioRecording) {
         DispatchQueue.global(qos: .background).async { [weak self] in
             do {
-                try AudioFileManager.shared.deleteRecording(recording) // Attempts to delete the recording file.
+                try AudioFileManager.shared.deleteRecording(recording) // Attempt to delete the file
                 DispatchQueue.main.async {
-                    self?.updateLocalRecordings()
-                    
-                    // If the deleted recording was the current one, reset playback availability.
+                    self?.updateLocalRecordings() // Update recordings list after deletion
                     if self?.currentRecording?.url == recording.url {
-                        self?.currentRecording = nil
+                        self?.currentRecording = nil // Clear current recording if it was deleted
                         self?.isPlaybackAvailable = false
                     }
-                    
-                    self?.errorMessage = nil
                 }
             } catch {
                 DispatchQueue.main.async { [weak self] in
@@ -352,78 +294,36 @@ public class AudioState: NSObject, AudioStateProtocol {
         }
     }
     
-    // MARK: - Playback Controls
-    
-    /// Toggles between starting and pausing playback.
-    public func togglePlayback() {
-        if isPlaying {
-            pausePlayback() // If currently playing, pause the playback.
-        } else {
-            startPlayback() // Otherwise, start playback.
-        }
+    // MARK: - Formatting Helpers
+    // Formats recording time into a user-friendly string
+    public var formattedRecordingTime: String {
+        AudioFileManager.shared.formattedDuration(recordingTime)
     }
     
-    /// Starts playback of the current recording.
-    private func startPlayback() {
-        guard let recording = currentRecording else {
-            DispatchQueue.main.async { [weak self] in
-                self?.errorMessage = "No recording available to play"
-            }
-            return
-        }
-        
-        // Attempts to play the recording using AVAudioPlayer.
-        do {
-            let audioPlayer = try AVAudioPlayer(contentsOf: recording.url)
-            audioPlayer.delegate = self // Set the delegate to respond to playback events.
-            audioPlayer.prepareToPlay()
-            audioPlayer.play()
-            self.audioPlayer = audioPlayer
-            DispatchQueue.main.async { [weak self] in
-                self?.isPlaying = true
-                self?.errorMessage = nil
-            }
-        } catch {
-            DispatchQueue.main.async { [weak self] in
-                self?.errorMessage = "Error playing audio: \(error.localizedDescription)"
-            }
-        }
-    }
-    
-    /// Pauses playback of the current recording.
-    private func pausePlayback() {
-        audioPlayer?.pause()
-        DispatchQueue.main.async { [weak self] in
-            self?.isPlaying = false
-        }
+    // Formats file size into human-readable form
+    public func formattedFileSize(bytes: Int64) -> String {
+        AudioFileManager.shared.formattedFileSize(bytes: bytes)
     }
     
     // MARK: - AudioLevelPublisher
-    
-    /// Publisher that emits the current audio level (normalized between 0.0 and 1.0).
+    // Publishes the current audio level for UI or other purposes
     public var audioLevelPublisher: AnyPublisher<Float, Never> {
         soundMeasurementManager.$currentAudioLevel
             .map { Float($0) }
             .eraseToAnyPublisher()
     }
     
-    // MARK: - Formatting Helpers
-    
-    /// Formats the recording duration for display purposes.
-    public var formattedRecordingTime: String {
-        AudioFileManager.shared.formattedDuration(recordingTime)
+    // MARK: - Utility
+    // Retrieves the URL of the current recording, if available
+    public func currentRecordingURL() -> URL? {
+        return recordingManager.currentRecordingURL()
     }
-    
-    /// Formats the file size of a recording for display.
-    public func formattedFileSize(bytes: Int64) -> String {
-        AudioFileManager.shared.formattedFileSize(bytes: bytes)
-    }
-    
-    // MARK: - AVAudioPlayerDelegate
-    
-    private var audioPlayer: AVAudioPlayer?
 }
 
+
+// MARK: - AVAudioRecorderDelegate
+
+// Handles AVAudioRecorder events such as recording completion or errors
 extension AudioState: AVAudioRecorderDelegate {
     public func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
@@ -441,34 +341,5 @@ extension AudioState: AVAudioRecorderDelegate {
                 self?.isRecording = false
             }
         }
-    }
-}
-
-extension AudioState: AVAudioPlayerDelegate {
-    // Called when playback finishes, either successfully or with an error.
-    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        DispatchQueue.main.async { [weak self] in
-            self?.isPlaying = false // Resets the isPlaying flag when playback is finished.
-            if !flag {
-                self?.errorMessage = "Playback finished with an error"
-            }
-        }
-    }
-    
-    // Called when playback encounters an error.
-    public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-        if let error = error {
-            DispatchQueue.main.async { [weak self] in
-                self?.errorMessage = "Playback decode error: \(error.localizedDescription)"
-                self?.isPlaying = false
-            }
-        }
-    }
-}
-
-// MARK: - Extension to Expose Recording URL
-extension AudioState {
-    public func currentRecordingURL() -> URL? {
-        return recordingManager.currentRecordingURL()
     }
 }

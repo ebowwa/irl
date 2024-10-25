@@ -20,14 +20,15 @@ public class AudioDevice: Device {
     public let name: String
     public var isConnected: Bool = false
     public var isRecording: Bool = false
-    public var isPlaying: Bool = false
 
     private var audioState: AudioState
+    private var recordingScript: RecordingScript
 
     public init(name: String, audioState: AudioState = .shared) {
         self.identifier = UUID()
         self.name = name
         self.audioState = audioState
+        self.recordingScript = RecordingScript()
     }
 
     public func connect() {
@@ -42,18 +43,24 @@ public class AudioDevice: Device {
 
     public func startRecording() {
         guard isConnected else { return }
-        audioState.startRecording(manual: true)
+        recordingScript.startRecording() // Use RecordingScript for recording functionality
         isRecording = true
         print("Recording started on \(name).")
     }
 
     public func stopRecording() {
         guard isConnected else { return }
-        audioState.stopRecording()
+        recordingScript.stopRecording() // Use RecordingScript for stopping recording
         isRecording = false
         print("Recording stopped on \(name).")
     }
+
+    // Optionally expose current recording URL if needed
+    public func currentRecordingURL() -> URL? {
+        return recordingScript.currentRecordingURL()
+    }
 }
+
 
 public class DeviceManager: ObservableObject {
     @Published private(set) public var connectedDevices: [Device] = []

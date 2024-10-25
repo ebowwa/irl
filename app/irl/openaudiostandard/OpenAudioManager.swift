@@ -14,19 +14,17 @@ public class OpenAudioManager: NSObject {
     public static let shared = OpenAudioManager()
 
     // Managers
-    public let audioState: AudioState
-    public let audioEngineManager: AudioEngineManager
-    public let speechRecognitionManager: SpeechRecognitionManager
-    public let soundMeasurementManager: SoundMeasurementManager
-    public let audioPlaybackManager: AudioPlaybackManager
-    public let locationManager: LocationManager
-    public let deviceManager: DeviceManager
+    private let audioState: AudioState
+    private let audioEngineManager: AudioEngineManagerProtocol
+    private let soundMeasurementManager: SoundMeasurementManager
+    private let audioPlaybackManager: AudioPlaybackManager
+    private let locationManager: LocationManager
+    private let deviceManager: DeviceManager
 
     // Initializer
     private override init() {
         self.audioState = AudioState.shared
         self.audioEngineManager = AudioEngineManager.shared
-        self.speechRecognitionManager = SpeechRecognitionManager.shared
         self.soundMeasurementManager = SoundMeasurementManager.shared
         self.audioPlaybackManager = AudioPlaybackManager()
         self.locationManager = LocationManager.shared

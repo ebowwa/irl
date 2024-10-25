@@ -8,7 +8,7 @@ struct IRLApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            EntryJourneyView()
                 .environmentObject(globalState)
                 .environmentObject(audioState)
         }

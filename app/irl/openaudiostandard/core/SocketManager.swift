@@ -71,3 +71,4 @@ public class WebSocketManager: NSObject, WebSocketManagerProtocol {
         webSocketTask?.cancel(with: .goingAway, reason: nil)
     }
 }
+
