@@ -15,12 +15,19 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     @Published var isBackgroundNoiseReady: Bool = false
     @Published var isSpeaking: Bool = false // New Published Property
 
-    // Singleton instances
-    private let soundManager = SoundMeasurementManager.shared
-    private let recordingScript = RecordingScript() // Integrate RecordingScript
+    // Dependencies injected via initializer
+    private let soundManager: SoundMeasurementManager
+    private let transcriptionManager: TranscriptionManager
+    private let recordingScript: RecordingScript
     private var cancellables = Set<AnyCancellable>()
 
-    init() {
+    // Initializer with Dependency Injection
+    init(soundManager: SoundMeasurementManager = SoundMeasurementManager.shared,
+         transcriptionManager: TranscriptionManager = TranscriptionManager.shared,
+         recordingScript: RecordingScript = RecordingScript.shared) {
+        self.soundManager = soundManager
+        self.transcriptionManager = transcriptionManager
+        self.recordingScript = recordingScript
         setupManagers()
     }
 
@@ -35,6 +42,7 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     private func setupManagers() {
         // Subscribe to audio level updates from SoundMeasurementManager
         soundManager.$currentAudioLevel
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] level in
                 self?.currentAudioLevel = level
             }
@@ -42,12 +50,13 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
 
         // Subscribe to background noise readiness from SoundMeasurementManager
         soundManager.$isBackgroundNoiseReady
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] isReady in
                 self?.isBackgroundNoiseReady = isReady
             }
             .store(in: &cancellables)
         
-        // Subscribe to speech recognition publishers from RecordingScript
+        // Subscribe to speaking status from RecordingScript
         recordingScript.isSpeakingPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isSpeaking in
@@ -55,6 +64,7 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
+        // Subscribe to transcription updates from RecordingScript
         recordingScript.transcriptionPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] transcription in
@@ -74,6 +84,7 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     }
 }
 
+
 //
 //  SimpleLocalTranscriptionView.swift
 //  irl
@@ -84,7 +95,12 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
 import SwiftUI
 
 struct SimpleLocalTranscription: View {
-    @StateObject private var viewModel = SimpleLocalTranscriptionViewModel()
+    @StateObject private var viewModel: SimpleLocalTranscriptionViewModel
+
+    // Initializer accepting a ViewModel
+    init(viewModel: SimpleLocalTranscriptionViewModel = SimpleLocalTranscriptionViewModel()) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -115,7 +131,7 @@ struct SimpleLocalTranscription: View {
                         if viewModel.isSpeaking {
                             Image(systemName: "waveform")
                                 .foregroundColor(.green)
-                                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true))
+                                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: viewModel.isSpeaking)
                         } else {
                             Image(systemName: "waveform")
                                 .foregroundColor(.gray)

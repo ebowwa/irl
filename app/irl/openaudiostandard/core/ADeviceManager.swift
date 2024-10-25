@@ -1,19 +1,13 @@
-// DeviceManager.swift
+//
+//  DeviceManager.swift
+//  openaudio
+//
+//  Created by Elijah Arbee on 10/23/24.
+//
 
 import Foundation
+import Combine
 import AVFoundation
-
-public protocol Device: AnyObject {
-    var identifier: UUID { get }
-    var name: String { get }
-    var isConnected: Bool { get set }
-    var isRecording: Bool { get set }
-
-    func connect()
-    func disconnect()
-    func startRecording()
-    func stopRecording()
-}
 
 public class AudioDevice: Device {
     public let identifier: UUID
@@ -24,11 +18,12 @@ public class AudioDevice: Device {
     private var audioState: AudioState
     private var recordingScript: RecordingScript
 
+    // Use the singleton instance of RecordingScript
     public init(name: String, audioState: AudioState = .shared) {
         self.identifier = UUID()
         self.name = name
         self.audioState = audioState
-        self.recordingScript = RecordingScript()
+        self.recordingScript = RecordingScript.shared // Access the singleton instance
     }
 
     public func connect() {
@@ -61,7 +56,6 @@ public class AudioDevice: Device {
     }
 }
 
-
 public class DeviceManager: ObservableObject {
     @Published private(set) public var connectedDevices: [Device] = []
 
@@ -69,9 +63,9 @@ public class DeviceManager: ObservableObject {
     public static let shared = DeviceManager()
 
     private init() {}
-
+    
     // MARK: - Device Management
-
+    
     /// Adds a new device to the manager and connects it.
     public func addDevice(_ device: Device) {
         connectedDevices.append(device)
@@ -87,7 +81,7 @@ public class DeviceManager: ObservableObject {
     }
 
     // MARK: - Recording Controls
-
+    
     /// Starts recording on a specific device.
     public func startRecording(on device: Device) {
         device.startRecording()
