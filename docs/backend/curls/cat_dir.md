@@ -1,7 +1,3 @@
-Here's the documentation for the updated FastAPI routes for concatenating files into JSON, including the demo URL using the `ngrok` service:
-
----
-
 # API Documentation for Directory File Concatenation Service
 
 This API provides routes for concatenating files in specified directories into a single JSON object. It supports both predefined directory paths and custom user-specified paths. The files can be of two types: `.json` files, which are parsed and included in the output, or text files, which are read and stored as text in the output.
@@ -178,7 +174,3 @@ curl -X POST "https://4d9b-76-78-246-141.ngrok-free.app/concatenate/custom" \
 ```
 
 These commands will save the responses into `output_predefined.json` and `output_custom.json` respectively.
-
----
-
-This documentation outlines the API structure, use cases, and example requests, including a demo URL for testing purposes.
