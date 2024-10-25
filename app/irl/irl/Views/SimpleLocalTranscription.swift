@@ -1,5 +1,5 @@
 //
-//  SimpleLocalTranscription.swift
+//  SimpleLocalTranscriptionViewModel.swift
 //  irl
 //
 //  Created by Elijah Arbee on 9/6/24.
@@ -13,9 +13,11 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     @Published var lastTranscribedText: String = ""
     @Published var currentAudioLevel: Double = 0.0
     @Published var isBackgroundNoiseReady: Bool = false
+    @Published var isSpeaking: Bool = false // New Published Property
 
-    // Use singleton instances
+    // Singleton instances
     private let soundManager = SoundMeasurementManager.shared
+    private let recordingScript = RecordingScript() // Integrate RecordingScript
     private var cancellables = Set<AnyCancellable>()
 
     init() {
@@ -23,16 +25,14 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
     }
 
     func startRecording() {
-        // Removed speechManager references
+        recordingScript.startRecording()
     }
 
     func stopRecording() {
-        // Removed speechManager references
+        recordingScript.stopRecording()
     }
 
     private func setupManagers() {
-        // Removed speechManager setup
-
         // Subscribe to audio level updates from SoundMeasurementManager
         soundManager.$currentAudioLevel
             .sink { [weak self] level in
@@ -46,13 +46,33 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
                 self?.isBackgroundNoiseReady = isReady
             }
             .store(in: &cancellables)
-    }
-
-    private func handleTranscriptionUpdate(_ newTranscription: String) {
-        // Removed transcription handling
+        
+        // Subscribe to speech recognition publishers from RecordingScript
+        recordingScript.isSpeakingPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isSpeaking in
+                self?.isSpeaking = isSpeaking
+            }
+            .store(in: &cancellables)
+        
+        recordingScript.transcriptionPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] transcription in
+                guard let self = self else { return }
+                if self.recordingScript.isRecordingState {
+                    // Update lastTranscribedText with ongoing transcription
+                    self.lastTranscribedText = transcription
+                } else {
+                    // Append finalized transcription to history
+                    if !transcription.isEmpty {
+                        self.transcriptionHistory.append(transcription)
+                        self.lastTranscribedText = ""
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 }
-
 
 //
 //  SimpleLocalTranscriptionView.swift
@@ -60,6 +80,7 @@ class SimpleLocalTranscriptionViewModel: ObservableObject {
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
+
 import SwiftUI
 
 struct SimpleLocalTranscription: View {
@@ -86,26 +107,45 @@ struct SimpleLocalTranscription: View {
             if !viewModel.isBackgroundNoiseReady {
                 CalibrationStatusView()
             } else {
-                AudioLevelView(audioLevel: .constant(viewModel.currentAudioLevel))
+                VStack {
+                    AudioLevelView(audioLevel: .constant(viewModel.currentAudioLevel))
+                    
+                    // Optional: Display speaking status
+                    HStack {
+                        if viewModel.isSpeaking {
+                            Image(systemName: "waveform")
+                                .foregroundColor(.green)
+                                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true))
+                        } else {
+                            Image(systemName: "waveform")
+                                .foregroundColor(.gray)
+                        }
+                        Text(viewModel.isSpeaking ? "Listening..." : "Idle")
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.top, 8)
+                }
             }
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         .onAppear {
-            // Removed startRecording
+            viewModel.startRecording()
         }
         .onDisappear {
-            // Removed stopRecording
+            viewModel.stopRecording()
         }
     }
 }
+
 //
 //  TranscriptionHistoryView.swift
 //  irl
 //
 //  Created by Elijah Arbee on 9/6/24.
 //
+
 import SwiftUI
 
 struct TranscriptionHistoryView: View {
@@ -127,6 +167,9 @@ struct TranscriptionHistoryView: View {
         }
     }
 }
+
+//
+
 
 //
 //  TranscriptionHeaderView.swift

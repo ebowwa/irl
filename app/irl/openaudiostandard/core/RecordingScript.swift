@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 import Combine
+import Speech // Import the Speech framework
 
 // MARK: - RecordingScript Class
 
@@ -17,6 +18,10 @@ public class RecordingScript: NSObject, RecordingManagerProtocol {
     @Published private(set) public var recordingTimeValue: TimeInterval = 0
     @Published private(set) public var recordingProgressValue: Double = 0
     @Published private(set) public var errorMessageValue: String?
+    
+    // New Publishers for Speech Recognition
+    @Published private(set) public var isSpeaking: Bool = false
+    @Published private(set) public var transcription: String = ""
     
     // MARK: - Protocol Conformance
     public var isRecording: AnyPublisher<Bool, Never> {
@@ -35,12 +40,27 @@ public class RecordingScript: NSObject, RecordingManagerProtocol {
         $errorMessageValue.eraseToAnyPublisher()
     }
     
+    // New Publishers for Speech
+    public var isSpeakingPublisher: AnyPublisher<Bool, Never> {
+        $isSpeaking.eraseToAnyPublisher()
+    }
+    
+    public var transcriptionPublisher: AnyPublisher<String, Never> {
+        $transcription.eraseToAnyPublisher()
+    }
+    
     // MARK: - Properties
     private let audioEngineManager = AudioEngineManager.shared
     private var audioLevelSubscription: AnyCancellable?
     private var audioBufferSubscription: AnyCancellable?
     private var recordingTimer: Timer?
     fileprivate var audioRecorder: AVAudioRecorder? // Changed to 'fileprivate' for extension access
+    
+    // Speech Recognition Properties
+    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US")) // Specify locale as needed
+    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recognitionTask: SFSpeechRecognitionTask?
+    private let audioEngine = AVAudioEngine()
     
     // MARK: - Initialization
     public override init() {
@@ -61,13 +81,34 @@ public class RecordingScript: NSObject, RecordingManagerProtocol {
         // Initialize the engine and prepare for recording
         setupAudioSession()
         audioEngineManager.startEngine()
+        
+        // Request Speech Recognition Authorization
+        requestSpeechAuthorization()
+    }
+    
+    // MARK: - Speech Recognition Authorization
+    private func requestSpeechAuthorization() {
+        SFSpeechRecognizer.requestAuthorization { [weak self] authStatus in
+            DispatchQueue.main.async {
+                switch authStatus {
+                case .authorized:
+                    print("Speech recognition authorized.")
+                case .denied, .restricted, .notDetermined:
+                    print("Speech recognition not authorized.")
+                    self?.errorMessageValue = "Speech recognition not authorized."
+                @unknown default:
+                    print("Unknown speech recognition authorization status.")
+                    self?.errorMessageValue = "Unknown speech recognition authorization status."
+                }
+            }
+        }
     }
     
     // MARK: - Audio Session Setup
     private func setupAudioSession() {
         do {
             let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
+            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP])
             try audioSession.setActive(true)
             print("Audio session is set up successfully.")
         } catch {
@@ -100,11 +141,14 @@ public class RecordingScript: NSObject, RecordingManagerProtocol {
             audioRecorder?.delegate = self
             audioRecorder?.isMeteringEnabled = true
             audioRecorder?.record()
-
+            
             isRecordingState = true
             recordingTimeValue = 0
             recordingProgressValue = 0
             startRecordingTimer()
+            
+            // Start Speech Recognition
+            startSpeechRecognition()
         } catch {
             print("Could not start recording: \(error.localizedDescription)")
             self.errorMessageValue = "Could not start recording: \(error.localizedDescription)"
@@ -122,6 +166,9 @@ public class RecordingScript: NSObject, RecordingManagerProtocol {
         audioRecorder = nil
         isRecordingState = false
         stopRecordingTimer()
+        
+        // Stop Speech Recognition
+        stopSpeechRecognition()
     }
 
     // MARK: - Recording Timer
@@ -153,12 +200,100 @@ public class RecordingScript: NSObject, RecordingManagerProtocol {
         let normalized = (averagePower - minDb) / (maxDb - minDb)
         return Double(max(0, min(1, normalized)))
     }
-
+    
+    // MARK: - Speech Recognition Methods
+    private func startSpeechRecognition() {
+        // Ensure previous task is canceled
+        if recognitionTask != nil {
+            recognitionTask?.cancel()
+            recognitionTask = nil
+        }
+        
+        // Initialize the recognition request
+        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+        
+        guard let recognitionRequest = recognitionRequest else {
+            print("Unable to create a SFSpeechAudioBufferRecognitionRequest object")
+            self.errorMessageValue = "Unable to create a speech recognition request."
+            return
+        }
+        
+        recognitionRequest.shouldReportPartialResults = true
+        
+        // Configure the audio session for speech recognition
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("Audio session properties weren't set because of an error: \(error.localizedDescription)")
+            self.errorMessageValue = "Audio session error: \(error.localizedDescription)"
+            return
+        }
+        
+        // Start the recognition task
+        guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
+            print("Speech recognizer is not available.")
+            self.errorMessageValue = "Speech recognizer is not available."
+            return
+        }
+        
+        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
+            guard let self = self else { return }
+            
+            if let result = result {
+                // Update transcription
+                self.transcription = result.bestTranscription.formattedString
+                // Update isSpeaking based on confidence or result
+                self.isSpeaking = result.isFinal ? false : true
+                print("Transcription: \(self.transcription)")
+            }
+            
+            if let error = error {
+                print("Speech recognition error: \(error.localizedDescription)")
+                self.errorMessageValue = "Speech recognition error: \(error.localizedDescription)"
+                self.isSpeaking = false
+                self.recognitionTask = nil
+            }
+            
+            if result?.isFinal == true {
+                self.isSpeaking = false
+                self.recognitionTask = nil
+            }
+        }
+        
+        // Attach the audio input to the recognition request
+        let inputNode = audioEngine.inputNode
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            self.recognitionRequest?.append(buffer)
+        }
+        
+        // Start the audio engine
+        audioEngine.prepare()
+        do {
+            try audioEngine.start()
+        } catch {
+            print("audioEngine couldn't start because of an error: \(error.localizedDescription)")
+            self.errorMessageValue = "Audio engine error: \(error.localizedDescription)"
+        }
+    }
+    
+    private func stopSpeechRecognition() {
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
+        recognitionRequest?.endAudio()
+        recognitionTask?.cancel()
+        recognitionTask = nil
+        isSpeaking = false
+    }
+    
     // MARK: - Deinitialization
     deinit {
         audioLevelSubscription?.cancel()
         audioBufferSubscription?.cancel()
         audioEngineManager.stopEngine()
+        stopSpeechRecognition()
         print("Recording script cleanup completed.")
     }
 }
@@ -184,10 +319,14 @@ extension RecordingScript: AVAudioRecorderDelegate {
     }
 }
 
-// MARK: - Extension to Expose Recording URL
+// MARK: - Extension to Expose Recording URL and Transcription
 extension RecordingScript {
     public func currentRecordingURL() -> URL? {
         return audioRecorder?.url
+    }
+    
+    public func currentTranscription() -> String {
+        return transcription
     }
 }
 
@@ -204,11 +343,12 @@ public struct AudioRecording: Identifiable {
     public let id: UUID
     public let url: URL
     public var isSpeechLikely: Bool?
+    public var transcription: String? // Added transcription property
     
-    public init(id: UUID = UUID(), url: URL, isSpeechLikely: Bool? = nil) {
+    public init(id: UUID = UUID(), url: URL, isSpeechLikely: Bool? = nil, transcription: String? = nil) {
         self.id = id
         self.url = url
         self.isSpeechLikely = isSpeechLikely
+        self.transcription = transcription
     }
 }
-
