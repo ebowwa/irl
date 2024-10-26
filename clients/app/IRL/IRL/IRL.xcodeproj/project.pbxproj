@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7613C7732CCCB729000EE4F6 /* irl_watch_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7613C76A2CCCB729000EE4F6 /* irl_watch_Watch_AppTests.swift */; };
+		7613C7742CCCB729000EE4F6 /* irl_watchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7613C7682CCCB729000EE4F6 /* irl_watchApp.swift */; };
+		7613C7752CCCB729000EE4F6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7613C7672CCCB729000EE4F6 /* ContentView.swift */; };
+		7613C7762CCCB729000EE4F6 /* irl_watch_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7613C76C2CCCB729000EE4F6 /* irl_watch_Watch_AppUITests.swift */; };
+		7613C7772CCCB729000EE4F6 /* irl_watch_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7613C76D2CCCB729000EE4F6 /* irl_watch_Watch_AppUITestsLaunchTests.swift */; };
+		7613C7782CCCB729000EE4F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7613C7662CCCB729000EE4F6 /* Assets.xcassets */; };
+		7613C7792CCCB729000EE4F6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7613C7642CCCB729000EE4F6 /* Preview Assets.xcassets */; };
 		763BA8132CB74E80003A0CDB /* ComplexModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8122CB74E80003A0CDB /* ComplexModule */; };
 		763BA8152CB74E80003A0CDB /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8142CB74E80003A0CDB /* Numerics */; };
 		763BA8172CB74E80003A0CDB /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8162CB74E80003A0CDB /* RealModule */; };
@@ -41,28 +48,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7613C7642CCCB729000EE4F6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		7613C7662CCCB729000EE4F6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7613C7672CCCB729000EE4F6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7613C7682CCCB729000EE4F6 /* irl_watchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = irl_watchApp.swift; sourceTree = "<group>"; };
+		7613C76A2CCCB729000EE4F6 /* irl_watch_Watch_AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = irl_watch_Watch_AppTests.swift; sourceTree = "<group>"; };
+		7613C76C2CCCB729000EE4F6 /* irl_watch_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = irl_watch_Watch_AppUITests.swift; sourceTree = "<group>"; };
+		7613C76D2CCCB729000EE4F6 /* irl_watch_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = irl_watch_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		7613C76F2CCCB729000EE4F6 /* irl-watch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "irl-watch.xcodeproj"; sourceTree = "<group>"; };
 		763BA6A72CB644F4003A0CDB /* IRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		764859872CC708540067CB1B /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		766B4CAE2CCAD41100AA9021 /* Core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		766B4CAF2CCAD41100AA9021 /* envKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = envKeys.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		7658C8DA2CB83D07000F33C6 /* Exceptions for "IRL" folder in "IRL" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 763BA6A62CB644F4003A0CDB /* IRL */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		763BA6A92CB644F4003A0CDB /* IRL */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				7658C8DA2CB83D07000F33C6 /* Exceptions for "IRL" folder in "IRL" target */,
-			);
 			path = IRL;
 			sourceTree = "<group>";
 		};
@@ -89,11 +91,66 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7613C7652CCCB729000EE4F6 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				7613C7642CCCB729000EE4F6 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		7613C7692CCCB729000EE4F6 /* irl-watch Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				7613C7652CCCB729000EE4F6 /* Preview Content */,
+				7613C7662CCCB729000EE4F6 /* Assets.xcassets */,
+				7613C7672CCCB729000EE4F6 /* ContentView.swift */,
+				7613C7682CCCB729000EE4F6 /* irl_watchApp.swift */,
+			);
+			path = "irl-watch Watch App";
+			sourceTree = "<group>";
+		};
+		7613C76B2CCCB729000EE4F6 /* irl-watch Watch AppTests */ = {
+			isa = PBXGroup;
+			children = (
+				7613C76A2CCCB729000EE4F6 /* irl_watch_Watch_AppTests.swift */,
+			);
+			path = "irl-watch Watch AppTests";
+			sourceTree = "<group>";
+		};
+		7613C76E2CCCB729000EE4F6 /* irl-watch Watch AppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7613C76C2CCCB729000EE4F6 /* irl_watch_Watch_AppUITests.swift */,
+				7613C76D2CCCB729000EE4F6 /* irl_watch_Watch_AppUITestsLaunchTests.swift */,
+			);
+			path = "irl-watch Watch AppUITests";
+			sourceTree = "<group>";
+		};
+		7613C7702CCCB729000EE4F6 /* irl-watch */ = {
+			isa = PBXGroup;
+			children = (
+				7613C7692CCCB729000EE4F6 /* irl-watch Watch App */,
+				7613C76B2CCCB729000EE4F6 /* irl-watch Watch AppTests */,
+				7613C76E2CCCB729000EE4F6 /* irl-watch Watch AppUITests */,
+				7613C76F2CCCB729000EE4F6 /* irl-watch.xcodeproj */,
+			);
+			path = "irl-watch";
+			sourceTree = "<group>";
+		};
+		7613C7712CCCB729000EE4F6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		763BA69E2CB644F4003A0CDB = {
 			isa = PBXGroup;
 			children = (
 				766B4CAE2CCAD41100AA9021 /* Core.swift */,
 				766B4CAF2CCAD41100AA9021 /* envKeys.swift */,
+				7613C7702CCCB729000EE4F6 /* irl-watch */,
 				764859872CC708540067CB1B /* Package.swift */,
 				763BA6A92CB644F4003A0CDB /* IRL */,
 				764859622CC703DC0067CB1B /* Frameworks */,
@@ -184,6 +241,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 763BA6A82CB644F4003A0CDB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7613C7712CCCB729000EE4F6 /* Products */;
+					ProjectRef = 7613C76F2CCCB729000EE4F6 /* irl-watch.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				763BA6A62CB644F4003A0CDB /* IRL */,
@@ -196,6 +259,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7613C7782CCCB729000EE4F6 /* Assets.xcassets in Resources */,
+				7613C7792CCCB729000EE4F6 /* Preview Assets.xcassets in Resources */,
 				764859882CC708540067CB1B /* Package.swift in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -207,6 +272,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7613C7732CCCB729000EE4F6 /* irl_watch_Watch_AppTests.swift in Sources */,
+				7613C7742CCCB729000EE4F6 /* irl_watchApp.swift in Sources */,
+				7613C7752CCCB729000EE4F6 /* ContentView.swift in Sources */,
+				7613C7762CCCB729000EE4F6 /* irl_watch_Watch_AppUITests.swift in Sources */,
+				7613C7772CCCB729000EE4F6 /* irl_watch_Watch_AppUITestsLaunchTests.swift in Sources */,
 				766B4D342CCAD41100AA9021 /* Core.swift in Sources */,
 				766B4D352CCAD41100AA9021 /* envKeys.swift in Sources */,
 			);
