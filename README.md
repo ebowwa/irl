@@ -4,6 +4,11 @@
 
 ![IRL](/.github/public/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
 
+# MVP Status **Empty Box means incomplete**
+[] full ios app 
+[] openaudiostandard
+[] full watch app/integration
+
 ## About
 
 IRL (In Real Life) is an AI-powered project that functions as an augmented memory assistant, human interpreter, advocate, and more. This app is designed to elevate human-AI interaction by providing real-time support and insights to users in various contexts.
