@@ -2,7 +2,7 @@
 
 ## How it works
 
-![How it works](public/high_level_distribution.jpg)
+![How it works](/.github/public/high_level_distribution.jpg)
 
 ## Requirements
 

@@ -1,6 +1,6 @@
 //
 //  socketmanager.swift
-//  IRL-AudioCore
+//  openaudiostandard
 //
 //  Created by Elijah Arbee on 10/20/24.
 //

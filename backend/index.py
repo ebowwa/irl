@@ -95,7 +95,7 @@ app.include_router(gemini_router, prefix="/api/gemini")  # <-- Added Gemini rout
 
 app.include_router(gemini_socket_router, prefix="/api/gemini")
 
-# app.include_router(cat_directory_router) # **ONLY IF DEV IS SET otherwise high safety concerns**
+app.include_router(cat_directory_router) # **ONLY IF DEV IS SET otherwise high safety concerns**
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately

@@ -52,8 +52,8 @@ public class AudioState: NSObject, AudioStateProtocol {
     
     // MARK: - WebSocket Manager
     
-    private var webSocketManager: WebSocketManagerProtocol? // WebSocket manager for live audio streaming
-    
+    public var webSocketManager: WebSocketManagerProtocol?
+
     // MARK: - Recording Control Flags
     
     private var isManualRecording: Bool = false // Indicates if the current recording was started manually.

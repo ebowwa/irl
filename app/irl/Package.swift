@@ -16,7 +16,10 @@ let package = Package(
         // Adding SQLite.swift
         .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
         // Adding swift-numerics for ComplexModule, Numerics, and RealModule
-        .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2")
+        .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", .upToNextMajor(from: "0.9.0"))
+    ],
+
     ],
     targets: [
         .target(
@@ -26,6 +29,7 @@ let package = Package(
                 .product(name: "ComplexModule", package: "swift-numerics"),
                 .product(name: "Numerics", package: "swift-numerics"),
                 .product(name: "RealModule", package: "swift-numerics")
+                .product(name: "ZIPFoundation", package: "ZIPFoundation")
             ],
             path: "Sources"
         ),

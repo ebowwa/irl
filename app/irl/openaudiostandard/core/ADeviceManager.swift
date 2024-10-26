@@ -1,6 +1,6 @@
 //
 //  DeviceManager.swift
-//  openaudio
+//  openaudiostandard
 //
 //  Created by Elijah Arbee on 10/23/24.
 //

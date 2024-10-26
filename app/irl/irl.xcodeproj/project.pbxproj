@@ -12,6 +12,7 @@
 		763BA8172CB74E80003A0CDB /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = 763BA8162CB74E80003A0CDB /* RealModule */; };
 		764859882CC708540067CB1B /* Package.swift in Resources */ = {isa = PBXBuildFile; fileRef = 764859872CC708540067CB1B /* Package.swift */; };
 		7658CDCD2CBAF8FC000F33C6 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7658CDCC2CBAF8FC000F33C6 /* SQLite */; };
+		766B4DF62CCC42D500AA9021 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 766B4DF52CCC42D500AA9021 /* ZIPFoundation */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -77,6 +78,7 @@
 				763BA8152CB74E80003A0CDB /* Numerics in Frameworks */,
 				763BA8132CB74E80003A0CDB /* ComplexModule in Frameworks */,
 				763BA8172CB74E80003A0CDB /* RealModule in Frameworks */,
+				766B4DF62CCC42D500AA9021 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +138,7 @@
 				763BA8142CB74E80003A0CDB /* Numerics */,
 				763BA8162CB74E80003A0CDB /* RealModule */,
 				7658CDCC2CBAF8FC000F33C6 /* SQLite */,
+				766B4DF52CCC42D500AA9021 /* ZIPFoundation */,
 			);
 			productName = IRL;
 			productReference = 763BA6A72CB644F4003A0CDB /* IRL.app */;
@@ -170,6 +173,7 @@
 				7658CB9D2CBA6A32000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
 				7658CB9E2CBA6A3D000F33C6 /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
 				7658CDCB2CBAF8FC000F33C6 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+				766B4DF42CCC42D500AA9021 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 763BA6A82CB644F4003A0CDB /* Products */;
@@ -456,6 +460,14 @@
 				minimumVersion = 0.15.3;
 			};
 		};
+		766B4DF42CCC42D500AA9021 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -478,6 +490,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7658CDCB2CBAF8FC000F33C6 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
 			productName = SQLite;
+		};
+		766B4DF52CCC42D500AA9021 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 766B4DF42CCC42D500AA9021 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
