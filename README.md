@@ -4,7 +4,7 @@
 
 ![IRL](/.github/public/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
 
-# MVP Status **Empty Box means incomplete**
+# MVP Status 
 [] full ios app 
 [] openaudiostandard
 [] full watch app/integration
