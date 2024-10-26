@@ -5,9 +5,15 @@
 ![IRL](/.github/public/7LIk_g_yRE2jVpeDe9Vxng.jpeg)
 
 # MVP Status 
-[] full ios app 
 [] openaudiostandard
+
+[] full ios app
+
 [] full watch app/integration
+
+[] web integrations
+
+[] add. device integrations
 
 ## About
 
