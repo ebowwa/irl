@@ -64,23 +64,17 @@ app.add_middleware(
 
 # Socket-based routes (ping, whisper-tts)
 app.include_router(socket_ping.router)  # Ping route for WebSocket health check
-
 app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 
-# Claude/OpenAI LLM routes
 app.include_router(claude_router, prefix="/v3/claude") 
 
-# Hume AI route (speech prosody, emotional analysis)
-app.include_router(hume_router, prefix="/api/v1/hume")
-
-# Embeddings route (vectorization for NLP tasks)
+app.include_router(hume_router, prefix="/api/v1/hume") # Hume AI route (speech prosody, emotional analysis)
 app.include_router(embeddings_router) # , prefix="/embeddings")
 
 # Image generation routes
 # app.include_router(fluxlora_router, prefix="/api")  # Disabled: FluxLora model
 app.include_router(sdxl_router, prefix="/api")  # Fast-SDXL image generation
 
-# Include the transcription router
 # app.include_router(transcription_router, prefix="/api",tags=["Transcription"])
 
 # OpenAI GPT model routes (GPT-4o-mini, configurable models)
