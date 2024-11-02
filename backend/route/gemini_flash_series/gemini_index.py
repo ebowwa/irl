@@ -162,13 +162,6 @@ async def list_languages():
     """
     return {"languages": SUPPORTED_LANGUAGES}
 
-
-
-
-
-
-
-
 ### --------------------DEMO-VIEW----------------------- ###
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
