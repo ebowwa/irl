@@ -20,7 +20,7 @@ Handle the following in your CLI terminal:
    
 2. Navigate into the project directory:
    ```bash
-   cd irl && cd backend
+   cd caringmind && cd backend
    ```
 
 3. Install the required dependencies:
@@ -31,7 +31,7 @@ Handle the following in your CLI terminal:
 4. Configure API values
     ```bash
     # Duplicate the env.example file to create a new .env file
-    cp env.example .env
+    cp .env.example .env
 
     # Open the .env file and add your API keys
     nano .env
@@ -63,7 +63,7 @@ Handle the following in your CLI terminal:
 
 4. Expose your local server to the internet using ngrok:
    ```bash
-   ngrok http 8000
+   ngrok http 9090
    ```
    This will generate a public URL for your local server, which can be accessed externally.
 

@@ -32,8 +32,13 @@ def estimate_tokens(text, model):
     """
     Estimate the number of tokens in the input text for the given model.
     """
-    encoding = tiktoken.encoding_for_model(model)
+    # Explicitly use 'cl100k_base' encoding for the specified models
+    if model in ["text-embedding-3-small", "text-embedding-3-large"]:
+        encoding = tiktoken.get_encoding("cl100k_base")
+    else:
+        encoding = tiktoken.encoding_for_model(model)
     return len(encoding.encode(text))
+
 
 # Function to generate embeddings
 def generate_embedding(model_key: str, input_text: str, normalize: bool):
