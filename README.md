@@ -6,8 +6,6 @@
 
 # MVP Status 
 
-    [ ] openaudiostandard
-
     [ ] mvp ios app
 
     [ ] mvp watch app
