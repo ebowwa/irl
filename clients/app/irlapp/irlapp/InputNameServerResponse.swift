@@ -7,7 +7,7 @@ import Foundation
 import AVFoundation
 import Combine
 import SwiftUI
-import UniformTypeIdentifiers // Import the UniformTypeIdentifiers framework
+import UniformTypeIdentifiers
 
 struct ServerResponse: Codable {
     let name: String
@@ -110,11 +110,14 @@ class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
                 switch result {
                 case .success(let response):
                     completion(.success(response))
-                    // Optionally, delete the audio file after successful upload
+                    // 3.2.1 Optionally, delete the audio file after successful upload
                     try? FileManager.default.removeItem(at: fileURL)
+                    // Note 1: The client-side copy of the audio file is deleted after a successful upload to free up storage.
                 case .failure(let error):
                     self?.errorMessage = "Failed to process audio: \(error.localizedDescription)"
                     self?.showingError = true
+                    // Note 2: The client-side copy of the audio file is retained if the upload fails, allowing for potential retries.
+                    // Note 3: Option to save to bucket exists here
                     completion(.failure(error))
                 }
             }
@@ -192,6 +195,7 @@ class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
                 let decoder = JSONDecoder()
                 let serverResponse = try decoder.decode(ServerResponse.self, from: data)
                 completion(.success(serverResponse))
+                print(serverResponse)
             } catch {
                 completion(.failure(error))
             }

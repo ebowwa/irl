@@ -23,6 +23,7 @@ from route.gemini_flash_series.gemini_index import router as gemini_router
 # from route.post.media.upload.Index import router as media_router unneeded
 from services.gemini_socket import router as gemini_socket_router
 from route.features.user_name_upload import router as user_name_upload_router
+from route.features.unzip_audiobatch import router as unzip_audio_batch_router
 from utils.ngrok_utils import start_ngrok 
 import ngrok 
 from utils.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
@@ -93,6 +94,8 @@ app.include_router(gemini_router, prefix="/api/gemini")  # <-- Added Gemini rout
 app.include_router(gemini_socket_router, prefix="/api/gemini")
 
 app.include_router(user_name_upload_router)
+
+app.include_router(unzip_audio_batch_router)
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately

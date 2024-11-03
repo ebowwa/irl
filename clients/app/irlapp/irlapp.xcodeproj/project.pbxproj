@@ -89,8 +89,8 @@
 		764214B32CCD8B0F00424E73 = {
 			isa = PBXGroup;
 			children = (
-				764214BE2CCD8B0F00424E73 /* irlapp */,
 				764214BD2CCD8B0F00424E73 /* Products */,
+				764214BE2CCD8B0F00424E73 /* irlapp */,
 			);
 			sourceTree = "<group>";
 		};
