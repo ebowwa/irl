@@ -68,7 +68,3 @@ async def upload_audio_zip(file: UploadFile = File(...)):
     except Exception as e:
         # 4.4. Return error details if extraction fails
         raise HTTPException(status_code=500, detail=str(e))
-
-# This router can now be included in your main FastAPI app as follows:
-# from your_module_name import router
-# app.include_router(router)

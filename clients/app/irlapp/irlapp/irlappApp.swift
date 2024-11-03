@@ -88,7 +88,7 @@ struct ContentView: View {
                                     age: $onboardingViewModel.age)
                     .transition(.slide)
             case .home:
-                EmptyView()
+                HomeView()
                     .transition(.slide)
             }
         }
