@@ -28,12 +28,13 @@ Step into a world where CaringMind listens, remembers, and knows just what you n
 
 ## What Can CaringMind Do?
 
-    **Capture Every Moment:** CaringMind holds onto the memories you want to keep, gently storing the moments and conversations you’d rather not forget.
+**Capture Every Moment:** CaringMind holds onto the memories you want to keep, gently storing the moments and conversations you’d rather not forget.
 
-    **Know Your World:** CaringMind gets to know what makes your day better. From the biggest ideas to the tiniest details, CaringMind remembers them so you don’t have to.
-    Encourage Productivity & Play: Need a little reminder or gentle nudge? CaringMind helps you stay focused and make the most of your time. It’s like having a magical, invisible helper always ready to cheer you on.
+**Know Your World:** CaringMind gets to know what makes your day better. From the biggest ideas to the tiniest details, CaringMind remembers them so you don’t have to.
 
-    **Stay Connected:** CaringMind feels what matters most to you—your family, friends, school, work, and goals—and quietly makes it easier to feel connected to the people and things that make you happy.
+**Encourage Productivity & Play:** Need a little reminder or gentle nudge? CaringMind helps you stay focused and make the most of your time. It’s like having a magical, invisible helper always ready to cheer you on.
+
+**Stay Connected:** CaringMind feels what matters most to you—your family, friends, school, work, and goals—and quietly makes it easier to feel connected to the people and things that make you happy.
 
 With a touch of CaringMind in your pocket, staying present, productive, and connected feels natural, like a little magic working just for you. Let CaringMind take care of the background, so you can stay in the moment.
 
