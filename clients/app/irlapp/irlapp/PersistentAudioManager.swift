@@ -1,6 +1,4 @@
 // Initial Issues:
-// 1.13. Sound Quality Issues
-//     The voice sounds changed/modified, which is unexpected given the quality expected when using the Apple microphone, which should typically provide good quality, its likely the handling of the audio or even the recording of the audio
 // 1.14. Missing Speech in Audio Files
 //     Some audio files sent to the server do not include speech; we have local transcriptions. This should be an easy configuration.
 import Foundation
