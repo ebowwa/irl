@@ -27,6 +27,7 @@
 Step into a world where CaringMind listens, remembers, and knows just what you need, when you need it. CaringMind helps you stay on track, feel closer to friends and family, and enjoy each moment with a presence that feels almost magical. It's as if there's a guide who remembers everything important for you—always there, ready to help.
 
 ## What Can CaringMind Do?
+[onboarding demo](.github/public/app-demo/simulator_screenshot_1DEC8EAF-AF94-4DFB-820E-0C51FFE2FA2E.png)
 
 **Capture Every Moment:** CaringMind holds onto the memories you want to keep, gently storing the moments and conversations you’d rather not forget.
 
