@@ -1,5 +1,4 @@
 // RUN backend: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python index.py && ngrok http 8000
-//
 //  Constants.swift
 //  irlapp
 //
@@ -9,12 +8,27 @@
 import Foundation
 
 struct Constants {
+    // Default base domain value for fallback
+    private static let defaultBaseDomain = "36e9-2601-646-a201-db60-00-f79e.ngrok-free.app"
+    
     // Environment-specific settings
-    static let baseDomain = UserDefaults.standard.string(forKey: "baseDomain") ?? "36e9-2601-646-a201-db60-00-f79e.ngrok-free.app"
-    static let devMode = UserDefaults.standard.bool(forKey: "devMode") // Default is `false` if not set
-    static let demoMode = UserDefaults.standard.bool(forKey: "demoMode") // Default is `false` if not set
-    static let productionMode = UserDefaults.standard.bool(forKey: "productionMode") // Default is `true` if not set
-
+    static let baseDomain: String = {
+        // Fetch `baseDomain` from UserDefaults or fall back to default
+        UserDefaults.standard.string(forKey: "baseDomain") ?? defaultBaseDomain
+    }()
+    
+    static let devMode: Bool = {
+        UserDefaults.standard.bool(forKey: "devMode")
+    }()
+    
+    static let demoMode: Bool = {
+        UserDefaults.standard.bool(forKey: "demoMode")
+    }()
+    
+    static let productionMode: Bool = {
+        UserDefaults.standard.bool(forKey: "productionMode")
+    }()
+    
     // URL configurations
     static var baseURL: String {
         "https://\(baseDomain)"
@@ -29,7 +43,7 @@ struct Constants {
     // Initialization function for setup (optional)
     static func initializeDefaults() {
         UserDefaults.standard.register(defaults: [
-            "baseDomain": "36e9-2601-646-a201-db60-00-f79e.ngrok-free.app",
+            "baseDomain": defaultBaseDomain,
             "devMode": false,
             "demoMode": false,
             "productionMode": true

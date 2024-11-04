@@ -68,24 +68,18 @@ app.include_router(socket_ping.router)  # Ping route for WebSocket health check
 app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 
 app.include_router(claude_router, prefix="/v3/claude") 
-
 app.include_router(hume_router, prefix="/api/v1/hume") # Hume AI route (speech prosody, emotional analysis)
 app.include_router(embeddings_router) # , prefix="/embeddings")
-
 # Image generation routes
 # app.include_router(fluxlora_router, prefix="/api")  # Disabled: FluxLora model
 app.include_router(sdxl_router, prefix="/api")  # Fast-SDXL image generation
-
-# app.include_router(transcription_router, prefix="/api",tags=["Transcription"])
-
+# app.include_router(transcription_router, prefix="/api",tags=["Transcription"]) 
 # OpenAI GPT model routes (GPT-4o-mini, configurable models)
 app.include_router(openai_router, prefix="/LLM")
-
 # Diarization route (speaker separation)
 # app.include_router(diarization_router, prefix="/api")
 
-# ChatGPT share conversation route
-app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # New route for ChatGPT share conversations
+app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # route for ChatGPT share conversations
 
 # app.include_router(media_router, prefix="/media")  # <-- Include media router with a prefix
 
@@ -93,9 +87,9 @@ app.include_router(gemini_router, prefix="/api/gemini")  # <-- Added Gemini rout
 
 app.include_router(gemini_socket_router, prefix="/api/gemini")
 
-app.include_router(user_name_upload_router)
+app.include_router(user_name_upload_router, "/onboarding") # add "/onboarding"
 
-app.include_router(unzip_audio_batch_router)
+app.include_router(unzip_audio_batch_router) # this is in test for handling zip batches from the client
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately
