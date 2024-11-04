@@ -1,15 +1,23 @@
-# app/routers/gemini_router.py
+# backend/route/features/user_name_upload_v2.py
 # FastAPI router for processing audio using Google Gemini
 
 import os
+import tempfile
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
 import json
+import traceback
+from types import MappingProxyType
+import logging
 
-# 1. Load environment variables from the .env file
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# 1. Load environment variables from .env
 load_dotenv()
 
 # 2. Initialize the FastAPI router
@@ -18,13 +26,13 @@ router = APIRouter()
 # 3. Retrieve and configure the Gemini API key
 google_api_key = os.getenv("GOOGLE_API_KEY")
 if not google_api_key:
-    raise EnvironmentError("GOOGLE_API_KEY not found in environment variables.")
+    raise EnvironmentError("GEMINI_API_KEY not found in environment variables.")
 
 genai.configure(api_key=google_api_key)
 
 def upload_to_gemini(file_path: str, mime_type: str = None):
     """
-    4. Uploads the given file to Gemini.
+    Uploads the given file to Gemini.
 
     Args:
         file_path (str): Path to the file to upload.
@@ -34,19 +42,27 @@ def upload_to_gemini(file_path: str, mime_type: str = None):
         Uploaded file object.
     """
     try:
-        # 4.1. Upload the file using Gemini's API
         uploaded_file = genai.upload_file(file_path, mime_type=mime_type)
-        print(f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}")
-        return uploaded_file
+        logger.info(f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}")
+        return uploaded_file  # Return the file object directly
     except Exception as e:
-        # 4.2. Log and re-raise any exceptions that occur during upload
-        print(f"Error uploading file: {e}")
+        logger.error(f"Error uploading file: {e}")
         raise
+
+def serialize(obj):
+    if isinstance(obj, MappingProxyType):
+        return dict(obj)
+    elif hasattr(obj, '__dict__'):
+        return obj.__dict__
+    elif isinstance(obj, list):
+        return [serialize(item) for item in obj]
+    else:
+        return str(obj)
 
 @router.post("/process-audio")
 async def process_audio(file: UploadFile = File(...)):
     """
-    5. Endpoint to upload an audio file, process it with Gemini, and return the analysis.
+    Endpoint to upload an audio file, process it with Gemini, and return the analysis.
 
     Args:
         file (UploadFile): The audio file to process.
@@ -54,7 +70,7 @@ async def process_audio(file: UploadFile = File(...)):
     Returns:
         JSONResponse: The analysis result from Gemini.
     """
-    # 5.1. Validate MIME type of the uploaded file
+    # 4. Validate MIME type of the uploaded file
     supported_mime_types = [
         "audio/wav",
         "audio/mp3",
@@ -70,16 +86,15 @@ async def process_audio(file: UploadFile = File(...)):
         )
 
     try:
-        # 5.2. Save the uploaded file temporarily on the server
-        temp_file_path = f"/tmp/{file.filename}"
-        with open(temp_file_path, "wb") as temp_file:
-            content_bytes = await file.read()
-            temp_file.write(content_bytes)
+        # 5. Save the uploaded file temporarily on the server using tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as temp_file:
+            temp_file.write(await file.read())
+            temp_file_path = temp_file.name
 
-        # 5.3. Upload the file to Gemini
+        # 6. Upload the file to Gemini and get the file object
         uploaded_file = upload_to_gemini(temp_file_path, mime_type=file.content_type)
 
-        # 5.4. Define the updated generation configuration with the new JSON schema
+        # 7. Define the updated generation configuration with the new JSON schema
         generation_config = {
             "temperature": 1,
             "top_p": 0.95,
@@ -87,16 +102,7 @@ async def process_audio(file: UploadFile = File(...)):
             "max_output_tokens": 8192,
             "response_schema": content.Schema(
                 type=content.Type.OBJECT,
-                # 5.4.1. Define required fields as a list of strings
-                required=[
-                    "name",
-                    "prosody",
-                    "feeling",
-                    "confidence_score",
-                    "confidence_reasoning",
-                    "Psychoanalysis"
-                ],
-                # 5.4.2. Define properties with their respective types and descriptions
+                required=["name", "prosody", "feeling", "confidence_score", "confidence_reasoning", "Psychoanalysis"],
                 properties={
                     "name": content.Schema(
                         type=content.Type.STRING,
@@ -124,18 +130,16 @@ async def process_audio(file: UploadFile = File(...)):
                     ),
                 },
             ),
-            # 5.4.3. Specify the response MIME type as JSON
             "response_mime_type": "application/json",
         }
 
-        # 5.5. Initialize the Gemini Generative Model with the specified configuration
+        # 8. Initialize the Gemini Generative Model with the specified configuration
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-1.5-flash",  # Verify this model name
             generation_config=generation_config,
         )
 
-        # 5.6. Prepare the chat session history with the updated prompt
-        # 5.6.1. Define the prompt text with actual values, removing placeholders
+        # 9. Prepare the full prompt text
         prompt_text = (
             "Imagine onboarding as an exploratory field where speech prosody and name "
             "pronunciation reveal aspects of personal identity, emotions, and cultural "
@@ -147,60 +151,71 @@ async def process_audio(file: UploadFile = File(...)):
             "personal, cultural, and emotional nuances. Be concise yet thoughtful.\n\n"
             "Follow these steps, but be sure to take context from the user's accent to be "
             "triple sure you have transcribed correctly:\n"
-            "1.) Transcribe just the user's complete name. Human names, dialects, accents, etc., can be very tricky. Ensure the transcription makes sense by contemplating all available context before finalizing the full name transcription.\n"
+            "1.) Transcribe just the user's complete name. Human names, dialects, accents, etc., can be very tricky. Ensure the transcription makes sense by contemplating all available context before finalizing the full name transcription. If the name sounds fake or like the user is lying call them out. \n"
             "2.) Analyze the audio to determine what the user's speech prosody to their name says about them. Employ extreme inference and capture every detail.\n"
             "3.) Analyze how the user feels about saying their name for this experience.\n"
             "4.) Concisely assign a confidence score and reasoning to either confidence or lack of confidence on the hearing, understanding, and transcription of the speaker.\n"
             "5.) Perform a psychoanalytic assessment: conduct a master psychoanalysis within the confines and context of this audio, aiming to deeply understand the user.\n\n"
             "Be sure to be mindful of user dynamics in pronunciation.\n\n"
-            "The user was prompted to say 'Hello, I'm Elijah Cornelius RB.'"
+            "The user was prompted to say '{greeting}, I'm {full_name}', with the user identified always address the user by name. Do not specifically mention `the audio`, `the audio file` or otherwise.\n\n"
+            "Consider this onboarding as akin to setting up a human playable character (HPC) "
+            "in a role-playing game. Just as an HPC has defining attributes—such as speech, "
+            "personality, and behavioral cues—capturing a user’s unique pronunciation, tone, "
+            "and accent patterns reveals underlying aspects of their personality and comfort "
+            "level.\n\n"
+            "Follow these steps, mindful of the user dynamics and context from their accent to "
+            "ensure accurate transcription:\n\n"
+            "Transcribe the user’s complete name: Focus on capturing every sound and inflection "
+            "to reflect the authenticity of their identity, similar to the way a game captures an "
+            "HPC’s unique dialogue choices.\n\n"
+            "Analyze the user’s speech prosody to uncover nuances in identity:\n\n"
+            "Treat prosody patterns (tone, rhythm, emphasis) like the \"character traits\" of the "
+            "HPC, which might hint at confidence, pride, or cultural background. Capture every "
+            "detail, considering how tone and emphasis reveal depth, much like layers in "
+            "character development.\n\n"
+            "Evaluate how the user feels about saying their name for this experience:\n\n"
+            "Observe the \"emotional response\" layer of the HPC analogy: Does their tone suggest "
+            "comfort or hesitation in saying their name? Infer if any detected hesitancy reflects "
+            "uncertainty or if it could stem from the novelty of the interaction, enhancing the "
+            "authenticity of the onboarding experience.\n\n"
+            "Remember: Analyze speech patterns to build a personalized experience, respecting the "
+            "individuality and nuances within each user’s \"character profile.\""
         )
 
-        # 5.6.2. Initialize the chat session with the prepared history
+        # 10. Prepare the chat history using the correct structure
         chat_history = [
             {
                 "role": "user",
                 "parts": [
-                    uploaded_file,
-                    prompt_text,
+                    uploaded_file,  # Direct file object
+                    prompt_text,    # Prompt string
                 ],
             },
-            # 5.6.3. Remove any model responses from the history to prevent instructing the model to use code blocks
-            # Do not include model responses in the history
         ]
 
-        # 5.7. Start the chat session with the prepared history
+        # 11. Debugging: Print the chat history to verify
+        logger.debug("Chat History:")
+        logger.debug(json.dumps(chat_history, indent=2, default=serialize))
+
+        # 12. Start the chat session with the prepared history
         chat_session = model.start_chat(history=chat_history)
 
-        # 5.8. Send the message to Gemini
-        # Since the prompt includes all necessary instructions, no additional input is needed
-        response = chat_session.send_message("")  # No additional input needed
+        # 13. Send the message to Gemini
+        response = chat_session.send_message("Process the audio and think deeply")  # No additional input needed
 
-        # 5.9. Clean up by removing the temporary audio file
+        # 14. Clean up by removing the temporary audio file
         os.remove(temp_file_path)
 
-        # 5.10. Parse the JSON response from Gemini
+        # 15. Parse the JSON response from Gemini
         try:
-            # Directly parse the response text as JSON since 'response_mime_type' is set to 'application/json'
             parsed_result = json.loads(response.text)
         except json.JSONDecodeError as e:
-            # 5.10.1. Handle JSON parsing errors
             raise HTTPException(status_code=500, detail=f"Failed to parse Gemini response: {e}")
 
-        # 5.11. Return the parsed JSON response to the client
+        # 16. Return the parsed JSON response to the client
         return JSONResponse(content=parsed_result)
 
     except Exception as e:
-        # 5.12. Handle any unexpected errors during processing
-        print(f"Error processing audio: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-"""
-# Example curl Command to Test the Endpoint
-
-curl -X POST "http://127.0.0.1:9090/gemini/process-audio" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@/Users/ebowwa/Desktop/Recorded_Audio_October_27_2024_9_59PM.ogg;type=audio/ogg"
-"""
+        logger.error(f"Error processing audio: {e}")
+        traceback.print_exc()  # Print the stack trace for debugging
+        raise HTTPException(status_code=500, detail="Internal Server Error. Please check the server logs.")
