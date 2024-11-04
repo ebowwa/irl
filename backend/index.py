@@ -19,7 +19,7 @@ from route.features.image_generation.fast_sdxl import router as sdxl_router  # F
 from route.features.text.llm_inference.OpenAIRoute import router as openai_router
 from route.features.text.chatgpt_share.index import router as share_oai_chats_router
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
-from route.gemini_flash_series.gemini_index import router as gemini_router
+from route.features.gemini_flash_series.gemini_index import router as gemini_router
 # from route.post.media.upload.Index import router as media_router unneeded
 from services.gemini_socket import router as gemini_socket_router
 from route.features.user_name_upload import router as user_name_upload_router
