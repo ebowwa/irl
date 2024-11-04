@@ -7,9 +7,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import logging
 from route.dev import socket_ping
-from route.features.whisper_socket.whisper_tts import whisper_tts
+from route.features.whisper_socket import whisper_tts
 from route.features.text.llm_inference.claude import router as claude_router
-from backend.route.features.humeclient import router as hume_router
+from route.features.humeclient import router as hume_router
 from route.features.text.embedding.index import router as embeddings_router
 # from backend.examples.textEmbeddingRoutev1 import router as embeddings_router  # Embeddings import
 # from routers.post.image_generation.FLUXLORAFAL import router as fluxlora_router  # Disabled import
@@ -24,7 +24,7 @@ from route.features.gemini_flash_series.gemini_index import router as gemini_rou
 from services.gemini_socket import router as gemini_socket_router
 from route.features.user_name_upload import router as user_name_upload_router
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
-from utils.ngrok_utils import start_ngrok 
+from utils.ngrok_utils import start_ngrok
 import ngrok 
 from utils.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
 from dotenv import load_dotenv  # Load environment variables from .env

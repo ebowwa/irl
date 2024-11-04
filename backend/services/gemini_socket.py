@@ -8,7 +8,7 @@ import json
 import os
 import pathlib
 import logging
-from route.gemini_flash_series.gemini_series_config import MODEL_VARIANTS, SUPPORTED_RESPONSE_MIME_TYPES
+from utils.gemini_config import MODEL_VARIANTS, SUPPORTED_LANGUAGES, SUPPORTED_RESPONSE_MIME_TYPES
 
 # Router and constants setup
 router = APIRouter()
