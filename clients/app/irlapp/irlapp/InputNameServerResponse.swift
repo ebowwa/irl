@@ -36,7 +36,7 @@ class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
     private var audioFileURL: URL?
     
     // Backend URL
-    private let backendURL = URL(string: "https://36e9-2601-646-a201-db60-00-f79e.ngrok-free.app/process-audio")! // Updated to your provided backend URL
+    private let backendURL = URL(string: "https://695c-2601-646-a201-db60-00-a3c1.ngrok-free.app/process-audio")! // Updated to your provided backend URL
     
     // 1. Start Recording
     func startRecording() {

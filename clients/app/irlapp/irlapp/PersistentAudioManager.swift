@@ -549,7 +549,7 @@ class PersistentAudioManager: NSObject, ObservableObject, SFSpeechRecognizerDele
     
     private func uploadBatchFile(fileURL: URL) {
         // 15.0.1. Validate Upload URL
-        guard let uploadURL = URL(string: "https://36e9-2601-646-a201-db60-00-f79e.ngrok-free.app/upload-audio-zip/") else {
+        guard let uploadURL = URL(string: "https://695c-2601-646-a201-db60-00-a3c1.ngrok-free.app/upload-audio-zip/") else {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 let message = "Invalid upload URL."
