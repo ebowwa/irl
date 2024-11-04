@@ -87,7 +87,7 @@ app.include_router(gemini_router, prefix="/api/gemini")  # <-- Added Gemini rout
 
 app.include_router(gemini_socket_router, prefix="/api/gemini")
 
-app.include_router(user_name_upload_router, "/onboarding") # add "/onboarding"
+app.include_router(user_name_upload_router, prefix="/onboarding") # add "/onboarding"
 
 app.include_router(unzip_audio_batch_router) # this is in test for handling zip batches from the client
 
