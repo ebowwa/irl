@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import get_swagger_ui_html  # Import Swagger UI
+from fastapi.openapi.docs import get_swagger_ui_html  
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import logging
@@ -11,16 +11,11 @@ from route.features.whisper_socket import whisper_tts
 from route.features.text.llm_inference.claude import router as claude_router
 from route.features.humeclient import router as hume_router
 from route.features.text.embedding.index import router as embeddings_router
-# from backend.examples.textEmbeddingRoutev1 import router as embeddings_router  # Embeddings import
-# from routers.post.image_generation.FLUXLORAFAL import router as fluxlora_router  # Disabled import
-from route.features.image_generation.fast_sdxl import router as sdxl_router  # Fast-SDXL model router
-# from route.post.audio.diarization.index import router as diarization_router  # rm 4 gemini
-# from backend.examples.openai_post import router as openai_router  # OpenAI (GPT-4o-mini) router
+from route.features.image_generation.fast_sdxl import router as sdxl_router  # Fast-SDXL model 
 from route.features.text.llm_inference.OpenAIRoute import router as openai_router
 from route.features.text.chatgpt_share.index import router as share_oai_chats_router
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
 from route.features.gemini_flash_series.gemini_index import router as gemini_router
-# from route.post.media.upload.Index import router as media_router unneeded
 from services.gemini_socket import router as gemini_socket_router
 from route.features.user_name_upload_v1 import router as user_name_upload_v1_router
 from route.features.user_name_upload_v2 import router as user_name_upload_v2_router
@@ -29,11 +24,9 @@ from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_route
 from utils.ngrok_utils import start_ngrok
 import ngrok 
 from utils.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
-from dotenv import load_dotenv  # Load environment variables from .env
+from dotenv import load_dotenv 
 import os
-import socket
-import subprocess
-import signal
+
 
 # ------------------ Load Environment Variables --------------------
 # Load the .env file to read configurations like PORT, NGROK_AUTH, etc.
@@ -45,10 +38,10 @@ USE_NGROK = True  # Enable Ngrok by default, can be toggled
 # ------------------ FastAPI App Configuration ---------------------
 # Create the FastAPI app instance with essential metadata
 app = FastAPI(
-    title="IRL Backend Service",
-    description="A FastAPI backend acting as a proxy to leading AI models.",
+    title="Caring Mind Backend Service",
+    description="an api into the information substrate",
     version="0.0.1",
-    openapi_url="/openapi.json",  # OpenAPI schema URL
+    openapi_url="/openapi.json",  
     docs_url=None,  # Disable default docs UI
     redoc_url=None  # Disable default ReDoc UI
 )
@@ -72,28 +65,29 @@ app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 app.include_router(claude_router, prefix="/v3/claude") 
 app.include_router(hume_router, prefix="/api/v1/hume") # Hume AI route (speech prosody, emotional analysis)
 app.include_router(embeddings_router) # , prefix="/embeddings")
-# Image generation routes
 # app.include_router(fluxlora_router, prefix="/api")  # Disabled: FluxLora model
 app.include_router(sdxl_router, prefix="/api")  # Fast-SDXL image generation
 # app.include_router(transcription_router, prefix="/api",tags=["Transcription"]) 
 # OpenAI GPT model routes (GPT-4o-mini, configurable models)
 app.include_router(openai_router, prefix="/LLM")
-# Diarization route (speaker separation)
 # app.include_router(diarization_router, prefix="/api")
 
-app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # route for ChatGPT share conversations
+app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # route for ChatGPT share conversations; i.e. existing chatgpt shared chats
 
-# app.include_router(media_router, prefix="/media")  # <-- Include media router with a prefix
+# app.include_router(media_router, prefix="/media") 
 
-app.include_router(gemini_router, prefix="/api/gemini")  # <-- Added Gemini router with prefix
+app.include_router(gemini_router, prefix="/api/gemini")  
 
 app.include_router(gemini_socket_router, prefix="/api/gemini")
 
-app.include_router(user_name_upload_v1_router, prefix="/onboarding/v1") # add "/onboarding"
-
-app.include_router(user_name_upload_v2_router, prefix="/onboarding/v2") # add "/onboarding"
-app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3") # add "/onboarding"
-
+app.include_router(user_name_upload_v1_router, prefix="/onboarding/v1") # + /process-audio
+app.include_router(user_name_upload_v2_router, prefix="/onboarding/v2") 
+app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3") 
+# double-try correct user name 
+# one-liner & Day in the life Q's
+# general diarization, transcription, otherwise route
+# media upload should preserve for 1 day min with bucket?
+# 
 app.include_router(unzip_audio_batch_v1_router) # this is in test for handling zip batches from the client
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
