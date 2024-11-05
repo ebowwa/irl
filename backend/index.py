@@ -1,7 +1,7 @@
 # File: backend/index.py **DO NOT OMIT ANYTHING FROM THE FOLLOWING CONTENT, INCLUDING & NOT LIMITED TO COMMENTED NOTES
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
+from middleware import setup_cors
 from fastapi.openapi.docs import get_swagger_ui_html  
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -27,11 +27,8 @@ from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs  # sees
 from dotenv import load_dotenv 
 import os
 
-
 # ------------------ Load Environment Variables --------------------
-# Load the .env file to read configurations like PORT, NGROK_AUTH, etc.
 load_dotenv()
-
 # Flag to toggle Ngrok usage
 USE_NGROK = True  # Enable Ngrok by default, can be toggled
 
@@ -46,15 +43,9 @@ app = FastAPI(
     redoc_url=None  # Disable default ReDoc UI
 )
 
-# ------------------ CORS Middleware -------------------------------
-# Add CORS support to allow cross-origin requests from any domain
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow requests from all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
-)
+# ------------------ Middleware Setup ------------------------------
+
+setup_cors(app)
 
 # ------------------ API Routes -------------------------------------
 
