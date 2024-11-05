@@ -7,7 +7,7 @@ class FindTerminateServerPIDs:
     def __init__(self, port):
         self.port = port
 
-    def find_and_kill_server_process(self):
+    def find_and_kill_process(self):
         try:
             # Use lsof to find all PIDs using the port
             pid_command = f"lsof -t -i:{self.port}"
