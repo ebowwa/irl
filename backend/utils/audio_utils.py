@@ -1,6 +1,4 @@
 # backend/utils/audioUtils.py
-# usually the user will submit an image and that image will transmit here, we need to maybe store them, store them for 5 mins, or otherwise
-
 import os
 import tempfile
 from fastapi import UploadFile, HTTPException

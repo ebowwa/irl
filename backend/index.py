@@ -64,21 +64,21 @@ app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 
 app.include_router(claude_router, prefix="/v3/claude") 
 app.include_router(hume_router, prefix="/api/v1/hume") # Hume AI route (speech prosody, emotional analysis)
-app.include_router(embeddings_router) # , prefix="/embeddings")
+app.include_router(embeddings_router, prefix="/text/embeddings") # , prefix="/embeddings")
 # app.include_router(fluxlora_router, prefix="/api")  # Disabled: FluxLora model
-app.include_router(sdxl_router, prefix="/api")  # Fast-SDXL image generation
+app.include_router(sdxl_router, prefix="/image/generation")  # Fast-SDXL image generation
 # app.include_router(transcription_router, prefix="/api",tags=["Transcription"]) 
 # OpenAI GPT model routes (GPT-4o-mini, configurable models)
-app.include_router(openai_router, prefix="/LLM")
+app.include_router(openai_router, prefix="/text/response")
 # app.include_router(diarization_router, prefix="/api")
 
-app.include_router(share_oai_chats_router, prefix="/api/chatgpt")  # route for ChatGPT share conversations; i.e. existing chatgpt shared chats
+app.include_router(share_oai_chats_router, prefix="/retrieve/externalchats")  # route for ChatGPT share conversations; i.e. existing chatgpt shared chats
 
 # app.include_router(media_router, prefix="/media") 
 
-app.include_router(gemini_router, prefix="/api/gemini")  
+app.include_router(gemini_router, prefix="/post/gemini")  
 
-app.include_router(gemini_socket_router, prefix="/api/gemini")
+app.include_router(gemini_socket_router, prefix="/socket/gemini")
 
 app.include_router(user_name_upload_v1_router, prefix="/onboarding/v1") # + /process-audio
 app.include_router(user_name_upload_v2_router, prefix="/onboarding/v2") 
