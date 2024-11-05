@@ -15,15 +15,15 @@ from route.features.image_generation.fast_sdxl import router as sdxl_router  # F
 from route.features.text.llm_inference.OpenAIRoute import router as openai_router
 from route.features.text.chatgpt_share.index import router as share_oai_chats_router
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
-from route.features.gemini_flash_socket.gemini_index import router as gemini_router
+from route.features.gemini_post import router as gemini_router
 from services.gemini_socket import router as gemini_socket_router
 from route.features.user_name_upload_v1 import router as user_name_upload_v1_router
 from route.features.user_name_upload_v2 import router as user_name_upload_v2_router
 from route.features.user_name_upload_v3 import router as user_name_upload_v3_router
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
-from utils.ngrok_utils import start_ngrok
+from utils.server.ngrok_utils import start_ngrok
 import ngrok 
-from utils.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
+from utils.server.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
 from dotenv import load_dotenv 
 import os
 
