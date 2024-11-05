@@ -23,7 +23,7 @@ from route.features.user_name_upload_v3 import router as user_name_upload_v3_rou
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
 from utils.server.ngrok_utils import start_ngrok
 import ngrok 
-from utils.server.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
+from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs  # sees If port is open if so closes the port so the server can init
 from dotenv import load_dotenv 
 import os
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     PORT = int(os.getenv("PORT", 9090))
 
     # Initialize the ServerManager for handling the port
-    server_manager = ServerManager(port=PORT)
+    server_manager = FindTerminateServerPIDs(port=PORT)
 
     # Attempt to kill any process using the same port before launching
     try:
