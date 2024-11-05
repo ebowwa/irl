@@ -1,4 +1,5 @@
 // NameInputView.swift
+
 import SwiftUI
 
 struct NameInputView: View {
@@ -10,6 +11,11 @@ struct NameInputView: View {
     @State private var receivedName: String = ""
     @State private var prosody: String = ""
     @State private var feeling: String = ""
+    @State private var confidenceScore: Int = 0
+    @State private var confidenceReasoning: String = ""
+    @State private var psychoanalysis: String = ""
+    @State private var locationBackground: String = ""  // New state variable added
+    
     @State private var isCorrectName: Bool = true
     @State private var confirmedName: String = ""
     @State private var isRecording: Bool = false
@@ -70,7 +76,18 @@ struct NameInputView: View {
                                         self.receivedName = response.name
                                         self.prosody = response.prosody
                                         self.feeling = response.feeling
+                                        self.confidenceScore = response.confidence_score
+                                        self.confidenceReasoning = response.confidence_reasoning
+                                        self.psychoanalysis = response.psychoanalysis
+                                        self.locationBackground = response.location_background  // Assign the new field
                                         self.showConfirmation = true
+                                        // Log prosody & feeling
+                                        // print("Prosody: \(self.prosody)")
+                                        // print("Feeling: \(self.feeling)")
+                                        // print("Confidence Score: \(self.confidenceScore)")
+                                        // print("Confidence Reasoning: \(self.confidenceReasoning)")
+                                        // print("Psychoanalysis: \(self.psychoanalysis)")
+                                        // print("Location Background: \(self.locationBackground)")  // Optional logging
                                     case .failure(let error):
                                         print("Error: \(error.localizedDescription)")
                                     }
@@ -117,9 +134,16 @@ struct NameInputView: View {
                         }
                         .padding(.horizontal, 30)
                         
-                        // Voice Analysis Card
-                        VoiceAnalysisCard(prosody: prosody, feeling: feeling)
-                            .padding(.horizontal)
+                        // Voice Analysis Card with additional data
+                        VoiceAnalysisCard(
+                            prosody: prosody,
+                            feeling: feeling,
+                            confidenceScore: confidenceScore,
+                            confidenceReasoning: confidenceReasoning,
+                            psychoanalysis: psychoanalysis,
+                            locationBackground: locationBackground  // Pass the new field
+                        )
+                        .padding(.horizontal)
                         
                         Toggle(isOn: $isCorrectName) {
                             Text(isCorrectName ? "Yes, that's correct" : "No, I'll correct it")

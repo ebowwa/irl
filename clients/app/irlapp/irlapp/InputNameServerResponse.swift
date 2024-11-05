@@ -1,18 +1,31 @@
 // AppManager.swift
 // Handles data, audio, and server interactions
-// working! add a back button for name corrections.
-// console log the results of prosody & feeling
-// 
+
 import Foundation
 import AVFoundation
 import Combine
 import SwiftUI
 import UniformTypeIdentifiers
 
+
 struct ServerResponse: Codable {
     let name: String
     let prosody: String
     let feeling: String
+    let confidence_score: Int
+    let confidence_reasoning: String
+    let psychoanalysis: String
+    let location_background: String  // New field added
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case prosody
+        case feeling
+        case confidence_score
+        case confidence_reasoning
+        case psychoanalysis
+        case location_background
+    }
 }
 
 class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
@@ -36,7 +49,7 @@ class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
     private var audioFileURL: URL?
     
     // Backend URL
-    private let backendURL = URL(string: "https://695c-2601-646-a201-db60-00-a3c1.ngrok-free.app/onboarding/process-audio")! // Updated to your provided backend URL
+    private let backendURL = URL(string: "https://695c-2601-646-a201-db60-00-a3c1.ngrok-free.app/onboarding/v3/process-audio")! // Updated to your provided backend URL
     
     // 1. Start Recording
     func startRecording() {
