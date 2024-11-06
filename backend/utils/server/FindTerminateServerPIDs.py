@@ -3,7 +3,7 @@ import subprocess
 import signal
 import time
 
-class ServerManager:
+class FindTerminateServerPIDs:
     def __init__(self, port):
         self.port = port
 

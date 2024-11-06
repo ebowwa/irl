@@ -1,7 +1,7 @@
 # File: backend/index.py **DO NOT OMIT ANYTHING FROM THE FOLLOWING CONTENT, INCLUDING & NOT LIMITED TO COMMENTED NOTES
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
+from middleware import setup_cors
 from fastapi.openapi.docs import get_swagger_ui_html  
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -15,24 +15,21 @@ from route.features.image_generation.fast_sdxl import router as sdxl_router  # F
 from route.features.text.llm_inference.OpenAIRoute import router as openai_router
 from route.features.text.chatgpt_share.index import router as share_oai_chats_router
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
-from route.features.gemini_flash_series.gemini_index import router as gemini_router
+from route.features.gemini_post import router as gemini_router
 from services.gemini_socket import router as gemini_socket_router
 from route.features.user_name_upload_v1 import router as user_name_upload_v1_router
 from route.features.user_name_upload_v2 import router as user_name_upload_v2_router
 from route.features.user_name_upload_v3 import router as user_name_upload_v3_router
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
 from route.features.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
-from utils.ngrok_utils import start_ngrok
+from utils.server.ngrok_utils import start_ngrok
 import ngrok 
-from utils.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
+from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs  # sees If port is open if so closes the port so the server can init
 from dotenv import load_dotenv 
 import os
 
-
 # ------------------ Load Environment Variables --------------------
-# Load the .env file to read configurations like PORT, NGROK_AUTH, etc.
 load_dotenv()
-
 # Flag to toggle Ngrok usage
 USE_NGROK = True  # Enable Ngrok by default, can be toggled
 
@@ -47,15 +44,9 @@ app = FastAPI(
     redoc_url=None  # Disable default ReDoc UI
 )
 
-# ------------------ CORS Middleware -------------------------------
-# Add CORS support to allow cross-origin requests from any domain
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow requests from all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
-)
+# ------------------ Middleware Setup ------------------------------
+
+setup_cors(app)
 
 # ------------------ API Routes -------------------------------------
 
@@ -115,7 +106,7 @@ if __name__ == "__main__":
     PORT = int(os.getenv("PORT", 9090))
 
     # Initialize the ServerManager for handling the port
-    server_manager = ServerManager(port=PORT)
+    server_manager = FindTerminateServerPIDs(port=PORT)
 
     # Attempt to kill any process using the same port before launching
     try:
