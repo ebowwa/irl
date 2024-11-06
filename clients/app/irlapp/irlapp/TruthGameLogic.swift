@@ -38,7 +38,6 @@ struct AnalysisResponse: Decodable {
 }
 
 /// 1.3. Queue Data Structure for StatementAnalysis
-/// A simple FIFO queue implementation for managing StatementAnalysis objects.
 public struct Queue<T> {
     fileprivate var array = [T?]()
     fileprivate var head = 0
@@ -280,26 +279,20 @@ class AnalysisService: NSObject, ObservableObject {
     func setupStatements() {
         guard let response = response else { return }
 
-        // Find the likely lie based on likelyLieStatementId.
-        guard let likelyLie = response.statements.first(where: { $0.id == response.likelyLieStatementId }) else {
-            // If not found, enqueue all statements as-is.
-            for statement in response.statements {
-                statementQueue.enqueue(statement)
-            }
-            return
-        }
+        // Reset the queue and statements array
+        statementQueue = Queue<StatementAnalysis>()
+        statements = []
+        swipedStatements = []
 
-        // Enqueue the likely lie first
-        statementQueue.enqueue(likelyLie)
-
-        // Enqueue other statements excluding the likely lie.
-        let otherStatements = response.statements.filter { $0.id != response.likelyLieStatementId }
-        for statement in otherStatements {
+        // Enqueue all statements
+        for statement in response.statements {
             statementQueue.enqueue(statement)
         }
 
-        // Optionally enqueue the likely lie again at the end if needed
-        statementQueue.enqueue(likelyLie)
+        // Optionally enqueue the likely lie first and last if needed
+        if let likelyLie = response.statements.first(where: { $0.id == response.likelyLieStatementId }) {
+            statementQueue.enqueue(likelyLie)
+        }
 
         // Load the first statement
         loadNextStatement()
@@ -307,7 +300,7 @@ class AnalysisService: NSObject, ObservableObject {
 
     // MARK: 9. Swipe Handling
 
-    /// 9.1. Handles the swipe action by updating the swipedStatements set and checking if summary should be shown.
+    /// 9.1. Handles the swipe action by updating the swipedStatements set.
     /// - Parameters:
     ///   - direction: The direction in which the card was swiped.
     ///   - statement: The specific statement that was swiped.
@@ -317,15 +310,6 @@ class AnalysisService: NSObject, ObservableObject {
 
         // Load the next statement from the queue
         loadNextStatement()
-
-        // Check if all statements have been swiped.
-        if swipedStatements.count == statementQueue.count + swipedStatements.count {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation {
-                    self.showSummary = true
-                }
-            }
-        }
     }
 
     // MARK: 10. Queue Management Functions
@@ -333,7 +317,15 @@ class AnalysisService: NSObject, ObservableObject {
     /// 10.1. Loads the next statement from the queue into the statements array for display.
     private func loadNextStatement() {
         if let nextStatement = statementQueue.dequeue() {
-            statements.append(nextStatement)
+            // Replace the current statement with the next one
+            statements = [nextStatement]
+        } else {
+            // No more statements, show summary
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.showSummary = true
+                }
+            }
         }
     }
 
@@ -383,6 +375,7 @@ extension AnalysisService: AVAudioPlayerDelegate {
         }
     }
 }
+
 /**
 // MARK: 15. Data Extension for Multipart Form Data
 
