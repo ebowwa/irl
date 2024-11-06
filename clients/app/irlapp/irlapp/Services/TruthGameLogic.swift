@@ -374,7 +374,7 @@ extension AnalysisService: AVAudioPlayerDelegate {
             self.isPlaying = false
         }
     }
-}
+} 
 
 /**
 // MARK: 15. Data Extension for Multipart Form Data
