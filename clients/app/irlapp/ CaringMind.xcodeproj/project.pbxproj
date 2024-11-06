@@ -41,7 +41,6 @@
 		764215772CCDA69F00424E73 /* Exceptions for "irlapp" folder in " CaringMind" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"FZZuH9cnPk-ZfICAvVuWr_image Background Removed.png",
 				Info.plist,
 			);
 			target = 764214BB2CCD8B0F00424E73 /*  CaringMind */;
