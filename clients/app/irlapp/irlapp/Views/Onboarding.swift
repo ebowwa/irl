@@ -37,6 +37,8 @@ struct OnboardingIntroView: View {
                 case 5:
                     AgeInputView(age: $age, step: $step, userName: userName)
                 case 6:
+                    AnalysisView()
+                case 7:
                     FinalStepView(userName: userName, age: age)
                         .onAppear {
                             // Optionally, you can navigate to home after a delay
