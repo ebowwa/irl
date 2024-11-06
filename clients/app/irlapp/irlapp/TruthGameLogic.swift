@@ -18,7 +18,7 @@ struct StatementAnalysis: Identifiable, Decodable {
     // Mapping JSON keys to struct properties
     enum CodingKeys: String, CodingKey {
         case id
-        case statement = "text" 
+        case statement = "text"
         case isTruth
         case pitchVariation
         case pauseDuration
@@ -35,6 +35,48 @@ struct AnalysisResponse: Decodable {
     let responseMessage: String
     let statementIds: [Int]
     let statements: [StatementAnalysis]
+}
+
+/// 1.3. Queue Data Structure for StatementAnalysis
+/// A simple FIFO queue implementation for managing StatementAnalysis objects.
+public struct Queue<T> {
+    fileprivate var array = [T?]()
+    fileprivate var head = 0
+
+    public var isEmpty: Bool {
+        return count == 0
+    }
+
+    public var count: Int {
+        return array.count - head
+    }
+
+    public mutating func enqueue(_ element: T) {
+        array.append(element)
+    }
+
+    public mutating func dequeue() -> T? {
+        guard head < array.count, let element = array[head] else { return nil }
+
+        array[head] = nil
+        head += 1
+
+        let percentage = Double(head) / Double(array.count)
+        if array.count > 50 && percentage > 0.25 {
+            array.removeFirst(head)
+            head = 0
+        }
+
+        return element
+    }
+
+    public var front: T? {
+        if isEmpty {
+            return nil
+        } else {
+            return array[head]
+        }
+    }
 }
 
 // MARK: 2. Error Wrapper
@@ -62,6 +104,9 @@ class AnalysisService: NSObject, ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var audioRecorder: AVAudioRecorder?
     private var audioPlayer: AVAudioPlayer?
+
+    // 3.3. Queue for managing statement cards
+    private var statementQueue = Queue<StatementAnalysis>()
 
     // MARK: 4. Initialization
 
@@ -231,22 +276,33 @@ class AnalysisService: NSObject, ObservableObject {
 
     // MARK: 8. Setup Functions
 
-    /// 8.1. Sets up the statements array based on the analysis response.
+    /// 8.1. Sets up the statements queue based on the analysis response.
     func setupStatements() {
         guard let response = response else { return }
 
         // Find the likely lie based on likelyLieStatementId.
         guard let likelyLie = response.statements.first(where: { $0.id == response.likelyLieStatementId }) else {
-            // If not found, use all statements as-is.
-            statements = response.statements
+            // If not found, enqueue all statements as-is.
+            for statement in response.statements {
+                statementQueue.enqueue(statement)
+            }
             return
         }
 
-        // Separate other statements excluding the likely lie.
-        let otherStatements = response.statements.filter { $0.id != response.likelyLieStatementId }
+        // Enqueue the likely lie first
+        statementQueue.enqueue(likelyLie)
 
-        // Combine all statements with the likely lie first and last.
-        statements = [likelyLie] + otherStatements + [likelyLie]
+        // Enqueue other statements excluding the likely lie.
+        let otherStatements = response.statements.filter { $0.id != response.likelyLieStatementId }
+        for statement in otherStatements {
+            statementQueue.enqueue(statement)
+        }
+
+        // Optionally enqueue the likely lie again at the end if needed
+        statementQueue.enqueue(likelyLie)
+
+        // Load the first statement
+        loadNextStatement()
     }
 
     // MARK: 9. Swipe Handling
@@ -259,8 +315,11 @@ class AnalysisService: NSObject, ObservableObject {
         // Add the swiped statement's ID to the swipedStatements set.
         swipedStatements.insert(statement.id)
 
+        // Load the next statement from the queue
+        loadNextStatement()
+
         // Check if all statements have been swiped.
-        if swipedStatements.count == statements.count {
+        if swipedStatements.count == statementQueue.count + swipedStatements.count {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation {
                     self.showSummary = true
@@ -269,9 +328,16 @@ class AnalysisService: NSObject, ObservableObject {
         }
     }
 
-    // MARK: 10. Reset Function
+    // MARK: 10. Queue Management Functions
 
-    /// 10.1. Resets all swiped statements, allowing users to revisit the cards.
+    /// 10.1. Loads the next statement from the queue into the statements array for display.
+    private func loadNextStatement() {
+        if let nextStatement = statementQueue.dequeue() {
+            statements.append(nextStatement)
+        }
+    }
+
+    /// 10.2. Resets the statements queue and related properties.
     func resetSwipes() {
         withAnimation {
             swipedStatements.removeAll()
@@ -279,6 +345,7 @@ class AnalysisService: NSObject, ObservableObject {
             response = nil
             statements.removeAll()
             recordedURL = nil
+            statementQueue = Queue<StatementAnalysis>() // Reset the queue
         }
     }
 
@@ -316,3 +383,15 @@ extension AnalysisService: AVAudioPlayerDelegate {
         }
     }
 }
+/**
+// MARK: 15. Data Extension for Multipart Form Data
+
+extension Data {
+    /// Appends a string to the Data.
+    mutating func append(_ string: String) {
+        if let data = string.data(using: .utf8) {
+            append(data)
+        }
+    }
+}
+*/
