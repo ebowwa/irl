@@ -21,6 +21,7 @@ from route.features.user_name_upload_v1 import router as user_name_upload_v1_rou
 from route.features.user_name_upload_v2 import router as user_name_upload_v2_router
 from route.features.user_name_upload_v3 import router as user_name_upload_v3_router
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
+from route.features.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 from utils.ngrok_utils import start_ngrok
 import ngrok 
 from utils.server_manager import ServerManager  # sees If port is open if so closes the port so the server can init
@@ -89,7 +90,7 @@ app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")
 # media upload should preserve for 1 day min with bucket?
 # 
 app.include_router(unzip_audio_batch_v1_router) # this is in test for handling zip batches from the client
-
+app.include_router(analyze_truth_lie_v1_router)
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately
 @app.get("/openapi.json", include_in_schema=False)
