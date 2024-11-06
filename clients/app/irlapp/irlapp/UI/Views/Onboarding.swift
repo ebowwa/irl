@@ -37,7 +37,7 @@ struct OnboardingIntroView: View {
                 case 5:
                     AgeInputView(age: $age, step: $step, userName: userName)
                 case 6:
-                    AnalysisView()
+                    TruthLieGameView()
                 case 7:
                     FinalStepView(userName: userName, age: age)
                         .onAppear {

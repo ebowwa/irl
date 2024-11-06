@@ -11,6 +11,7 @@
 		761C82882CD0631800B91398 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 761C82872CD0631800B91398 /* GoogleSignInSwift */; };
 		761C828B2CD1670A00B91398 /* ReSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 761C828A2CD1670A00B91398 /* ReSwift */; };
 		7642150E2CCD8CA500424E73 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7642150D2CCD8CA500424E73 /* ZIPFoundation */; };
+		769EA2EF2CDC05A90015412E /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 769EA2EE2CDC05A90015412E /* SwiftyJSON */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,26 +32,38 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		764214BC2CCD8B0F00424E73 /* irlapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = irlapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		764214CD2CCD8B1100424E73 /* irlappTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = irlappTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		764214D72CCD8B1100424E73 /* irlappUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = irlappUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		764214BC2CCD8B0F00424E73 /*  CaringMind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = " CaringMind.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = " CaringMindTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = " CaringMindUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		764215772CCDA69F00424E73 /* Exceptions for "irlapp" folder in "irlapp" target */ = {
+		764215772CCDA69F00424E73 /* Exceptions for "irlapp" folder in " CaringMind" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"FZZuH9cnPk-ZfICAvVuWr_image Background Removed.png",
 				Info.plist,
 			);
-			target = 764214BB2CCD8B0F00424E73 /* irlapp */;
+			target = 764214BB2CCD8B0F00424E73 /*  CaringMind */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		767D586A2CDC2CF60038695B /* Exceptions for "irlapp" folder in "Copy Bundle Resources" phase from " CaringMind" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 764214BA2CCD8B0F00424E73 /* Resources */;
+			membershipExceptions = (
+				irlapp.entitlements,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		764214BE2CCD8B0F00424E73 /* irlapp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				764215772CCDA69F00424E73 /* Exceptions for "irlapp" folder in "irlapp" target */,
+				764215772CCDA69F00424E73 /* Exceptions for "irlapp" folder in " CaringMind" target */,
+				767D586A2CDC2CF60038695B /* Exceptions for "irlapp" folder in "Copy Bundle Resources" phase from " CaringMind" target */,
 			);
 			path = irlapp;
 			sourceTree = "<group>";
@@ -65,6 +78,7 @@
 				761C828B2CD1670A00B91398 /* ReSwift in Frameworks */,
 				761C82882CD0631800B91398 /* GoogleSignInSwift in Frameworks */,
 				7642150E2CCD8CA500424E73 /* ZIPFoundation in Frameworks */,
+				769EA2EF2CDC05A90015412E /* SwiftyJSON in Frameworks */,
 				761C82862CD0631800B91398 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,9 +111,9 @@
 		764214BD2CCD8B0F00424E73 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				764214BC2CCD8B0F00424E73 /* irlapp.app */,
-				764214CD2CCD8B1100424E73 /* irlappTests.xctest */,
-				764214D72CCD8B1100424E73 /* irlappUITests.xctest */,
+				764214BC2CCD8B0F00424E73 /*  CaringMind.app */,
+				764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */,
+				764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,9 +121,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		764214BB2CCD8B0F00424E73 /* irlapp */ = {
+		764214BB2CCD8B0F00424E73 /*  CaringMind */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 764214E12CCD8B1100424E73 /* Build configuration list for PBXNativeTarget "irlapp" */;
+			buildConfigurationList = 764214E12CCD8B1100424E73 /* Build configuration list for PBXNativeTarget " CaringMind" */;
 			buildPhases = (
 				764214B82CCD8B0F00424E73 /* Sources */,
 				764214B92CCD8B0F00424E73 /* Frameworks */,
@@ -122,20 +136,21 @@
 			fileSystemSynchronizedGroups = (
 				764214BE2CCD8B0F00424E73 /* irlapp */,
 			);
-			name = irlapp;
+			name = " CaringMind";
 			packageProductDependencies = (
 				7642150D2CCD8CA500424E73 /* ZIPFoundation */,
 				761C82852CD0631800B91398 /* GoogleSignIn */,
 				761C82872CD0631800B91398 /* GoogleSignInSwift */,
 				761C828A2CD1670A00B91398 /* ReSwift */,
+				769EA2EE2CDC05A90015412E /* SwiftyJSON */,
 			);
 			productName = irlapp;
-			productReference = 764214BC2CCD8B0F00424E73 /* irlapp.app */;
+			productReference = 764214BC2CCD8B0F00424E73 /*  CaringMind.app */;
 			productType = "com.apple.product-type.application";
 		};
-		764214CC2CCD8B1100424E73 /* irlappTests */ = {
+		764214CC2CCD8B1100424E73 /*  CaringMindTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 764214E42CCD8B1100424E73 /* Build configuration list for PBXNativeTarget "irlappTests" */;
+			buildConfigurationList = 764214E42CCD8B1100424E73 /* Build configuration list for PBXNativeTarget " CaringMindTests" */;
 			buildPhases = (
 				AF90D9FE650B30B01F7D29DC /* [CP] Check Pods Manifest.lock */,
 				764214C92CCD8B1100424E73 /* Sources */,
@@ -147,14 +162,14 @@
 			dependencies = (
 				764214CF2CCD8B1100424E73 /* PBXTargetDependency */,
 			);
-			name = irlappTests;
+			name = " CaringMindTests";
 			productName = irlappTests;
-			productReference = 764214CD2CCD8B1100424E73 /* irlappTests.xctest */;
+			productReference = 764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		764214D62CCD8B1100424E73 /* irlappUITests */ = {
+		764214D62CCD8B1100424E73 /*  CaringMindUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 764214E72CCD8B1100424E73 /* Build configuration list for PBXNativeTarget "irlappUITests" */;
+			buildConfigurationList = 764214E72CCD8B1100424E73 /* Build configuration list for PBXNativeTarget " CaringMindUITests" */;
 			buildPhases = (
 				4C0B4A3675294BFE313E3F92 /* [CP] Check Pods Manifest.lock */,
 				764214D32CCD8B1100424E73 /* Sources */,
@@ -166,9 +181,9 @@
 			dependencies = (
 				764214D92CCD8B1100424E73 /* PBXTargetDependency */,
 			);
-			name = irlappUITests;
+			name = " CaringMindUITests";
 			productName = irlappUITests;
-			productReference = 764214D72CCD8B1100424E73 /* irlappUITests.xctest */;
+			productReference = 764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -195,7 +210,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 764214B72CCD8B0F00424E73 /* Build configuration list for PBXProject "irlapp" */;
+			buildConfigurationList = 764214B72CCD8B0F00424E73 /* Build configuration list for PBXProject " CaringMind" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -208,15 +223,16 @@
 				7642150C2CCD8CA500424E73 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 				761C82842CD0631800B91398 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				761C82892CD1670A00B91398 /* XCRemoteSwiftPackageReference "ReSwift" */,
+				769EA2ED2CDC05A90015412E /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 764214BD2CCD8B0F00424E73 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				764214BB2CCD8B0F00424E73 /* irlapp */,
-				764214CC2CCD8B1100424E73 /* irlappTests */,
-				764214D62CCD8B1100424E73 /* irlappUITests */,
+				764214BB2CCD8B0F00424E73 /*  CaringMind */,
+				764214CC2CCD8B1100424E73 /*  CaringMindTests */,
+				764214D62CCD8B1100424E73 /*  CaringMindUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -319,12 +335,12 @@
 /* Begin PBXTargetDependency section */
 		764214CF2CCD8B1100424E73 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 764214BB2CCD8B0F00424E73 /* irlapp */;
+			target = 764214BB2CCD8B0F00424E73 /*  CaringMind */;
 			targetProxy = 764214CE2CCD8B1100424E73 /* PBXContainerItemProxy */;
 		};
 		764214D92CCD8B1100424E73 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 764214BB2CCD8B0F00424E73 /* irlapp */;
+			target = 764214BB2CCD8B0F00424E73 /*  CaringMind */;
 			targetProxy = 764214D82CCD8B1100424E73 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -566,7 +582,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/irlapp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/irlapp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ CaringMind.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ CaringMind";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
@@ -592,7 +608,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "irlappTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/irlapp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/irlapp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ CaringMind.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ CaringMind";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
@@ -646,7 +662,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		764214B72CCD8B0F00424E73 /* Build configuration list for PBXProject "irlapp" */ = {
+		764214B72CCD8B0F00424E73 /* Build configuration list for PBXProject " CaringMind" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				764214DF2CCD8B1100424E73 /* Debug */,
@@ -655,7 +671,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		764214E12CCD8B1100424E73 /* Build configuration list for PBXNativeTarget "irlapp" */ = {
+		764214E12CCD8B1100424E73 /* Build configuration list for PBXNativeTarget " CaringMind" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				764214E22CCD8B1100424E73 /* Debug */,
@@ -664,7 +680,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		764214E42CCD8B1100424E73 /* Build configuration list for PBXNativeTarget "irlappTests" */ = {
+		764214E42CCD8B1100424E73 /* Build configuration list for PBXNativeTarget " CaringMindTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				764214E52CCD8B1100424E73 /* Debug */,
@@ -673,7 +689,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		764214E72CCD8B1100424E73 /* Build configuration list for PBXNativeTarget "irlappUITests" */ = {
+		764214E72CCD8B1100424E73 /* Build configuration list for PBXNativeTarget " CaringMindUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				764214E82CCD8B1100424E73 /* Debug */,
@@ -709,6 +725,14 @@
 				minimumVersion = 0.9.19;
 			};
 		};
+		769EA2ED2CDC05A90015412E /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -731,6 +755,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7642150C2CCD8CA500424E73 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		769EA2EE2CDC05A90015412E /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 769EA2ED2CDC05A90015412E /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

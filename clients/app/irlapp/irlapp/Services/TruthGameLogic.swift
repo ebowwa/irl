@@ -2,12 +2,13 @@
 import SwiftUI
 import Combine
 import AVFoundation
+import SwiftyJSON
 
 // MARK: 1. Data Models
 
 /// 1.1. Represents the analysis of an individual statement.
 struct StatementAnalysis: Identifiable, Decodable {
-    let id: Int
+    let id = UUID()
     let statement: String // Mapped from 'text' in JSON
     let isTruth: Bool
     let pitchVariation: String
@@ -17,7 +18,6 @@ struct StatementAnalysis: Identifiable, Decodable {
 
     // Mapping JSON keys to struct properties
     enum CodingKeys: String, CodingKey {
-        case id
         case statement = "text"
         case isTruth
         case pitchVariation
@@ -31,9 +31,7 @@ struct StatementAnalysis: Identifiable, Decodable {
 struct AnalysisResponse: Decodable {
     let finalConfidenceScore: Double
     let guessJustification: String
-    let likelyLieStatementId: Int // Refers to the `id` of the likely lie
     let responseMessage: String
-    let statementIds: [Int]
     let statements: [StatementAnalysis]
 }
 
@@ -93,12 +91,12 @@ class AnalysisService: NSObject, ObservableObject {
     // 3.2. Published properties to notify the UI of data changes.
     @Published var response: AnalysisResponse?
     @Published var statements: [StatementAnalysis] = []
-    @Published var swipedStatements: Set<Int> = [] // Tracks swiped statements by their IDs
+    @Published var swipedStatements: Set<UUID> = [] // Tracks swiped statements by their IDs
     @Published var showSummary: Bool = false
     @Published var isRecording: Bool = false
     @Published var isPlaying: Bool = false
     @Published var recordedURL: URL?
-    @Published var recordingError: ErrorWrapper? // Updated to use ErrorWrapper
+    @Published var recordingError: ErrorWrapper?
 
     private var cancellables = Set<AnyCancellable>()
     private var audioRecorder: AVAudioRecorder?
@@ -201,24 +199,27 @@ class AnalysisService: NSObject, ObservableObject {
     /// 7.1. Uploads the recorded audio to the backend for analysis.
     func uploadRecording() {
         guard let url = recordedURL else {
+            print("Log: No recording found. Aborting upload.")
             self.recordingError = ErrorWrapper(message: "No recording found to upload.")
             return
         }
 
+        // Corrected to original upload URL
         guard let uploadURL = URL(string: "https://695c-2601-646-a201-db60-00-a3c1.ngrok-free.app/TruthNLie") else {
+            print("Log: Invalid upload URL.")
             self.recordingError = ErrorWrapper(message: "Invalid upload URL.")
             return
         }
 
+        print("Log: Starting upload for file: \(url.lastPathComponent)")
+
         var request = URLRequest(url: uploadURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        // Note: 'Content-Type' for multipart/form-data is set automatically by URLSession
 
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
-        // Prepare multipart/form-data body
         var body = Data()
         let filename = url.lastPathComponent
         let mimeType = "audio/wav" // Updated MIME type for WAV
@@ -226,20 +227,23 @@ class AnalysisService: NSObject, ObservableObject {
         body.append("--\(boundary)\r\n")
         body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n")
         body.append("Content-Type: \(mimeType)\r\n\r\n")
+
         if let fileData = try? Data(contentsOf: url) {
             body.append(fileData)
+            print("Log: File data appended successfully for \(filename)")
         } else {
+            print("Log: Failed to read the recorded file at \(url.absoluteString)")
             DispatchQueue.main.async {
                 self.recordingError = ErrorWrapper(message: "Failed to read the recorded file.")
             }
             return
         }
-        body.append("\r\n")
-        body.append("--\(boundary)--\r\n")
+        body.append("\r\n--\(boundary)--\r\n")
 
         // Create a URLSession upload task
         URLSession.shared.uploadTask(with: request, from: body) { data, response, error in
             if let error = error {
+                print("Log: Upload failed with error: \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     self.recordingError = ErrorWrapper(message: "Upload failed: \(error.localizedDescription)")
                 }
@@ -247,25 +251,62 @@ class AnalysisService: NSObject, ObservableObject {
             }
 
             guard let data = data else {
+                print("Log: No data received from server.")
                 DispatchQueue.main.async {
                     self.recordingError = ErrorWrapper(message: "No data received from server.")
                 }
                 return
             }
 
+            print("Log: Response data received, proceeding with JSON parsing.")
+
             do {
-                let decoder = JSONDecoder()
-                let analysisResponse = try decoder.decode(AnalysisResponse.self, from: data)
+                let json = try JSON(data: data)
+                if let serverError = json["error"].string {
+                    print("Log: Server Error - \(serverError)")
+                    DispatchQueue.main.async {
+                        self.recordingError = ErrorWrapper(message: "Server Error: \(serverError)")
+                    }
+                    return
+                }
+
+                let finalConfidenceScore = json["finalConfidenceScore"].doubleValue
+                let guessJustification = json["guessJustification"].stringValue
+                let responseMessage = json["responseMessage"].stringValue
+                print("Log: Parsed final confidence score: \(finalConfidenceScore)")
+
+                var statementsArray: [StatementAnalysis] = []
+                for statementJSON in json["statements"].arrayValue {
+                    let statement = StatementAnalysis(
+                        statement: statementJSON["text"].stringValue,
+                        isTruth: statementJSON["isTruth"].boolValue,
+                        pitchVariation: statementJSON["pitchVariation"].stringValue,
+                        pauseDuration: statementJSON["pauseDuration"].doubleValue,
+                        stressLevel: statementJSON["stressLevel"].stringValue,
+                        confidenceScore: statementJSON["confidenceScore"].doubleValue
+                    )
+                    statementsArray.append(statement)
+                    print("Log: Added statement to array: \(statement.statement) with confidence score \(statement.confidenceScore)")
+                }
+
+                let analysisResponse = AnalysisResponse(
+                    finalConfidenceScore: finalConfidenceScore,
+                    guessJustification: guessJustification,
+                    responseMessage: responseMessage,
+                    statements: statementsArray
+                )
+
                 DispatchQueue.main.async {
                     self.response = analysisResponse
+                    print(analysisResponse)
+                    print("Log: Analysis response successfully set. Invoking setupStatements()")
                     self.setupStatements()
                 }
             } catch {
-                // Print the error for debugging purposes
                 if let jsonString = String(data: data, encoding: .utf8) {
-                    print("Failed to decode JSON response: \(jsonString)")
+                    print("Log: Failed to decode JSON response: \(jsonString)")
                 }
-                print("Decoding error: \(error)")
+                print("Log: Decoding error: \(error)")
                 DispatchQueue.main.async {
                     self.recordingError = ErrorWrapper(message: "Failed to parse response: \(error.localizedDescription)")
                 }
@@ -277,26 +318,31 @@ class AnalysisService: NSObject, ObservableObject {
 
     /// 8.1. Sets up the statements queue based on the analysis response.
     func setupStatements() {
-        guard let response = response else { return }
+        guard let response = response else {
+            print("Log: No response found, cannot setup statements.")
+            return
+        }
 
-        // Reset the queue and statements array
+        print("Log: Setting up statements queue from response data.")
+
         statementQueue = Queue<StatementAnalysis>()
         statements = []
         swipedStatements = []
 
-        // Enqueue all statements
-        for statement in response.statements {
+        if let lieStatement = response.statements.first(where: { !$0.isTruth }) {
+            statementQueue.enqueue(lieStatement)
+            print("Log: Lie statement enqueued: \(lieStatement.statement)")
+        }
+
+        for statement in response.statements where statement.isTruth {
             statementQueue.enqueue(statement)
+            print("Log: True statement enqueued: \(statement.statement)")
         }
 
-        // Optionally enqueue the likely lie first and last if needed
-        if let likelyLie = response.statements.first(where: { $0.id == response.likelyLieStatementId }) {
-            statementQueue.enqueue(likelyLie)
-        }
-
-        // Load the first statement
+        print("Log: Statements setup complete. Loading next statement.")
         loadNextStatement()
     }
+
 
     // MARK: 9. Swipe Handling
 
@@ -374,8 +420,7 @@ extension AnalysisService: AVAudioPlayerDelegate {
             self.isPlaying = false
         }
     }
-} 
-
+}
 /**
 // MARK: 15. Data Extension for Multipart Form Data
 

@@ -107,7 +107,7 @@ struct SwipeableCardView: View {
 
 // MARK: 3. Main Analysis View
 
-struct AnalysisView: View {
+struct TruthLieGameView: View {
     // 3.1. Observed service to manage data and logic.
     @StateObject private var service = AnalysisService()
     
@@ -147,7 +147,7 @@ struct AnalysisView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+        // .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
         .navigationTitle("AI Analysis Results")
         .alert(item: $service.recordingError) { error in
             Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
@@ -156,67 +156,40 @@ struct AnalysisView: View {
     
     // MARK: 4. Recording Container
     
-    /// 4.1. A container that provides recording controls.
+    /// 4.1. A container for the "Two Truths and a Lie" game with a single "Get Started" button.
     private var recordingContainer: some View {
         VStack(spacing: 20) {
-            Text("Record Your Statements")
+            Text("Two Truths and a Lie")
                 .font(.headline)
-            
-            if service.isRecording {
-                Text("Recording in progress...")
-                    .foregroundColor(.red)
-            }
-            
-            HStack(spacing: 40) {
-                // Record Button
-                Button(action: {
-                    if service.isRecording {
-                        service.stopRecording()
-                    } else {
-                        service.startRecording()
-                    }
-                }) {
-                    Image(systemName: service.isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(service.isRecording ? .red : .blue)
-                }
-                
-                // Play Button
-                Button(action: {
-                    if service.isPlaying {
-                        service.stopPlaying()
-                    } else {
-                        service.playRecording()
-                    }
-                }) {
-                    Image(systemName: service.isPlaying ? "stop.circle.fill" : "play.circle.fill")
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(.green)
-                }
-                
-                // Upload Button
-                Button(action: {
+                .foregroundColor(.primary)
+
+            Button(action: {
+                if service.isRecording {
+                    service.stopRecording()
                     service.uploadRecording()
-                }) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(.purple)
+                } else {
+                    service.startRecording()
                 }
-                .disabled(service.recordedURL == nil || service.isRecording)
+            }) {
+                Text(service.isRecording ? "Stop & Upload" : "Get Started")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(service.isRecording ? Color.red : Color.blue)
+                    .cornerRadius(10)
             }
             
-            // Display upload status or response
             if let response = service.response {
-                Text("Upload Successful! Swipe the analyzed statements below.")
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
+                Text("Upload Successful! Check your statements below.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
             }
         }
+        .padding()
+        .background(Color.clear)
     }
-    
+
     // MARK: 5. Summary Card
     
     /// 5.1. The summary analysis card displayed after all statements have been swiped.
@@ -291,7 +264,7 @@ extension View {
 struct AnalysisView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            AnalysisView()
+            TruthLieGameView()
         }
     }
 }
