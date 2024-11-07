@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "pixelcut-export (3).png",
+      "filename" : "pixelcut-export (5).png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -24,6 +24,7 @@
           "value" : "tinted"
         }
       ],
+      "filename" : "pixelcut-export (3).png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

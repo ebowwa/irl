@@ -1,6 +1,5 @@
 //  Onboarding.swift
-//  irlapp
-// - the user name will pivot from a text input to a user speech
+//  CaringMind
 //  Created by Elijah Arbee on 10/30/24.
 //
 import SwiftUI
@@ -37,7 +36,7 @@ struct OnboardingIntroView: View {
                 case 5:
                     AgeInputView(age: $age, step: $step, userName: userName)
                 case 6:
-                    TruthLieGameView()
+                    TruthLieGameView(step: $step)
                 case 7:
                     FinalStepView(userName: userName, age: age)
                         .onAppear {
@@ -190,9 +189,6 @@ struct AgeInputView: View {
 }
 
 // Step 6: Final step after collecting user name and age
-// import SwiftUI
-// import GoogleSignIn
-
 struct FinalStepView: View {
     var userName: String
     var age: String
@@ -255,6 +251,8 @@ struct FinalStepView: View {
             if let signInResult = signInResult {
                 // Handle sign-in success
                 print("User signed in successfully: \(signInResult.user.profile?.name ?? "Unknown")")
+                // 1.1 Update persistence status upon successful sign-in
+                UserDefaults.standard.set(true, forKey: "isUserSignedInWithGoogle")
                 // Navigate to home or update state as needed
                 router.navigate(to: .home)
             }
@@ -336,18 +334,27 @@ class OnboardingViewModel: ObservableObject {
     }
 
     func saveCurrentStep() {
-        UserDefaults.standard.set(currentStep, forKey: "currentStep")
+        // 1.2 Check if the user is signed in with Google before saving
+        if UserDefaults.standard.bool(forKey: "isUserSignedInWithGoogle") {
+            UserDefaults.standard.set(currentStep, forKey: "currentStep")
+        }
     }
 
     func saveUserInputs() {
-        UserDefaults.standard.set(userInputs, forKey: "userInputs")
+        // 1.3 Check if the user is signed in with Google before saving
+        if UserDefaults.standard.bool(forKey: "isUserSignedInWithGoogle") {
+            UserDefaults.standard.set(userInputs, forKey: "userInputs")
+        }
     }
 
     func loadState() {
-        currentStep = UserDefaults.standard.integer(forKey: "currentStep")
-        userInputs = UserDefaults.standard.dictionary(forKey: "userInputs") as? [String: String] ?? [:]
-        userName = userInputs["userName"] ?? ""
-        age = userInputs["age"] ?? ""
+        // 1.4 Check if the user is signed in with Google before loading saved data
+        if UserDefaults.standard.bool(forKey: "isUserSignedInWithGoogle") {
+            currentStep = UserDefaults.standard.integer(forKey: "currentStep")
+            userInputs = UserDefaults.standard.dictionary(forKey: "userInputs") as? [String: String] ?? [:]
+            userName = userInputs["userName"] ?? ""
+            age = userInputs["age"] ?? ""
+        }
     }
 
     func nextStep() {
@@ -362,4 +369,3 @@ class OnboardingViewModel: ObservableObject {
         }
     }
 }
-

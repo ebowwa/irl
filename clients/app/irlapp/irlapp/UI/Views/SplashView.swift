@@ -7,7 +7,7 @@
 
 import SwiftUI
 import GoogleSignIn
-import GoogleSignInSwift // Ensure this import is present
+import GoogleSignInSwift
 
 struct SplashView: View {
     @EnvironmentObject var router: AppRouterViewModel
@@ -33,8 +33,8 @@ struct SplashView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 20)
                 
-                // Optional Tagline or Inspirational Message
-                Text("Align with Purpose")
+                // Subtext
+                Text("your conciousness companion")
                     .font(.headline)
                     .foregroundColor(.white.opacity(0.8))
                     .padding(.top, 5)
@@ -72,6 +72,7 @@ struct SplashView: View {
     }
     
     private func signInWithGoogle() {
+        // TODO: add error handling for user cancel
         // Obtain the root view controller
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootViewController = windowScene.windows.first?.rootViewController else {

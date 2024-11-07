@@ -4,7 +4,7 @@
 //
 //  Created by Elijah Arbee on 11/5/24.
 //
-// TruthGameView.swift
+
 import SwiftUI
 
 // MARK: 1. Reusable Card View
@@ -12,11 +12,11 @@ import SwiftUI
 /// 1.1. A generic card view that provides a consistent style for all cards.
 struct CardView<Content: View>: View {
     let content: Content
-    
+
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
+
     var body: some View {
         content
             .padding()
@@ -33,10 +33,10 @@ struct CardView<Content: View>: View {
 struct SwipeableCardView: View {
     let statement: StatementAnalysis
     let onSwipe: (_ direction: AnalysisService.SwipeDirection, _ statement: StatementAnalysis) -> Void
-    
+
     @State private var offset: CGSize = .zero
     @GestureState private var isDragging = false
-    
+
     var body: some View {
         CardView {
             VStack(alignment: .leading, spacing: 10) {
@@ -46,7 +46,7 @@ struct SwipeableCardView: View {
                         Text("Truth Detected")
                             .font(.headline)
                             .foregroundColor(.primary)
-                        
+
                         Image(systemName: "checkmark.seal.fill")
                             .font(.headline)
                             .foregroundColor(.green)
@@ -56,15 +56,15 @@ struct SwipeableCardView: View {
                         Text("Detected Lie")
                             .font(.headline)
                             .foregroundColor(.primary)
-                        
+
                         Image(systemName: "wand.and.rays")
                             .font(.headline)
                             .foregroundColor(.primary)
                     }
                 }
-                
+
                 Divider()
-                
+
                 // Display only the statement text
                 Text("**Statement:** \(statement.statement)")
                     .font(.subheadline)
@@ -108,31 +108,33 @@ struct SwipeableCardView: View {
 // MARK: 3. Main Analysis View
 
 struct TruthLieGameView: View {
-    // 3.1. Observed service to manage data and logic.
+    // 3.1. Add a binding to the step variable
+    @Binding var step: Int
+    // 3.2. Observed service to manage data and logic.
     @StateObject private var service = AnalysisService()
-    
+
     var body: some View {
         VStack {
-            // 3.2. Recording Container
+            // 3.3. Recording Container
             recordingContainer
                 .padding()
-            
+
             Divider()
-            
-            // 3.3. Swipeable Cards Area
+
+            // 3.4. Swipeable Cards Area
             ZStack {
-                // 3.4. Show Summary Card if all statements have been swiped.
+                // 3.5. Show Summary Card if all statements have been swiped.
                 if service.showSummary {
                     summaryCard
                         .transition(.opacity)
                 } else {
-                    // 3.5. If there are no more statements to swipe, display a placeholder.
+                    // 3.6. If there are no more statements to swipe, display a placeholder.
                     if service.statements.filter { !service.swipedStatements.contains($0.id) }.isEmpty && service.response != nil {
                         Text("No more statements")
                             .font(.title)
                             .foregroundColor(.secondary)
                     } else {
-                        // 3.6. Use ZStack to layer cards on top of each other.
+                        // 3.7. Use ZStack to layer cards on top of each other.
                         ForEach(service.statements) { statement in
                             // Only display cards that haven't been swiped.
                             if !service.swipedStatements.contains(statement.id) {
@@ -147,15 +149,14 @@ struct TruthLieGameView: View {
             }
             .padding()
         }
-        // .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
         .navigationTitle("AI Analysis Results")
         .alert(item: $service.recordingError) { error in
             Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
         }
     }
-    
+
     // MARK: 4. Recording Container
-    
+
     /// 4.1. A container for the "Two Truths and a Lie" game with a single "Get Started" button.
     private var recordingContainer: some View {
         VStack(spacing: 20) {
@@ -179,7 +180,7 @@ struct TruthLieGameView: View {
                     .background(service.isRecording ? Color.red : Color.blue)
                     .cornerRadius(10)
             }
-            
+
             if let response = service.response {
                 Text("Upload Successful! Check your statements below.")
                     .font(.footnote)
@@ -191,7 +192,7 @@ struct TruthLieGameView: View {
     }
 
     // MARK: 5. Summary Card
-    
+
     /// 5.1. The summary analysis card displayed after all statements have been swiped.
     private var summaryCard: some View {
         CardView {
@@ -199,9 +200,9 @@ struct TruthLieGameView: View {
                 Text("Summary Analysis")
                     .font(.headline)
                     .foregroundColor(.primary)
-                
+
                 Divider()
-                
+
                 if let response = service.response {
                     Group {
                         Text("**Final Confidence Score:** \(String(format: "%.2f", response.finalConfidenceScore))")
@@ -210,7 +211,7 @@ struct TruthLieGameView: View {
                     }
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    
+
                     // 5.2. Reset Button to allow users to revisit the cards.
                     Button(action: service.resetSwipes) {
                         Text("Reset")
@@ -222,6 +223,20 @@ struct TruthLieGameView: View {
                             .cornerRadius(10)
                     }
                     .padding(.top, 20)
+
+                    // 5.3. Next Button to proceed to the next onboarding step
+                    Button(action: {
+                        step += 1
+                    }) {
+                        Text("Next")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.green)
+                            .cornerRadius(10)
+                    }
+                    .padding(.top, 10)
                 } else {
                     Text("No summary available.")
                         .foregroundColor(.secondary)
@@ -231,9 +246,9 @@ struct TruthLieGameView: View {
         }
         .transition(.opacity)
     }
-    
+
     // MARK: 6. Helper Functions
-    
+
     /// 6.1. Calculates the index of a statement within the statements array.
     /// - Parameter statement: The statement to find.
     /// - Returns: The index of the statement or 0 if not found.
@@ -261,10 +276,10 @@ extension View {
 
 // MARK: 8. Preview
 
-struct AnalysisView_Previews: PreviewProvider {
+struct TruthLieGameView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            TruthLieGameView()
+            TruthLieGameView(step: .constant(6))
         }
     }
 }
