@@ -11,6 +11,7 @@
 		761C82882CD0631800B91398 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 761C82872CD0631800B91398 /* GoogleSignInSwift */; };
 		761C828B2CD1670A00B91398 /* ReSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 761C828A2CD1670A00B91398 /* ReSwift */; };
 		7642150E2CCD8CA500424E73 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7642150D2CCD8CA500424E73 /* ZIPFoundation */; };
+		767D58732CDD5A3D0038695B /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 767D58722CDD5A3D0038695B /* ComposableArchitecture */; };
 		769EA2EF2CDC05A90015412E /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 769EA2EE2CDC05A90015412E /* SwiftyJSON */; };
 /* End PBXBuildFile section */
 
@@ -32,9 +33,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		764214BC2CCD8B0F00424E73 /*  CaringMind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = " CaringMind.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = " CaringMindTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = " CaringMindUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		764214BC2CCD8B0F00424E73 /*  CaringMind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = " CaringMind.app"; path = "/Users/ebowwa/irl/clients/app/irlapp/build/Debug/ CaringMind.app"; sourceTree = "<absolute>"; };
+		764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = " CaringMindTests.xctest"; path = "/Users/ebowwa/irl/clients/app/irlapp/build/Debug/ CaringMind.app/Contents/PlugIns/ CaringMindTests.xctest"; sourceTree = "<absolute>"; };
+		764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = " CaringMindUITests.xctest"; path = "/Users/ebowwa/irl/clients/app/irlapp/build/Debug/ CaringMindUITests-Runner.app/Contents/PlugIns/ CaringMindUITests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -76,6 +77,7 @@
 			files = (
 				761C828B2CD1670A00B91398 /* ReSwift in Frameworks */,
 				761C82882CD0631800B91398 /* GoogleSignInSwift in Frameworks */,
+				767D58732CDD5A3D0038695B /* ComposableArchitecture in Frameworks */,
 				7642150E2CCD8CA500424E73 /* ZIPFoundation in Frameworks */,
 				769EA2EF2CDC05A90015412E /* SwiftyJSON in Frameworks */,
 				761C82862CD0631800B91398 /* GoogleSignIn in Frameworks */,
@@ -102,19 +104,8 @@
 		764214B32CCD8B0F00424E73 = {
 			isa = PBXGroup;
 			children = (
-				764214BD2CCD8B0F00424E73 /* Products */,
 				764214BE2CCD8B0F00424E73 /* irlapp */,
 			);
-			sourceTree = "<group>";
-		};
-		764214BD2CCD8B0F00424E73 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				764214BC2CCD8B0F00424E73 /*  CaringMind.app */,
-				764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */,
-				764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,6 +133,7 @@
 				761C82872CD0631800B91398 /* GoogleSignInSwift */,
 				761C828A2CD1670A00B91398 /* ReSwift */,
 				769EA2EE2CDC05A90015412E /* SwiftyJSON */,
+				767D58722CDD5A3D0038695B /* ComposableArchitecture */,
 			);
 			productName = irlapp;
 			productReference = 764214BC2CCD8B0F00424E73 /*  CaringMind.app */;
@@ -223,9 +215,10 @@
 				761C82842CD0631800B91398 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				761C82892CD1670A00B91398 /* XCRemoteSwiftPackageReference "ReSwift" */,
 				769EA2ED2CDC05A90015412E /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				767D58712CDD5A3D0038695B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 764214BD2CCD8B0F00424E73 /* Products */;
+			productRefGroup = 764214B32CCD8B0F00424E73;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -726,6 +719,14 @@
 				minimumVersion = 0.9.19;
 			};
 		};
+		767D58712CDD5A3D0038695B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.15.2;
+			};
+		};
 		769EA2ED2CDC05A90015412E /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
@@ -756,6 +757,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7642150C2CCD8CA500424E73 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		767D58722CDD5A3D0038695B /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 767D58712CDD5A3D0038695B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 		769EA2EE2CDC05A90015412E /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -4,7 +4,6 @@
 //
 //  Created by Elijah Arbee on 11/5/24.
 //
-
 import SwiftUI
 
 // MARK: 1. Reusable Card View
@@ -20,9 +19,34 @@ struct CardView<Content: View>: View {
     var body: some View {
         content
             .padding()
-            .background(Color(.systemBackground))
+            .background(
+                ZStack {
+                    Color(.systemBackground)
+                    // Subtle circuit pattern overlay
+                    GeometryReader { geometry in
+                        Path { path in
+                            let width = geometry.size.width
+                            let height = geometry.size.height
+                            
+                            // Create subtle decorative lines
+                            path.move(to: CGPoint(x: 0, y: height * 0.3))
+                            path.addLine(to: CGPoint(x: width * 0.4, y: height * 0.3))
+                            path.addLine(to: CGPoint(x: width * 0.5, y: height * 0.4))
+                            
+                            path.move(to: CGPoint(x: width, y: height * 0.7))
+                            path.addLine(to: CGPoint(x: width * 0.6, y: height * 0.7))
+                            path.addLine(to: CGPoint(x: width * 0.5, y: height * 0.6))
+                        }
+                        .stroke(Color(hex: "#00FF00").opacity(0.1), lineWidth: 0.5)
+                    }
+                }
+            )
             .cornerRadius(15)
-            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+            .shadow(color: Color(hex: "#00FF00").opacity(0.1), radius: 5, x: 0, y: 5)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color(hex: "#00FF00").opacity(0.2), lineWidth: 1)
+            )
             .frame(maxWidth: 350, maxHeight: 500)
     }
 }
@@ -36,6 +60,7 @@ struct SwipeableCardView: View {
 
     @State private var offset: CGSize = .zero
     @GestureState private var isDragging = false
+    @State private var glowIntensity: Double = 0
 
     var body: some View {
         CardView {
@@ -64,6 +89,7 @@ struct SwipeableCardView: View {
                 }
 
                 Divider()
+                    .background(Color(hex: "#00FF00").opacity(0.2))
 
                 // Display only the statement text
                 Text("**Statement:** \(statement.statement)")
@@ -108,35 +134,28 @@ struct SwipeableCardView: View {
 // MARK: 3. Main Analysis View
 
 struct TruthLieGameView: View {
-    // 3.1. Add a binding to the step variable
     @Binding var step: Int
-    // 3.2. Observed service to manage data and logic.
     @StateObject private var service = AnalysisService()
 
     var body: some View {
         VStack {
-            // 3.3. Recording Container
             recordingContainer
                 .padding()
 
             Divider()
+                .background(Color(hex: "#00FF00").opacity(0.2))
 
-            // 3.4. Swipeable Cards Area
             ZStack {
-                // 3.5. Show Summary Card if all statements have been swiped.
                 if service.showSummary {
                     summaryCard
                         .transition(.opacity)
                 } else {
-                    // 3.6. If there are no more statements to swipe, display a placeholder.
                     if service.statements.filter { !service.swipedStatements.contains($0.id) }.isEmpty && service.response != nil {
                         Text("No more statements")
                             .font(.title)
                             .foregroundColor(.secondary)
                     } else {
-                        // 3.7. Use ZStack to layer cards on top of each other.
                         ForEach(service.statements) { statement in
-                            // Only display cards that haven't been swiped.
                             if !service.swipedStatements.contains(statement.id) {
                                 SwipeableCardView(statement: statement) { direction, swipedStatement in
                                     service.handleSwipe(direction: direction, for: swipedStatement)
@@ -151,13 +170,16 @@ struct TruthLieGameView: View {
         }
         .navigationTitle("AI Analysis Results")
         .alert(item: $service.recordingError) { error in
-            Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
+            Alert(
+                title: Text("Error"),
+                message: Text(error.message),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 
     // MARK: 4. Recording Container
 
-    /// 4.1. A container for the "Two Truths and a Lie" game with a single "Get Started" button.
     private var recordingContainer: some View {
         VStack(spacing: 20) {
             Text("Two Truths and a Lie")
@@ -173,12 +195,18 @@ struct TruthLieGameView: View {
                 }
             }) {
                 Text(service.isRecording ? "Stop & Upload" : "Get Started")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.headline)
                     .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(service.isRecording ? Color.red : Color.blue)
+                    .background(
+                        service.isRecording ? Color.red : Color(hex: "#00FF00")
+                    )
                     .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color(hex: "#00FF00").opacity(0.2), lineWidth: 1)
+                    )
             }
 
             if let response = service.response {
@@ -188,12 +216,10 @@ struct TruthLieGameView: View {
             }
         }
         .padding()
-        .background(Color.clear)
     }
 
     // MARK: 5. Summary Card
 
-    /// 5.1. The summary analysis card displayed after all statements have been swiped.
     private var summaryCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: 10) {
@@ -202,6 +228,7 @@ struct TruthLieGameView: View {
                     .foregroundColor(.primary)
 
                 Divider()
+                    .background(Color(hex: "#00FF00").opacity(0.2))
 
                 if let response = service.response {
                     Group {
@@ -212,19 +239,17 @@ struct TruthLieGameView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                    // 5.2. Reset Button to allow users to revisit the cards.
                     Button(action: service.resetSwipes) {
                         Text("Reset")
                             .font(.headline)
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(hex: "#00FF00"))
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue.opacity(0.1))
+                            .background(Color(hex: "#00FF00").opacity(0.1))
                             .cornerRadius(10)
                     }
                     .padding(.top, 20)
 
-                    // 5.3. Next Button to proceed to the next onboarding step
                     Button(action: {
                         step += 1
                     }) {
@@ -233,7 +258,7 @@ struct TruthLieGameView: View {
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.green)
+                            .background(Color(hex: "#00FF00"))
                             .cornerRadius(10)
                     }
                     .padding(.top, 10)
@@ -249,9 +274,6 @@ struct TruthLieGameView: View {
 
     // MARK: 6. Helper Functions
 
-    /// 6.1. Calculates the index of a statement within the statements array.
-    /// - Parameter statement: The statement to find.
-    /// - Returns: The index of the statement or 0 if not found.
     private func index(of statement: StatementAnalysis) -> Int {
         guard let idx = service.statements.firstIndex(where: { $0.id == statement.id }) else {
             return 0
@@ -263,18 +285,41 @@ struct TruthLieGameView: View {
 // MARK: 7. View Extension for Stacking Effect
 
 extension View {
-    /// 7.1. Applies a stacking offset to simulate a deck of cards.
-    /// - Parameters:
-    ///   - position: The position of the card in the stack.
-    ///   - total: The total number of cards.
-    /// - Returns: A view with an applied offset.
     func stacked(at position: Int, in total: Int) -> some View {
         let offset = Double(total - position) * 10
         return self.offset(CGSize(width: 0, height: offset))
     }
 }
 
-// MARK: 8. Preview
+// MARK: 8. Color Extension
+/**
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue:  Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+}
+*/
+// MARK: 9. Preview
 
 struct TruthLieGameView_Previews: PreviewProvider {
     static var previews: some View {
