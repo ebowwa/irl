@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:Core.swift">
+   </FileRef>
+   <FileRef
+      location = "group:envKeys.swift">
+   </FileRef>
+   <FileRef
+      location = "group:IRL">
+   </FileRef>
+   <FileRef
+      location = "group:irl_dev.xcworkspace">
+   </FileRef>
+   <Group
+      location = "group:irl-watch"
+      name = "irl-watch">
+      <FileRef
+         location = "group:irl-watch.xcodeproj">
+      </FileRef>
+      <Group
+         location = "group:irl-watch Watch App"
+         name = "irl-watch Watch App">
+         <FileRef
+            location = "group:irl_watchApp.swift">
+         </FileRef>
+         <FileRef
+            location = "group:Assets.xcassets">
+         </FileRef>
+         <Group
+            location = "group:Preview Content"
+            name = "Preview Content">
+            <FileRef
+               location = "group:Preview Assets.xcassets">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:ContentView.swift">
+         </FileRef>
+      </Group>
+   </Group>
+   <Group
+      location = "group:openaudiostandard"
+      name = "openaudiostandard">
+      <Group
+         location = "group:core"
+         name = "core">
+         <FileRef
+            location = "group:AFiles.swift">
+         </FileRef>
+         <FileRef
+            location = "group:RecordingScript.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ADeviceManager.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AEngine.swift">
+         </FileRef>
+         <FileRef
+            location = "group:OpenAudioModels.swift">
+         </FileRef>
+         <FileRef
+            location = "group:TranscriptionManager.swift">
+         </FileRef>
+         <FileRef
+            location = "group:SpeechRecognition.swift">
+         </FileRef>
+         <FileRef
+            location = "group:SocketManager.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AudioState.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:features"
+         name = "features">
+         <FileRef
+            location = "group:ASoundMeasurement.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ALocation.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AConverter.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AudioPlaybackManager.swift">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:OpenAudioManager.swift">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "group:Package.swift">
+   </FileRef>
+</Workspace>
