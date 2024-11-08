@@ -1,7 +1,7 @@
 # File: backend/index.py **DO NOT OMIT ANYTHING FROM THE FOLLOWING CONTENT, INCLUDING & NOT LIMITED TO COMMENTED NOTES
 
 from fastapi import FastAPI, HTTPException, Request
-from utils.middleware import setup_cors
+from utils.server.middleware import setup_cors
 from fastapi.openapi.docs import get_swagger_ui_html  
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
