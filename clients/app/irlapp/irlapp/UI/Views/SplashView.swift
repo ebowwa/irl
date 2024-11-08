@@ -95,7 +95,7 @@ struct SplashView: View {
                                .font(.system(size: 20))
                                .foregroundColor(Color(hex: "#00FF00"))
                            
-                           Text("SIGNIN WITH GOOGLE")
+                           Text("SIGN IN")
                                .font(.system(size: 16, weight: .bold, design: .monospaced))
                                .foregroundColor(Color(hex: "#00FF00"))
                        }

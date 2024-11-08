@@ -84,8 +84,7 @@ struct ContentView: View {
                     .transition(.opacity)
             case .onboarding:
                 OnboardingIntroView(step: $onboardingViewModel.currentStep,
-                                    userName: $onboardingViewModel.userName,
-                                    age: $onboardingViewModel.age)
+                                    userName: $onboardingViewModel.userName)
                     .transition(.slide)
             case .home:
                 HomeView()

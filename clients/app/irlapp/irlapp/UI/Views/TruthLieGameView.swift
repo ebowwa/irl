@@ -4,11 +4,10 @@
 //
 //  Created by Elijah Arbee on 11/5/24.
 //
+// once the audio is sent, unless the audio fails, remove the begin button, 
 import SwiftUI
 
 // MARK: 1. Reusable Card View
-
-/// 1.1. A generic card view that provides a consistent style for all cards.
 struct CardView<Content: View>: View {
     let content: Content
 
@@ -21,14 +20,14 @@ struct CardView<Content: View>: View {
             .padding()
             .background(
                 ZStack {
-                    Color(.systemBackground)
-                    // Subtle circuit pattern overlay
+                    Color.black
+                    // Circuit pattern design
                     GeometryReader { geometry in
                         Path { path in
                             let width = geometry.size.width
                             let height = geometry.size.height
                             
-                            // Create subtle decorative lines
+                            // Create circuit pattern with random elements
                             path.move(to: CGPoint(x: 0, y: height * 0.3))
                             path.addLine(to: CGPoint(x: width * 0.4, y: height * 0.3))
                             path.addLine(to: CGPoint(x: width * 0.5, y: height * 0.4))
@@ -36,24 +35,30 @@ struct CardView<Content: View>: View {
                             path.move(to: CGPoint(x: width, y: height * 0.7))
                             path.addLine(to: CGPoint(x: width * 0.6, y: height * 0.7))
                             path.addLine(to: CGPoint(x: width * 0.5, y: height * 0.6))
+                            
+                            // Additional circuit elements
+                            for i in stride(from: 0, to: width, by: 40) {
+                                if Bool.random() {
+                                    path.move(to: CGPoint(x: i, y: 0))
+                                    path.addLine(to: CGPoint(x: i + 20, y: 20))
+                                }
+                            }
                         }
                         .stroke(Color(hex: "#00FF00").opacity(0.1), lineWidth: 0.5)
                     }
                 }
             )
             .cornerRadius(15)
-            .shadow(color: Color(hex: "#00FF00").opacity(0.1), radius: 5, x: 0, y: 5)
+            .shadow(color: Color(hex: "#00FF00").opacity(0.2), radius: 5)
             .overlay(
                 RoundedRectangle(cornerRadius: 15)
-                    .stroke(Color(hex: "#00FF00").opacity(0.2), lineWidth: 1)
+                    .stroke(Color(hex: "#00FF00").opacity(0.3), lineWidth: 1)
             )
             .frame(maxWidth: 350, maxHeight: 500)
     }
 }
 
 // MARK: 2. Swipeable Card View
-
-/// 2.1. Represents a single swipeable card with gesture handling.
 struct SwipeableCardView: View {
     let statement: StatementAnalysis
     let onSwipe: (_ direction: AnalysisService.SwipeDirection, _ statement: StatementAnalysis) -> Void
@@ -64,37 +69,38 @@ struct SwipeableCardView: View {
 
     var body: some View {
         CardView {
-            VStack(alignment: .leading, spacing: 10) {
-                // Title indicating if the statement is a truth or a lie
-                if statement.isTruth {
-                    HStack {
-                        Text("Truth Detected")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-
+            VStack(alignment: .leading, spacing: 15) {
+                HStack {
+                    if statement.isTruth {
+                        Text("truth")
+                            .font(.system(size: 16, weight: .bold, design: .monospaced))
+                            .foregroundColor(Color(hex: "#00FF00"))
+                        Spacer()
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.headline)
-                            .foregroundColor(.green)
-                    }
-                } else {
-                    HStack {
-                        Text("Detected Lie")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-
+                            .foregroundColor(Color(hex: "#00FF00"))
+                    } else {
+                        Text("deception")
+                            .font(.system(size: 16, weight: .bold, design: .monospaced))
+                            .foregroundColor(Color(hex: "#00FF00"))
+                        Spacer()
                         Image(systemName: "wand.and.rays")
-                            .font(.headline)
-                            .foregroundColor(.primary)
+                            .foregroundColor(Color(hex: "#00FF00"))
                     }
                 }
 
                 Divider()
-                    .background(Color(hex: "#00FF00").opacity(0.2))
+                    .background(Color(hex: "#00FF00").opacity(0.3))
 
-                // Display only the statement text
-                Text("**Statement:** \(statement.statement)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                Text(statement.statement)
+                    .font(.system(size: 14, weight: .medium, design: .monospaced))
+                    .foregroundColor(Color(hex: "#00FF00"))
+                
+                // Swipe instruction hint
+                Text("< swipe to analyze >")
+                    .font(.system(size: 12, weight: .medium, design: .monospaced))
+                    .foregroundColor(Color(hex: "#00FF00").opacity(0.6))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 10)
             }
             .padding()
         }
@@ -132,60 +138,80 @@ struct SwipeableCardView: View {
 }
 
 // MARK: 3. Main Analysis View
-
 struct TruthLieGameView: View {
     @Binding var step: Int
     @StateObject private var service = AnalysisService()
+    @State private var showInstructions = false
 
     var body: some View {
-        VStack {
-            recordingContainer
-                .padding()
-
-            Divider()
-                .background(Color(hex: "#00FF00").opacity(0.2))
-
-            ZStack {
-                if service.showSummary {
-                    summaryCard
-                        .transition(.opacity)
-                } else {
-                    if service.statements.filter { !service.swipedStatements.contains($0.id) }.isEmpty && service.response != nil {
-                        Text("No more statements")
-                            .font(.title)
-                            .foregroundColor(.secondary)
+        ZStack {
+            Color.black.edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 25) {
+                recordingContainer
+                
+                Divider()
+                    .background(Color(hex: "#00FF00").opacity(0.3))
+                
+                ZStack {
+                    if service.showSummary {
+                        summaryCard
+                            .transition(.opacity)
                     } else {
-                        ForEach(service.statements) { statement in
-                            if !service.swipedStatements.contains(statement.id) {
-                                SwipeableCardView(statement: statement) { direction, swipedStatement in
-                                    service.handleSwipe(direction: direction, for: swipedStatement)
+                        if service.statements.filter({ !service.swipedStatements.contains($0.id) }).isEmpty && service.response != nil {
+                            Text("analysis complete")
+                                .font(.system(size: 24, weight: .bold, design: .monospaced))
+                                .foregroundColor(Color(hex: "#00FF00"))
+                        } else {
+                            ForEach(service.statements) { statement in
+                                if !service.swipedStatements.contains(statement.id) {
+                                    SwipeableCardView(statement: statement) { direction, swipedStatement in
+                                        service.handleSwipe(direction: direction, for: swipedStatement)
+                                    }
+                                    .stacked(at: index(of: statement), in: service.statements.count)
                                 }
-                                .stacked(at: index(of: statement), in: service.statements.count)
                             }
                         }
                     }
                 }
+                .padding()
             }
-            .padding()
         }
-        .navigationTitle("AI Analysis Results")
+        .overlay(
+            Group {
+                if showInstructions {
+                    instructionsOverlay
+                }
+            }
+        )
         .alert(item: $service.recordingError) { error in
             Alert(
-                title: Text("Error"),
+                title: Text("error"),
                 message: Text(error.message),
-                dismissButton: .default(Text("OK"))
+                dismissButton: .default(Text("retry"))
             )
         }
     }
 
     // MARK: 4. Recording Container
-
     private var recordingContainer: some View {
         VStack(spacing: 20) {
-            Text("Two Truths and a Lie")
-                .font(.headline)
-                .foregroundColor(.primary)
-
+            VStack(spacing: 8) {
+                Text("truth protocol")
+                    .font(.system(size: 24, weight: .bold, design: .monospaced))
+                    .foregroundColor(Color(hex: "#00FF00"))
+                
+                Text("tell me two truths and a lie")
+                    .font(.system(size: 16, weight: .medium, design: .monospaced))
+                    .foregroundColor(Color(hex: "#00FF00").opacity(0.8))
+                
+                Button(action: { showInstructions.toggle() }) {
+                    Label("how to play", systemImage: "info.circle")
+                        .font(.system(size: 14, weight: .medium, design: .monospaced))
+                        .foregroundColor(Color(hex: "#00FF00").opacity(0.6))
+                }
+            }
+            
             Button(action: {
                 if service.isRecording {
                     service.stopRecording()
@@ -194,137 +220,165 @@ struct TruthLieGameView: View {
                     service.startRecording()
                 }
             }) {
-                Text(service.isRecording ? "Stop & Upload" : "Get Started")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        service.isRecording ? Color.red : Color(hex: "#00FF00")
-                    )
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color(hex: "#00FF00").opacity(0.2), lineWidth: 1)
-                    )
+                HStack {
+                    Image(systemName: service.isRecording ? "stop.circle" : "waveform.circle")
+                    Text(service.isRecording ? "analyzing..." : "begin")
+                }
+                .font(.system(size: 16, weight: .bold, design: .monospaced))
+                .foregroundColor(service.isRecording ? .black : Color(hex: "#00FF00"))
+                .frame(width: 280, height: 56)
+                .background(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(service.isRecording ? Color(hex: "#00FF00") : Color.black)
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(hex: "#00FF00"), lineWidth: 1)
+                    }
+                )
             }
 
             if let response = service.response {
-                Text("Upload Successful! Check your statements below.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                Text("statements detected. swipe to analyze.")
+                    .font(.system(size: 14, weight: .medium, design: .monospaced))
+                    .foregroundColor(Color(hex: "#00FF00"))
             }
         }
         .padding()
     }
 
+    // MARK: 5. Instructions Overlay
+    private var instructionsOverlay: some View {
+        VStack(spacing: 20) {
+            Text("how to play")
+                .font(.system(size: 20, weight: .bold, design: .monospaced))
+            
+            VStack(alignment: .leading, spacing: 15) {
+                Text("1. tap begin and state three things about yourself")
+                Text("2. two statements should be true, one should be false")
+                Text("3. speak clearly and naturally")
+                Text("4. tap again when finished")
+                Text("5. swipe cards to analyze each statement")
+            }
+            .font(.system(size: 14, weight: .medium, design: .monospaced))
+            
+            Button("got it") {
+                showInstructions = false
+            }
+            .font(.system(size: 16, weight: .bold, design: .monospaced))
+        }
+        .padding()
+        .foregroundColor(Color(hex: "#00FF00"))
+        .background(Color.black.opacity(0.95))
+        .cornerRadius(15)
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color(hex: "#00FF00"), lineWidth: 1)
+        )
+        .padding()
+    }
+
     // MARK: 5. Summary Card
-
     private var summaryCard: some View {
-        CardView {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Summary Analysis")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-
-                Divider()
-                    .background(Color(hex: "#00FF00").opacity(0.2))
-
-                if let response = service.response {
-                    Group {
-                        Text("**Final Confidence Score:** \(String(format: "%.2f", response.finalConfidenceScore))")
-                        Text("**Guess Justification:** \(response.guessJustification)")
-                        Text("**Response Message:** \(response.responseMessage)")
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-
-                    Button(action: service.resetSwipes) {
-                        Text("Reset")
-                            .font(.headline)
+            CardView {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("final analysis")
+                            .font(.system(size: 20, weight: .bold, design: .monospaced))
                             .foregroundColor(Color(hex: "#00FF00"))
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color(hex: "#00FF00").opacity(0.1))
-                            .cornerRadius(10)
-                    }
-                    .padding(.top, 20)
 
-                    Button(action: {
-                        step += 1
-                    }) {
-                        Text("Next")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color(hex: "#00FF00"))
-                            .cornerRadius(10)
+                        if let response = service.response {
+                            VStack(alignment: .leading, spacing: 15) {
+                                HStack {
+                                    Text("accuracy")
+                                        .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                    Spacer()
+                                    Text(String(format: "%.0f%%", response.finalConfidenceScore * 100))
+                                        .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                }
+                                .foregroundColor(Color(hex: "#00FF00"))
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("analysis")
+                                        .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                    Text(response.guessJustification)
+                                        .font(.system(size: 12, weight: .regular, design: .monospaced))
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .lineLimit(nil)
+                                }
+                                .foregroundColor(Color(hex: "#00FF00"))
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("insight")
+                                        .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                    Text(response.responseMessage)
+                                        .font(.system(size: 12, weight: .regular, design: .monospaced))
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .lineLimit(nil)
+                                }
+                                .foregroundColor(Color(hex: "#00FF00"))
+
+                                Spacer(minLength: 20)
+
+                                Button(action: service.resetSwipes) {
+                                    Text("analyze again")
+                                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                        .foregroundColor(Color(hex: "#00FF00"))
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .stroke(Color(hex: "#00FF00"), lineWidth: 1)
+                                        )
+                                }
+
+                                Button(action: { step += 1 }) {
+                                    Text("continue >>")
+                                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                        .foregroundColor(.black)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color(hex: "#00FF00"))
+                                        .cornerRadius(8)
+                                }
+                            }
+                        } else {
+                            Text("no data available")
+                                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                .foregroundColor(Color(hex: "#00FF00"))
+                        }
                     }
-                    .padding(.top, 10)
-                } else {
-                    Text("No summary available.")
-                        .foregroundColor(.secondary)
+                    .padding()
                 }
             }
-            .padding()
+            .transition(.opacity)
         }
-        .transition(.opacity)
-    }
-
-    // MARK: 6. Helper Functions
-
-    private func index(of statement: StatementAnalysis) -> Int {
-        guard let idx = service.statements.firstIndex(where: { $0.id == statement.id }) else {
-            return 0
-        }
-        return idx
-    }
-}
-
-// MARK: 7. View Extension for Stacking Effect
-
-extension View {
-    func stacked(at position: Int, in total: Int) -> some View {
-        let offset = Double(total - position) * 10
-        return self.offset(CGSize(width: 0, height: offset))
-    }
-}
-
-// MARK: 8. Color Extension
-/**
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
-        }
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
-        )
-    }
-}
-*/
-// MARK: 9. Preview
-
-struct TruthLieGameView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            TruthLieGameView(step: .constant(6))
+        // MARK: 6. Helper Functions
+        private func index(of statement: StatementAnalysis) -> Int {
+            service.statements.firstIndex(where: { $0.id == statement.id }) ?? 0
         }
     }
-}
+
+    // MARK: 7. View Extension for Stacking Effect
+    extension View {
+        func stacked(at position: Int, in total: Int) -> some View {
+            let offset = Double(total - position) * 10
+            return self.offset(CGSize(width: 0, height: offset))
+        }
+    }
+
+    // MARK: 8. Preview Provider
+    struct TruthLieGameView_Previews: PreviewProvider {
+        static var previews: some View {
+            NavigationView {
+                TruthLieGameView(step: .constant(6))
+            }
+            .preferredColorScheme(.dark)
+        }
+    }
+
+    // MARK: 9. Animation Extension
+    extension Animation {
+        static var cardSpring: Animation {
+            .spring(response: 0.4, dampingFraction: 0.7)
+        }
+    }

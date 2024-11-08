@@ -129,3 +129,6 @@ if __name__ == "__main__":
         uvicorn.run(app, host="0.0.0.0", port=PORT)
     except Exception as e:
         print(f"Failed to start the server: {e}")
+
+
+# each user main app should have a uuid, we want to be able to verify the device in the server with it in the case we handle monetization outside the perview of apple

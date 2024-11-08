@@ -12,7 +12,7 @@ struct OnboardingIntroView: View {
    @EnvironmentObject var router: AppRouterViewModel
    @Binding var step: Int
    @Binding var userName: String
-   @Binding var age: String
+   //@Binding var age: String
    @State private var pulseOpacity = false
 
    var body: some View {
@@ -50,15 +50,11 @@ struct OnboardingIntroView: View {
                case 2:
                    ManageDataView(step: $step)
                case 3:
-                   MasterDataView(step: $step)
-               case 4:
                    NameInputView(userName: $userName, step: $step)
-               case 5:
-                   AgeInputView(age: $age, step: $step, userName: userName)
-               case 6:
+               case 4:
                    TruthLieGameView(step: $step)
-               case 7:
-                   FinalStepView(userName: userName, age: age)
+               case 5:
+                   FinalStepView(userName: userName)
                default:
                    Text("INITIALIZATION COMPLETE")
                        .font(.system(size: 24, weight: .bold, design: .monospaced))
@@ -112,127 +108,177 @@ struct WelcomeView: View {
 }
 
 struct MomentsThoughtsEmotionsView: View {
-   @Binding var step: Int
-   @State private var textOpacity = 0.0
-   @State private var nodeOpacity = Array(repeating: 0.0, count: 4)
-   @State private var lineOpacity = Array(repeating: 0.0, count: 3)
-
-   var body: some View {
-       ZStack {
-           // Lines connecting nodes
-           Path { path in
-               path.move(to: CGPoint(x: 200, y: 150))
-               path.addLine(to: CGPoint(x: 100, y: 300))
-           }
-           .stroke(Color(hex: "#00FF00"), lineWidth: 1)
-           .opacity(lineOpacity[0])
-           
-           Path { path in
-               path.move(to: CGPoint(x: 200, y: 150))
-               path.addLine(to: CGPoint(x: 200, y: 300))
-           }
-           .stroke(Color(hex: "#00FF00"), lineWidth: 1)
-           .opacity(lineOpacity[1])
-           
-           Path { path in
-               path.move(to: CGPoint(x: 200, y: 150))
-               path.addLine(to: CGPoint(x: 300, y: 300))
-           }
-           .stroke(Color(hex: "#00FF00"), lineWidth: 1)
-           .opacity(lineOpacity[2])
-
-           // Central LIFE=DATA node
-           ZStack {
-               Circle()
-                   .fill(Color.black)
-                   .frame(width: 120, height: 120)
-                   .overlay(
-                       Circle()
-                           .stroke(Color(hex: "#00FF00"), lineWidth: 2)
-                   )
-               
-               Text("LIFE\n=\nDATA")
-                   .font(.system(size: 20, weight: .bold, design: .monospaced))
-                   .foregroundColor(Color(hex: "#00FF00"))
-                   .multilineTextAlignment(.center)
-           }
-           .position(x: 200, y: 150)
-           .opacity(nodeOpacity[0])
-
-           // Child nodes
-           ForEach(0..<3) { index in
-               ZStack {
-                   Circle()
-                       .fill(Color.black)
-                       .frame(width: 100, height: 100)
-                       .overlay(
-                           Circle()
-                               .stroke(Color(hex: "#00FF00"), lineWidth: 2)
-                       )
-                   
-                   Text(["MOMENTS", "THOUGHTS", "EMOTIONS"][index])
-                       .font(.system(size: 14, weight: .bold, design: .monospaced))
-                       .foregroundColor(Color(hex: "#00FF00"))
-                       .multilineTextAlignment(.center)
-               }
-               .position(x: CGFloat(100 + index * 100), y: 300)
-               .opacity(nodeOpacity[index + 1])
-           }
-       }
-       .frame(maxWidth: .infinity, maxHeight: .infinity)
-       .onAppear {
-           // Animate nodes appearing
-           for i in 0..<4 {
-               withAnimation(.easeIn(duration: 0.5).delay(Double(i) * 0.3)) {
-                   nodeOpacity[i] = 1.0
-               }
-           }
-           
-           // Animate lines appearing
-           for i in 0..<3 {
-               withAnimation(.easeIn(duration: 0.5).delay(1.2 + Double(i) * 0.2)) {
-                   lineOpacity[i] = 1.0
-               }
-           }
-
-           // Proceed to next step
-           DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-               withAnimation {
-                   step += 1
-               }
-           }
-       }
-   }
+    @Binding var step: Int
+    @State private var textOpacity = 0.0
+    @State private var nodeOpacity = Array(repeating: 0.0, count: 4)
+    @State private var lineOpacity = Array(repeating: 0.0, count: 3)
+    @State private var pulseScale: CGFloat = 1.0
+    @State private var dataFlowPhase = Array(repeating: 0.0, count: 3)
+    
+    // Circuit pattern background
+    struct CircuitPatternView: View {
+        var body: some View {
+            GeometryReader { geometry in
+                Path { path in
+                    // Create circuit-like pattern
+                    let gridSize: CGFloat = 40
+                    for x in stride(from: 0, to: geometry.size.width, by: gridSize) {
+                        for y in stride(from: 0, to: geometry.size.height, by: gridSize) {
+                            path.move(to: CGPoint(x: x, y: y))
+                            path.addLine(to: CGPoint(x: x + gridSize, y: y))
+                            if Bool.random() {
+                                path.move(to: CGPoint(x: x, y: y))
+                                path.addLine(to: CGPoint(x: x, y: y + gridSize))
+                            }
+                        }
+                    }
+                }
+                .stroke(Color(hex: "#00FF00").opacity(0.1), lineWidth: 0.5)
+            }
+        }
+    }
+    
+    // Animated connection line
+    struct DataFlowLine: View {
+        let start: CGPoint
+        let end: CGPoint
+        let phase: CGFloat
+        
+        var body: some View {
+            Path { path in
+                path.move(to: start)
+                path.addLine(to: end)
+            }
+            .stroke(
+                Color(hex: "#00FF00"),
+                style: StrokeStyle(
+                    lineWidth: 2,
+                    lineCap: .round,
+                    dash: [4, 4],
+                    dashPhase: phase
+                )
+            )
+        }
+    }
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Background circuit pattern
+                CircuitPatternView()
+                
+                // Center position for main node
+                let centerX = geometry.size.width / 2
+                let centerY = geometry.size.height * 0.4  // Lowered position
+                
+                // Connection lines with data flow
+                ForEach(0..<3) { index in
+                    let endX = centerX + CGFloat(index - 1) * 120
+                    let endY = centerY + 150
+                    
+                    DataFlowLine(
+                        start: CGPoint(x: centerX, y: centerY),
+                        end: CGPoint(x: endX, y: endY),
+                        phase: dataFlowPhase[index]
+                    )
+                    .opacity(lineOpacity[index])
+                }
+                
+                // Central LIFE=DATA node
+                ZStack {
+                    Circle()
+                        .fill(Color.black)
+                        .frame(width: 120, height: 120)
+                        .overlay(
+                            Circle()
+                                .stroke(Color(hex: "#00FF00"), lineWidth: 2)
+                        )
+                        .shadow(color: Color(hex: "#00FF00").opacity(0.5), radius: 10)
+                    
+                    Text("LIFE\n=\nDATA")
+                        .font(.system(size: 20, weight: .bold, design: .monospaced))
+                        .foregroundColor(Color(hex: "#00FF00"))
+                        .multilineTextAlignment(.center)
+                }
+                .position(x: centerX, y: centerY)
+                .scaleEffect(pulseScale)
+                .opacity(nodeOpacity[0])
+                
+                // Child nodes
+                ForEach(0..<3) { index in
+                    ZStack {
+                        Circle()
+                            .fill(Color.black)
+                            .frame(width: 100, height: 100)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color(hex: "#00FF00"), lineWidth: 2)
+                            )
+                            .shadow(color: Color(hex: "#00FF00").opacity(0.3), radius: 8)
+                        
+                        Text(["MOMENTS", "THOUGHTS", "EMOTIONS"][index])
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundColor(Color(hex: "#00FF00"))
+                            .multilineTextAlignment(.center)
+                    }
+                    .position(
+                        x: centerX + CGFloat(index - 1) * 120,
+                        y: centerY + 150
+                    )
+                    .opacity(nodeOpacity[index + 1])
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
+            .onAppear {
+                // Start animations
+                startAnimations()
+            }
+        }
+    }
+    
+    private func startAnimations() {
+        // Animate nodes appearing
+        for i in 0..<4 {
+            withAnimation(.easeIn(duration: 0.5).delay(Double(i) * 0.3)) {
+                nodeOpacity[i] = 1.0
+            }
+        }
+        
+        // Animate lines appearing
+        for i in 0..<3 {
+            withAnimation(.easeIn(duration: 0.5).delay(1.2 + Double(i) * 0.2)) {
+                lineOpacity[i] = 1.0
+            }
+        }
+        
+        // Start pulsing animation for central node
+        withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+            pulseScale = 1.1
+        }
+        
+        // Animate data flow along lines
+        for i in 0..<3 {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                dataFlowPhase[i] = 20.0
+            }
+        }
+        
+        // Proceed to next step
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            withAnimation {
+                step += 1
+            }
+        }
+    }
 }
+
 struct ManageDataView: View {
    @Binding var step: Int
    @State private var textOpacity = 0.0
 
    var body: some View {
        Text("what you make of data determines your life ")
-           .modifier(CyberText())
-           .font(.system(size: 24, weight: .bold, design: .monospaced))
-           .opacity(textOpacity)
-           .padding(.horizontal, 30)
-           .onAppear {
-               withAnimation(.easeIn(duration: 0.5)) {
-                   textOpacity = 1.0
-               }
-               DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                   withAnimation {
-                       step += 1
-                   }
-               }
-           }
-   }
-}
-
-struct MasterDataView: View {
-   @Binding var step: Int
-   @State private var textOpacity = 0.0
-
-   var body: some View {
-       Text("INITIATING NEURAL INTERFACE\nCALIBRATING USER PARAMETERS")
            .modifier(CyberText())
            .font(.system(size: 24, weight: .bold, design: .monospaced))
            .opacity(textOpacity)
@@ -294,7 +340,7 @@ struct AgeInputView: View {
 
 struct FinalStepView: View {
    var userName: String
-   var age: String
+   //var age: String
    @EnvironmentObject var router: AppRouterViewModel
    @State private var pulseOpacity = false
    
@@ -306,7 +352,7 @@ struct FinalStepView: View {
                .modifier(CyberText())
                .font(.system(size: 24, weight: .bold, design: .monospaced))
            
-           Text("USER: \(userName.uppercased())\nAGE PARAMETER: \(age)")
+           Text("USER: \(userName.uppercased())")
                .modifier(CyberText())
                .font(.system(size: 18, design: .monospaced))
                .padding(.horizontal, 30)
@@ -395,13 +441,6 @@ class OnboardingViewModel: ObservableObject {
        }
    }
 
-   @Published var age: String = "" {
-       didSet {
-           userInputs["age"] = age
-           saveUserInputs()
-       }
-   }
-
    @Published var userInputs: [String: String] = [:] {
        didSet {
            saveUserInputs()
@@ -466,7 +505,6 @@ class OnboardingViewModel: ObservableObject {
        currentStep = UserDefaults.standard.integer(forKey: "currentStep")
        userInputs = UserDefaults.standard.dictionary(forKey: "userInputs") as? [String: String] ?? [:]
        userName = userInputs["userName"] ?? ""
-       age = userInputs["age"] ?? ""
    }
 
    // MARK: - Navigation
