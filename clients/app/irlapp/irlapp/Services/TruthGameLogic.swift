@@ -1,4 +1,4 @@
-// TruthGameLogic.swift
+// TruthGameLogic.swift **DO NOT OMIT ANYTHING FROM THE FOLLOWING CONTENT, INCLUDING & NOT LIMITED TO COMMENTED NOTES
 import SwiftUI
 import Combine
 import AVFoundation
