@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:Assets.xcassets">
+   </FileRef>
+   <Group
+      location = "group:Constants"
+      name = "Constants">
+      <FileRef
+         location = "group:AIModelDefinitions.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Routes.swift">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:Data"
+      name = "Data">
+      <Group
+         location = "group:Demo"
+         name = "Demo">
+         <FileRef
+            location = "group:EmotionPredictionDemo.json">
+         </FileRef>
+         <FileRef
+            location = "group:SampleAudioAnalysis.plist">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:EmotionsList.json">
+      </FileRef>
+      <FileRef
+         location = "group:demoExampleData.json">
+      </FileRef>
+      <FileRef
+         location = "group:chatData.json">
+      </FileRef>
+      <FileRef
+         location = "group:AudioConfiguration.json">
+      </FileRef>
+      <FileRef
+         location = "group:DemoData.json">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "group:GlobalState.swift">
+   </FileRef>
+   <FileRef
+      location = "group:Info.plist">
+   </FileRef>
+   <FileRef
+      location = "group:IRL.entitlements">
+   </FileRef>
+   <FileRef
+      location = "group:IRL.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:irl_mvp.xcworkspace">
+   </FileRef>
+   <Group
+      location = "group:irl-watch"
+      name = "irl-watch">
+      <FileRef
+         location = "group:irl-watch.xcodeproj">
+      </FileRef>
+      <Group
+         location = "group:irl-watch Watch App"
+         name = "irl-watch Watch App">
+         <FileRef
+            location = "group:irl_watchApp.swift">
+         </FileRef>
+         <FileRef
+            location = "group:Assets.xcassets">
+         </FileRef>
+         <Group
+            location = "group:Preview Content"
+            name = "Preview Content">
+            <FileRef
+               location = "group:Preview Assets.xcassets">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:ContentView.swift">
+         </FileRef>
+      </Group>
+   </Group>
+   <FileRef
+      location = "group:irlApp.swift">
+   </FileRef>
+   <FileRef
+      location = "group:LoudnessManager.plist">
+   </FileRef>
+   <Group
+      location = "group:Models"
+      name = "Models">
+      <FileRef
+         location = "group:WhisperModels.swift">
+      </FileRef>
+      <FileRef
+         location = "group:EmotionModels.swift">
+      </FileRef>
+      <FileRef
+         location = "group:SocialPost.swift">
+      </FileRef>
+      <FileRef
+         location = "group:IdentifiableString.swift">
+      </FileRef>
+      <FileRef
+         location = "group:ClaudeTypes.swift">
+      </FileRef>
+      <FileRef
+         location = "group:EmbeddingTypes.swift">
+      </FileRef>
+      <FileRef
+         location = "group:ImageGenModels.swift">
+      </FileRef>
+      <FileRef
+         location = "group:LiveViewTranscriptModel.swift">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:openaudiostandard"
+      name = "openaudiostandard">
+      <Group
+         location = "group:core"
+         name = "core">
+         <FileRef
+            location = "group:AFiles.swift">
+         </FileRef>
+         <FileRef
+            location = "group:RecordingScript.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ADeviceManager.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AEngine.swift">
+         </FileRef>
+         <FileRef
+            location = "group:OpenAudioModels.swift">
+         </FileRef>
+         <FileRef
+            location = "group:TranscriptionManager.swift">
+         </FileRef>
+         <FileRef
+            location = "group:SpeechRecognition.swift">
+         </FileRef>
+         <FileRef
+            location = "group:SocketManager.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AudioState.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:features"
+         name = "features">
+         <FileRef
+            location = "group:ASoundMeasurement.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ALocation.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AConverter.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AudioPlaybackManager.swift">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:OpenAudioManager.swift">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:Services"
+      name = "Services">
+      <Group
+         location = "group:Embeddings"
+         name = "Embeddings">
+         <FileRef
+            location = "group:EmbeddingService.swift">
+         </FileRef>
+         <FileRef
+            location = "group:KeyEntity+CoreDataClass.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FloatArrayTransformer.swift">
+         </FileRef>
+         <FileRef
+            location = "group:PersistenceController.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:ImageGeneration"
+         name = "ImageGeneration">
+         <FileRef
+            location = "group:FluxService.swift">
+         </FileRef>
+         <FileRef
+            location = "group:SDXLService.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Claude"
+         name = "Claude">
+         <FileRef
+            location = "group:ClaudeConstants.swift">
+         </FileRef>
+         <FileRef
+            location = "group:APIClient.swift">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:OpenAIRequest.swift">
+      </FileRef>
+      <FileRef
+         location = "group:ServerHealth.swift">
+      </FileRef>
+      <Group
+         location = "group:Whisper"
+         name = "Whisper">
+         <FileRef
+            location = "group:WhisperServiceIndex.swift">
+         </FileRef>
+         <FileRef
+            location = "group:WebsocketHandler.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FileUploader.swift">
+         </FileRef>
+         <FileRef
+            location = "group:WhisperEnums.swift">
+         </FileRef>
+      </Group>
+   </Group>
+   <Group
+      location = "group:Utils"
+      name = "Utils">
+      <FileRef
+         location = "group:UserService.swift">
+      </FileRef>
+      <FileRef
+         location = "group:JSONLoader.swift">
+      </FileRef>
+      <FileRef
+         location = "group:IrlAudioConfiguration.swift">
+      </FileRef>
+      <Group
+         location = "group:Language"
+         name = "Language">
+         <FileRef
+            location = "group:languages.json">
+         </FileRef>
+         <FileRef
+            location = "group:AppLanguage.swift">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:PermissionsRequestView.swift">
+      </FileRef>
+      <FileRef
+         location = "group:NotificationView.swift">
+      </FileRef>
+      <FileRef
+         location = "group:IrlAudioConfigLoader.swift">
+      </FileRef>
+      <FileRef
+         location = "group:DateHelper.swift">
+      </FileRef>
+      <Group
+         location = "group:Emotion"
+         name = "Emotion">
+         <FileRef
+            location = "group:EmotionParser.swift">
+         </FileRef>
+         <FileRef
+            location = "group:EmotionAnalyzer.swift">
+         </FileRef>
+         <FileRef
+            location = "group:EmotionUtilities.swift">
+         </FileRef>
+      </Group>
+   </Group>
+   <Group
+      location = "group:ViewModels"
+      name = "ViewModels">
+      <FileRef
+         location = "group:SettingsViewModel.swift">
+      </FileRef>
+      <FileRef
+         location = "group:ClaudeViewModel.swift">
+      </FileRef>
+      <FileRef
+         location = "group:ChatParametersViewModel.swift">
+      </FileRef>
+      <FileRef
+         location = "group:LiveViewModel.swift">
+      </FileRef>
+      <FileRef
+         location = "group:SocialFeedViewModel.swift">
+      </FileRef>
+      <FileRef
+         location = "group:EmotionAnalysisViewModel.swift">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:Views"
+      name = "Views">
+      <Group
+         location = "group:demo"
+         name = "demo">
+         <Group
+            location = "group:Chat"
+            name = "Chat">
+            <FileRef
+               location = "group:MemoryModule.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ChatMessageObservable.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ChatScrollView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:AlertItem.swift">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:AudioStreamView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:diarizationViewDemo.swift">
+         </FileRef>
+         <Group
+            location = "group:Plugins"
+            name = "Plugins">
+            <FileRef
+               location = "group:ConfigurationAndStorage.swift">
+            </FileRef>
+            <Group
+               location = "group:Tools"
+               name = "Tools">
+               <FileRef
+                  location = "group:ChatParametersModal.swift 16-26-13-446.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:AIAlignmentView.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:AdvancedSettingsView.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ToolsView.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:APISettingsView.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:SaveConfigurationView.swift">
+               </FileRef>
+            </Group>
+         </Group>
+         <FileRef
+            location = "group:ChatConfigView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:HumeView.swift">
+         </FileRef>
+         <Group
+            location = "group:Social"
+            name = "Social">
+            <FileRef
+               location = "group:HashtagsView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:StoriesView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PostView.swift">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:DeviceListView.swift">
+         </FileRef>
+         <Group
+            location = "group:Emotional"
+            name = "Emotional">
+            <FileRef
+               location = "group:EmotionTimelineView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:DetailAnalysisView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:EmotionBarView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:EmotionChartView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:EmotionalTranscriptView.swift">
+            </FileRef>
+            <FileRef
+               location = "group:OverviewView.swift">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:AudioStateView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:TabsView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:Transcribe.swift">
+         </FileRef>
+         <FileRef
+            location = "group:EmotionAnalysisDashboard.swift">
+         </FileRef>
+         <FileRef
+            location = "group:EmbeddingsView.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Components"
+         name = "Components">
+         <FileRef
+            location = "group:WaveShape.swift">
+         </FileRef>
+         <FileRef
+            location = "group:GradientPulsatingButton.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ConnectionStatusView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:Card.swift">
+         </FileRef>
+         <FileRef
+            location = "group:RecordingIndicatorView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:WaveformGradientEffect.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ServerHealthWidget.swift">
+         </FileRef>
+         <FileRef
+            location = "group:TabButtons.swift">
+         </FileRef>
+         <FileRef
+            location = "group:GradientTextView.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:generalapp"
+         name = "generalapp">
+         <FileRef
+            location = "group:DashboardView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:SearchView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ProfileVIew.swift">
+         </FileRef>
+         <FileRef
+            location = "group:SettingsViewIndex.swift">
+         </FileRef>
+         <FileRef
+            location = "group:HomeView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:StartTrialView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:LanguageSettingsView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:AppearanceSettingsView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FAQSection.swift">
+         </FileRef>
+         <FileRef
+            location = "group:PrivacySettingsView.swift">
+         </FileRef>
+         <FileRef
+            location = "group:CTAView.swift">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:ArenaView.swift">
+      </FileRef>
+      <FileRef
+         location = "group:ChatView.swift">
+      </FileRef>
+      <FileRef
+         location = "group:GeminiChatView.swift">
+      </FileRef>
+      <FileRef
+         location = "group:LiveView.swift">
+      </FileRef>
+      <FileRef
+         location = "group:SimpleLocalTranscription.swift">
+      </FileRef>
+      <FileRef
+         location = "group:SocialFeedView.swift">
+      </FileRef>
+   </Group>
+</Workspace>

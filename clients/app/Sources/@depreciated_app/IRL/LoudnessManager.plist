@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Metadata -->
+    <key>CFBundleDisplayName</key>
+    <string>LoudnessManager</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.example.LoudnessManager</string>
+    <key>CFBundleName</key>
+    <string>LoudnessManager</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleExecutable</key>
+    <string>LoudnessManager</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <!-- Loudness Manager Settings -->
+    <key>AudioConfigurations</key>
+    <array>
+        <dict>
+            <!-- Define default loudness settings for the app -->
+            <key>LoudnessMode</key>
+            <string>Normal</string>
+            <key>MinLoudnessLevel</key>
+            <integer>0</integer>
+            <key>MaxLoudnessLevel</key>
+            <integer>100</integer>
+            <key>DefaultLoudnessLevel</key>
+            <integer>50</integer>
+            <key>EnableDynamicRangeCompression</key>
+            <true/>
+        </dict>
+        <dict>
+            <!-- Define settings for different use cases, such as media playback -->
+            <key>LoudnessMode</key>
+            <string>MediaPlayback</string>
+            <key>MinLoudnessLevel</key>
+            <integer>10</integer>
+            <key>MaxLoudnessLevel</key>
+            <integer>80</integer>
+            <key>DefaultLoudnessLevel</key>
+            <integer>60</integer>
+            <key>EnableDynamicRangeCompression</key>
+            <false/>
+        </dict>
+        <dict>
+            <!-- Define settings for alarms or notifications -->
+            <key>LoudnessMode</key>
+            <string>Alarms</string>
+            <key>MinLoudnessLevel</key>
+            <integer>40</integer>
+            <key>MaxLoudnessLevel</key>
+            <integer>100</integer>
+            <key>DefaultLoudnessLevel</key>
+            <integer>90</integer>
+            <key>EnableDynamicRangeCompression</key>
+            <true/>
+        </dict>
+        <dict>
+            <!-- Define settings for background noise management -->
+            <key>LoudnessMode</key>
+            <string>BackgroundNoiseReduction</string>
+            <key>MinLoudnessLevel</key>
+            <integer>0</integer>
+            <key>MaxLoudnessLevel</key>
+            <integer>60</integer>
+            <key>DefaultLoudnessLevel</key>
+            <integer>30</integer>
+            <key>EnableDynamicRangeCompression</key>
+            <true/>
+        </dict>
+    </array>
+
+    <!-- Audio Processing Settings -->
+    <key>AudioProcessingSettings</key>
+    <dict>
+        <!-- Define the types of audio codecs and bitrates supported -->
+        <key>SupportedCodecs</key>
+        <array>
+            <string>Opus</string>
+            <string>AAC</string>
+            <string>PCM</string>
+        </array>
+        <key>PreferredCodec</key>
+        <string>Opus</string>
+        <key>OpusSettings</key>
+        <dict>
+            <key>Bitrate</key>
+            <integer>16000</integer>
+            <key>SampleRate</key>
+            <integer>16000</integer>
+            <key>Channels</key>
+            <integer>1</integer>
+        </dict>
+        <key>AACSettings</key>
+        <dict>
+            <key>Bitrate</key>
+            <integer>128000</integer>
+            <key>SampleRate</key>
+            <integer>44100</integer>
+            <key>Channels</key>
+            <integer>2</integer>
+        </dict>
+    </dict>
+
+    <!-- Device Compatibility -->
+    <key>CompatibleDevices</key>
+    <array>
+        <string>iPhone</string>
+        <string>iPad</string>
+        <string>Mac</string>
+        <string>AppleWatch</string>
+    </array>
+
+    <!-- Persistent Loudness Settings -->
+    <key>PersistLoudnessSettings</key>
+    <true/>
+    <key>PersistentStorageKey</key>
+    <string>com.example.LoudnessManager.PersistentSettings</string>
+
+    <!-- Error Handling -->
+    <key>ErrorHandling</key>
+    <dict>
+        <key>HandleAudioSessionErrors</key>
+        <true/>
+        <key>ErrorLogging</key>
+        <true/>
+        <key>MaxRetriesForAudioSessionSetup</key>
+        <integer>3</integer>
+    </dict>
+
+    <!-- App Background Execution for Audio -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>audio</string>
+    </array>
+
+    <!-- Permissions -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app requires microphone access to manage audio levels effectively.</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>This app uses Bluetooth to manage audio devices like headphones and speakers.</string>
+
+    <!-- Debug and Logging -->
+    <key>EnableDebugLogging</key>
+    <true/>
+    <key>LogFilePath</key>
+    <string>/var/log/LoudnessManager.log</string>
+
+    <!-- Audio Output Routing -->
+    <key>AudioOutputRouting</key>
+    <array>
+        <string>Headphones</string>
+        <string>BuiltInSpeaker</string>
+        <string>ExternalBluetoothDevice</string>
+    </array>
+</dict>
+</plist>
