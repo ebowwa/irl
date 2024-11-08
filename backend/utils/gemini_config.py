@@ -1,4 +1,4 @@
-# File: gemini_config.py
+# utils/gemini_config.py
 # Contains shared configuration for Gemini API
 
 MODEL_VARIANTS = {
