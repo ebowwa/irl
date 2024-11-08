@@ -8,12 +8,12 @@ struct VoiceAnalysisCard: View {
     let confidenceScore: Int
     let confidenceReasoning: String
     let psychoanalysis: String
-    let locationBackground: String  // New property added
+    let locationBackground: String
     
     @State private var closedSections: Set<Section> = []
     
     enum Section: Hashable {
-        case prosody, feeling, confidence, psychoanalysis, locationBackground  // New section added
+        case prosody, feeling, confidence, psychoanalysis, locationBackground
     }
     
     var body: some View {
@@ -193,7 +193,7 @@ struct VoiceAnalysisCard_Previews: PreviewProvider {
         confidence_score: 92,
         confidence_reasoning: "The user's pronunciation was clear with minimal background noise, but a slight accent introduced minor uncertainties in the transcription.",
         psychoanalysis: "The user's speech pattern shows signs of guardedness, as evidenced by a slower pace and occasional hesitation. This could indicate a cautious approach to self-expression, suggesting a reflective personality or possible concerns about judgment from others.",
-        location_background: "The background noise suggests an indoor setting, possibly a quiet office or a home workspace. The absence of significant ambient sounds indicates a controlled environment conducive to clear communication."  // Sample data for new field
+        location_background: "The background noise suggests an indoor setting, possibly a quiet office or a home workspace. The absence of significant ambient sounds indicates a controlled environment conducive to clear communication."
     )
     
     static var previews: some View {
@@ -203,7 +203,7 @@ struct VoiceAnalysisCard_Previews: PreviewProvider {
             confidenceScore: sampleResponse.confidence_score,
             confidenceReasoning: sampleResponse.confidence_reasoning,
             psychoanalysis: sampleResponse.psychoanalysis,
-            locationBackground: sampleResponse.location_background  // Pass the new field
+            locationBackground: sampleResponse.location_background 
         )
         .padding()
         .previewLayout(.sizeThatFits)

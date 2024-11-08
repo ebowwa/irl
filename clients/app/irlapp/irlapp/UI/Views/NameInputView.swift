@@ -1,4 +1,4 @@
-// TODO: can we do a `was i wrong q? and only this allowing another analyzation; with this second attempt can we send bothh audios and a message to one identify which is which and explain to focus on spotting the lie only in the second
+// TODO: 1. - can we do a `was i wrong q? and only this allowing another analyzation; with this second attempt can we send bothh audios and a message to one identify which is which and explain to focus on spotting the lie only in the second
 // NOTE: this is a good example of having the ui await the server response - i will need to carry this over to the truth game as well
 
 import SwiftUI

@@ -1,14 +1,16 @@
+// CaringMindApp.swift
+// Caringmind
 
-//  irlappApp.swift
-//  irlapp
+// General App Description: this product is meant to listen 24/7 it uses the openaudio which allows for processing of audio from devices and storing, post requests, websocket, audio playing controls, local audio measurement, etc
+// - this app should always be recording, it may be recording for local storage, for batch uploads to server, or for a live-streaming websocket
+// - this functionality should not be managed by views, but can be modified, i.e., switch to websocket, send data to server, playbacks, viewing transcriptions, data, etc
+
+// NOTE: this script was updated to include a google sign in which as of now does nothing, it works, the user can sign in with their google account but otherwise this feature has no other extension, moving forward location, usage metrics, drive storage can be applied through this gsignin
+
+
 //
 //  Created by Elijah Arbee on 10/26/24.
 //
-// NOTE: this product is meant to listen 24/7 it uses the openaudio which allows for processing of audio from devices and storing, post requests, websocket, audio playing controls, local audio measurement, etc
-// - this app should always be recording, it may be recording for local storage, for batch uploads to server, or for a live-streaming websocket
-// - this functionality should not be managed by views, but can be modified, i.e., switch to websocket, send data to server, playbacks, viewing transcriptions, data, etc
-// NOTE: this script was updated to include a google sign in which as of now does nothing, it works, the user can sign in with their google account but otherwise this feature has no other extension
-// irlappApp.swift
 
 import SwiftUI
 import GoogleSignIn
@@ -27,7 +29,6 @@ struct irlApp: App {
                 .environmentObject(router)
                 .environmentObject(onboardingViewModel)
                 .onAppear {
-                    // Removed framework state and audio-related initializations
                 }
         }
     }
@@ -44,7 +45,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 // ViewModels/AppRouterViewModel.swift
 
 class AppRouterViewModel: ObservableObject {
-    @Published var currentDestination: RouterDestination = .splash // Initialize to splash
+    @Published var currentDestination: RouterDestination = .splash
 
     func navigate(to destination: RouterDestination) {
         withAnimation {
@@ -71,7 +72,7 @@ enum RouterDestination: Identifiable {
     }
 }
 
-// ContentView with Onboarding and Google Sign-In button
+
 struct ContentView: View {
     @EnvironmentObject var router: AppRouterViewModel
     @StateObject private var onboardingViewModel = OnboardingViewModel()

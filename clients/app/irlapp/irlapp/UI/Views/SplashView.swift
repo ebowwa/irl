@@ -7,7 +7,7 @@
 import SwiftUI
 import GoogleSignIn
 import GoogleSignInSwift
-// maybe add globe to background maybe other noise
+// maybe add globe to background [circle] maybe other noise
 struct SplashView: View {
    @EnvironmentObject var router: AppRouterViewModel
    @State private var animate = false
