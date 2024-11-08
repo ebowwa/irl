@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
       {
-        "src": "/clients/irlweb/next.config.mjs",
+        "src": "/clients/caringmindWeb/next.config.mjs",
         "use": "@vercel/next"
       },
       {
@@ -13,7 +13,7 @@
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "/clients/irlweb/$1"
+        "dest": "/clients/caringmindWeb/$1"
       }
     ]
   }
