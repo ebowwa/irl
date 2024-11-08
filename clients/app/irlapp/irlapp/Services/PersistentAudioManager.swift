@@ -1,4 +1,5 @@
 // Initial Issues:
+// will likely be better off starting from scrartch with insights learned from here but streamined specifically for task within lifecycle - i.e. breaking up background dev and foreground dev.
 // 1.14. Missing Speech in Audio Files
 //     Some audio files sent to the server do not include speech; we have local transcriptions. This should be an easy configuration.
 import Foundation

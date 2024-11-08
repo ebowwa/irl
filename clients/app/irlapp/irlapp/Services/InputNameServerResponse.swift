@@ -1,5 +1,6 @@
 // AppManager.swift
 // Handles data, audio, and server interactions
+
 // ideally the user audio from the first `name statement` should be saved until confirmed, the reason is that sometimes the ai mistakes the audio and transcription, we want to ask the user to repeat themselves after the user updates the text transcription personally. So server: base on-shot prompt; client app: Audio input #1 + User Name Correction + Audio input #2
 import Foundation
 import AVFoundation
@@ -49,7 +50,7 @@ class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
     private var audioFileURL: URL?
     
     // Backend URL
-    private let backendURL = URL(string: "https://695c-2601-646-a201-db60-00-a3c1.ngrok-free.app/onboarding/v3/process-audio")! // Updated to your provided backend URL
+    private let backendURL = URL(string: "https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/onboarding/v3/process-audio")!
     
     // 1. Start Recording
     func startRecording() {

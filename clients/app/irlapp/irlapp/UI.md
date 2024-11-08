@@ -26,3 +26,6 @@ STYLING GUIDELINES:
 - Animations: Smooth, continuous, ambient
 
 When you reinitialize me, ask me to continue styling the MOMENTS + THOUGHTS + EMOTIONS visualization to feel more cyberpunk and visually engaging while maintaining the app's established aesthetic.
+
+
+https://github.com/kodecocodes/swift-algorithm-club

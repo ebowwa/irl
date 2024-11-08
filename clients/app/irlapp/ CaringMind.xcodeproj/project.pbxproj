@@ -33,9 +33,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		764214BC2CCD8B0F00424E73 /*  CaringMind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = " CaringMind.app"; path = "/Users/ebowwa/irl/clients/app/irlapp/build/Debug/ CaringMind.app"; sourceTree = "<absolute>"; };
-		764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = " CaringMindTests.xctest"; path = "/Users/ebowwa/irl/clients/app/irlapp/build/Debug/ CaringMind.app/Contents/PlugIns/ CaringMindTests.xctest"; sourceTree = "<absolute>"; };
-		764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = " CaringMindUITests.xctest"; path = "/Users/ebowwa/irl/clients/app/irlapp/build/Debug/ CaringMindUITests-Runner.app/Contents/PlugIns/ CaringMindUITests.xctest"; sourceTree = "<absolute>"; };
+		767D58A82CDDC2890038695B /*  CaringMind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = " CaringMind.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		767D58A92CDDC2890038695B /*  CaringMindTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = " CaringMindTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		767D58AA2CDDC2890038695B /*  CaringMindUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = " CaringMindUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -105,6 +105,9 @@
 			isa = PBXGroup;
 			children = (
 				764214BE2CCD8B0F00424E73 /* irlapp */,
+				767D58A82CDDC2890038695B /*  CaringMind.app */,
+				767D58A92CDDC2890038695B /*  CaringMindTests.xctest */,
+				767D58AA2CDDC2890038695B /*  CaringMindUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -136,7 +139,7 @@
 				767D58722CDD5A3D0038695B /* ComposableArchitecture */,
 			);
 			productName = irlapp;
-			productReference = 764214BC2CCD8B0F00424E73 /*  CaringMind.app */;
+			productReference = 767D58A82CDDC2890038695B /*  CaringMind.app */;
 			productType = "com.apple.product-type.application";
 		};
 		764214CC2CCD8B1100424E73 /*  CaringMindTests */ = {
@@ -155,7 +158,7 @@
 			);
 			name = " CaringMindTests";
 			productName = irlappTests;
-			productReference = 764214CD2CCD8B1100424E73 /*  CaringMindTests.xctest */;
+			productReference = 767D58A92CDDC2890038695B /*  CaringMindTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		764214D62CCD8B1100424E73 /*  CaringMindUITests */ = {
@@ -174,7 +177,7 @@
 			);
 			name = " CaringMindUITests";
 			productName = irlappUITests;
-			productReference = 764214D72CCD8B1100424E73 /*  CaringMindUITests.xctest */;
+			productReference = 767D58AA2CDDC2890038695B /*  CaringMindUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */

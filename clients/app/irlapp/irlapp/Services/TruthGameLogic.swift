@@ -205,7 +205,7 @@ class AnalysisService: NSObject, ObservableObject {
         }
 
         // Corrected to original upload URL
-        guard let uploadURL = URL(string: "https://695c-2601-646-a201-db60-00-a3c1.ngrok-free.app/TruthNLie") else {
+        guard let uploadURL = URL(string: "https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/TruthNLie") else {
             print("Log: Invalid upload URL.")
             self.recordingError = ErrorWrapper(message: "Invalid upload URL.")
             return
