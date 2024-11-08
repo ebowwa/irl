@@ -1940,4 +1940,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+pnpm-lock.yaml
 clients/caringmindWeb/pnpm-lock.yaml
