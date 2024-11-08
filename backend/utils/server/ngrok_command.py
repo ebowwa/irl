@@ -10,7 +10,7 @@ import sys
 from typing import Optional
 
 # Initialize the APIRouter
-router = APIRouter(prefix="/ngrok", tags=["ngrok"])
+router = APIRouter()
 
 class ServerState:
     """
