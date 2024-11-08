@@ -28,8 +28,6 @@ Step into a world where CaringMind listens, remembers, and knows just what you n
 
 ## What Can CaringMind Do?
 
-![onboarding demo](.github/public/app-demo/simulator_screenshot_1DEC8EAF-AF94-4DFB-820E-0C51FFE2FA2E.png)
-
 **Capture Every Moment:** CaringMind holds onto the memories you want to keep, gently storing the moments and conversations you’d rather not forget.
 
 **Know Your World:** CaringMind gets to know what makes your day better. From the biggest ideas to the tiniest details, CaringMind remembers them so you don’t have to.
