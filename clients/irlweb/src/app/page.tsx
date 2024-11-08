@@ -1,352 +1,130 @@
 "use client"
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Card,
-  CardContent, 
-  CardHeader,
-  CardTitle 
-} from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  BarChart,
-  Clock,
-  Mic,
-  Send,
-  StopCircle,
-  Wifi,
-  WifiOff,
-  X
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, Sparkles, Brain, Orbit } from 'lucide-react';
 
-// Define types for messages, stats, and instances
-type Message = {
-  sender: 'user' | 'gemini' | 'system';
-  text: string;
-  timestamp: Date;
-};
+const SplashPage = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  
+  const images = [
+    { url: "/api/placeholder/1200/800", title: "Personal Growth", description: "Expand your consciousness" },
+    { url: "/api/placeholder/1200/800", title: "Deep Connection", description: "Understanding that transcends language" },
+    { url: "/api/placeholder/1200/800", title: "Emotional Intelligence", description: "Feel understood, always" }
+  ];
 
-type Stats = {
-  totalMessages: number;
-  averageResponseTime: number;
-  messagesByModel: Record<string, { count: number; totalTime: number }>;
-};
-
-type RecordingState = Record<string, boolean>;
-
-type ConnectionsState = Record<string, WebSocket>;
-
-type MessagesState = Record<string, Message[]>;
-
-type MediaRecordersState = Record<string, MediaRecorder>;
-
-type AudioChunksState = Record<string, Blob[]>;
-
-type MessageInputsState = Record<string, string>;
-
-const MODELS = [
-  'gemini-1.5-flash',
-  'gemini-1.5-pro',
-  'gemini-1.5-flash-8b'
-];
-
-const GeminiMultiChat: React.FC = () => {
-  const [instances, setInstances] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('');
-  const [connections, setConnections] = useState<ConnectionsState>({});
-  const [messages, setMessages] = useState<MessagesState>({});
-  const [recording, setRecording] = useState<RecordingState>({});
-  const [stats, setStats] = useState<Stats>({
-    totalMessages: 0,
-    averageResponseTime: 0,
-    messagesByModel: {}
-  });
-
-  const messageInputs = useRef<MessageInputsState>({});
-  const mediaRecorders = useRef<MediaRecordersState>({});
-  const audioChunks = useRef<AudioChunksState>({});
-  const startTimes = useRef<Record<string, number>>({});
-
-  const createInstance = (model: string) => {
-    const instanceId = `${model}-${Date.now()}`;
-    setInstances(prev => [...prev, instanceId]);
-    setMessages(prev => ({ ...prev, [instanceId]: [] }));
-    messageInputs.current[instanceId] = '';
-    setActiveTab(instanceId);
-    connectWebSocket(instanceId, model);
-  };
-
-  const removeInstance = (instanceId: string) => {
-    disconnectWebSocket(instanceId);
-    setInstances(prev => prev.filter(id => id !== instanceId));
-    setMessages(prev => {
-      const newMessages = { ...prev };
-      delete newMessages[instanceId];
-      return newMessages;
-    });
-    if (activeTab === instanceId) {
-      setActiveTab(instances[0] || '');
-    }
-  };
-
-  const connectWebSocket = (instanceId: string, model: string) => {
-    const ws = new WebSocket('wss://4d9b-76-78-246-141.ngrok-free.app/api/gemini/ws/chat');
-    
-    ws.onopen = () => {
-      setConnections(prev => ({ ...prev, [instanceId]: ws }));
-      appendMessage(instanceId, 'system', `Connected to ${model}`);
-    };
-
-    ws.onmessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data);
-      const endTime = Date.now();
-      const responseTime = endTime - (startTimes.current[instanceId] || endTime);
-      
-      if (data.response) {
-        appendMessage(instanceId, 'gemini', data.response);
-        updateStats(instanceId, responseTime);
-      } else if (data.error) {
-        appendMessage(instanceId, 'system', `Error: ${data.error}`);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isHovering) {
+        setActiveIndex((current) => (current + 1) % images.length);
       }
-    };
-
-    ws.onclose = () => {
-      setConnections(prev => {
-        const newConns = { ...prev };
-        delete newConns[instanceId];
-        return newConns;
-      });
-      appendMessage(instanceId, 'system', 'Disconnected');
-    };
-  };
-
-  const disconnectWebSocket = (instanceId: string) => {
-    if (connections[instanceId]) {
-      connections[instanceId].close();
-    }
-  };
-
-  const appendMessage = (instanceId: string, sender: 'user' | 'gemini' | 'system', text: string) => {
-    setMessages(prev => ({
-      ...prev,
-      [instanceId]: [...(prev[instanceId] || []), { sender, text, timestamp: new Date() }]
-    }));
-  };
-
-  const updateStats = (instanceId: string, responseTime: number) => {
-    setStats(prev => {
-      const model = instanceId.split('-')[0];
-      const modelStats = prev.messagesByModel[model] || { count: 0, totalTime: 0 };
-      
-      return {
-        totalMessages: prev.totalMessages + 1,
-        averageResponseTime: (prev.averageResponseTime * prev.totalMessages + responseTime) / (prev.totalMessages + 1),
-        messagesByModel: {
-          ...prev.messagesByModel,
-          [model]: {
-            count: modelStats.count + 1,
-            totalTime: modelStats.totalTime + responseTime,
-          }
-        }
-      };
-    });
-  };
-
-  const sendMessage = (instanceId: string) => {
-    const message = messageInputs.current[instanceId];
-    if (!message.trim() || !connections[instanceId]) return;
-
-    appendMessage(instanceId, 'user', message);
-    startTimes.current[instanceId] = Date.now();
-    
-    connections[instanceId].send(JSON.stringify({
-      role: 'user',
-      text: message,
-      type: 'text'
-    }));
-    
-    messageInputs.current[instanceId] = '';
-  };
-
-  const startRecording = async (instanceId: string) => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      
-      mediaRecorder.onstart = () => {
-        audioChunks.current[instanceId] = [];
-        setRecording(prev => ({ ...prev, [instanceId]: true }));
-      };
-
-      mediaRecorder.ondataavailable = (event: BlobEvent) => {
-        audioChunks.current[instanceId].push(event.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current[instanceId], { type: 'audio/wav' });
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          const base64Audio = (reader.result as string).split(',')[1];
-          connections[instanceId].send(JSON.stringify({
-            role: 'user',
-            audio: base64Audio,
-            type: 'audio'
-          }));
-        };
-
-        reader.readAsDataURL(audioBlob);
-        setRecording(prev => ({ ...prev, [instanceId]: false }));
-      };
-
-      mediaRecorders.current[instanceId] = mediaRecorder;
-      mediaRecorder.start();
-    } catch (error) {
-      appendMessage(instanceId, 'system', 'Audio recording failed');
-      console.error('Recording error:', error);
-    }
-  };
-
-  const stopRecording = (instanceId: string) => {
-    if (mediaRecorders.current[instanceId]) {
-      mediaRecorders.current[instanceId].stop();
-    }
-  };
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isHovering, images.length]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Multi-Instance Gemini Chat</CardTitle>
-          <div className="flex gap-2">
-            {MODELS.map(model => (
-              <Button 
-                key={model}
-                variant="outline"
-                onClick={() => createInstance(model)}
-                size="sm"
-              >
-                New {model}
-              </Button>
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      {/* Hero Section */}
+      <div className="relative h-screen flex flex-col items-center justify-center px-4">
+        <div className="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-transparent" />
+        
+        {/* Logo Animation */}
+        <div className="relative w-32 h-32 mb-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-pink-50 rounded-full animate-pulse" />
+          <div className="absolute inset-4 bg-white rounded-full shadow-lg flex items-center justify-center">
+            <Brain className="w-12 h-12 text-purple-600" />
+          </div>
+        </div>
+
+        <h1 className="text-6xl font-bold mb-4 text-gray-900">
+          CaringMind
+        </h1>
+        <p className="text-2xl text-gray-600 mb-12">Your consciousness companion</p>
+        
+        {/* Image Carousel */}
+        <div 
+          className="relative w-full max-w-4xl h-96 mb-12 rounded-2xl overflow-hidden shadow-2xl"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                index === activeIndex ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
+              }`}
+            >
+              <img
+                src={image.url}
+                alt={image.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                <h3 className="text-3xl font-bold text-white mb-2">{image.title}</h3>
+                <p className="text-xl text-gray-200">{image.description}</p>
+              </div>
+            </div>
+          ))}
+          
+          {/* Carousel Controls */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  index === activeIndex ? 'bg-white w-6' : 'bg-white/50'
+                }`}
+                onClick={() => setActiveIndex(index)}
+              />
             ))}
           </div>
-        </CardHeader>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex space-x-4">
+          <button className="px-8 py-3 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transform hover:scale-105 transition-all">
+            Get Started
+          </button>
+          <button className="px-8 py-3 border border-purple-200 text-purple-600 rounded-full font-medium hover:bg-purple-50 transform hover:scale-105 transition-all">
+            Learn More
+          </button>
+        </div>
+      </div>
+
+      {/* Features Grid */}
+      <div className="max-w-6xl mx-auto px-4 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+            <Brain className="w-6 h-6 text-purple-600" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">Deep Understanding</h3>
+          <p className="text-gray-600">Experience AI that truly gets you</p>
+        </div>
         
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <div className="flex items-center">
-              <TabsList className="flex-1">
-                {instances.map(instanceId => (
-                  <TabsTrigger key={instanceId} value={instanceId} className="flex items-center gap-2">
-                    {connections[instanceId] ? <Wifi size={16} /> : <WifiOff size={16} />}
-                    {instanceId.split('-')[0]}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeInstance(instanceId);
-                      }}
-                    >
-                      <X size={16} />
-                    </Button>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
+        <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+            <Heart className="w-6 h-6 text-pink-600" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">Emotional Intelligence</h3>
+          <p className="text-gray-600">Connect on a deeper level</p>
+        </div>
+        
+        <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+            <Sparkles className="w-6 h-6 text-blue-600" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">Personal Growth</h3>
+          <p className="text-gray-600">Evolve with every interaction</p>
+        </div>
+      </div>
 
-            {instances.map(instanceId => (
-              <TabsContent key={instanceId} value={instanceId} className="border rounded-lg p-4">
-                <ScrollArea className="h-[400px] mb-4">
-                  {messages[instanceId]?.map((msg, idx) => (
-                    <div
-                      key={idx}
-                      className={`mb-2 p-2 rounded ${
-                        msg.sender === 'user' ? 'bg-blue-100 ml-auto' :
-                        msg.sender === 'gemini' ? 'bg-green-100' : 'bg-gray-100'
-                      } max-w-[80%] ${msg.sender === 'user' ? 'ml-auto' : ''}`}
-                    >
-                      <div className="text-sm font-medium mb-1">
-                        {msg.sender.charAt(0).toUpperCase() + msg.sender.slice(1)}
-                      </div>
-                      <div>{msg.text}</div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {msg.timestamp.toLocaleTimeString()}
-                      </div>
-                    </div>
-                  ))}
-                </ScrollArea>
-
-                <div className="flex gap-2">
-                <Input
-                    placeholder="Type your message..."
-                    value={messageInputs.current[instanceId] || ''}
-                    onChange={(e) => messageInputs.current[instanceId] = e.target.value}
-                    onKeyDown={(e) => e.key === 'Enter' && sendMessage(instanceId)}
-                  />
-                  <Button 
-                    onClick={() => sendMessage(instanceId)}
-                    disabled={!connections[instanceId]}
-                  >
-                    <Send size={16} />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => recording[instanceId] ? stopRecording(instanceId) : startRecording(instanceId)}
-                    disabled={!connections[instanceId]}
-                  >
-                    {recording[instanceId] ? <StopCircle size={16} /> : <Mic size={16} />}
-                  </Button>
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart size={20} />
-                Chat Statistics
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <div className="text-sm font-medium">Total Messages</div>
-                  <div className="text-2xl">{stats.totalMessages}</div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium">Average Response Time</div>
-                  <div className="text-2xl flex items-center gap-1">
-                    <Clock size={20} />
-                    {Math.round(stats.averageResponseTime)}ms
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium">Active Sessions</div>
-                  <div className="text-2xl">{instances.length}</div>
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <div className="text-sm font-medium mb-2">Messages by Model</div>
-                {Object.entries(stats.messagesByModel).map(([model, data]) => (
-                  <div key={model} className="flex justify-between items-center mb-2">
-                    <div>{model}</div>
-                    <div className="text-sm">
-                      {data.count} msgs ({Math.round(data.totalTime / data.count)}ms avg)
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </CardContent>
-      </Card>
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-100 py-8 text-center text-gray-600">
+        <p className="text-sm">
+          © 2025 CaringMind. Transforming consciousness, with care.
+        </p>
+      </footer>
     </div>
   );
 };
 
-export default GeminiMultiChat;
+export default SplashPage;
