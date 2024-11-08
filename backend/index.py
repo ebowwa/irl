@@ -23,6 +23,7 @@ from route.features.user_name_upload_v3 import router as user_name_upload_v3_rou
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
 from route.features.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 from utils.server.ngrok_utils import start_ngrok
+from utils.server.ngrok_command import router as ngrok_commands_router
 import ngrok 
 from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs  # sees If port is open if so closes the port so the server can init
 from dotenv import load_dotenv 
@@ -82,6 +83,7 @@ app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")
 # 
 app.include_router(unzip_audio_batch_v1_router) # this is in test for handling zip batches from the client
 app.include_router(analyze_truth_lie_v1_router)
+app.include_router(ngrok_commands_router, prefix="/ngrok")
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately
 @app.get("/openapi.json", include_in_schema=False)

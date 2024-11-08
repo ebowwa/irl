@@ -4,7 +4,8 @@
 //
 //  Created by Elijah Arbee on 11/5/24.
 //
-// once the audio is sent, unless the audio fails, remove the begin button, 
+// once the audio is sent, unless the audio fails, remove the begin button post user speech/when not needed i.e. like at summary
+
 import SwiftUI
 
 // MARK: 1. Reusable Card View
