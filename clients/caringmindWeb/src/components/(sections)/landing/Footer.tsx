@@ -5,8 +5,8 @@
 // src/components/sections/landing/landing-footer.tsx
 import React from 'react';
 import Link from 'next/link';
-import { TwitterIcon, InstagramIcon, FacebookIcon, YouTubeIcon } from '@/components/ui/icons/socialmedia';
-import landingFooterContent from '@public/raw_data/landing-footer-content.json';
+import { TwitterIcon, InstagramIcon, FacebookIcon, YouTubeIcon } from '@/components/icons/socialmedia';
+import landingFooterContent from '../../../../../../public/raw_data/landing-footer-content.json';
 
 interface FooterLogo {
   href: string;
