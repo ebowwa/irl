@@ -4,10 +4,6 @@
     {
       "src": "/clients/caringmindWeb/package.json",
       "use": "@vercel/next"
-    },
-    {
-      "src": "backend/**/*",
-      "use": "@vercel/python"
     }
   ],
   "routes": [
