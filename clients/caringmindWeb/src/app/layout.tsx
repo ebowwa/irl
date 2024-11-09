@@ -13,19 +13,20 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+// Corrected path for the favicon icon
 export const metadata: Metadata = {
-  title: "caringmind",
-  description: "the singularity is here",
+  title: "CaringMind",
+  description: "The singularity is here",
   icons: {
-    icon: '.github/public/AppIcon.png',  // Path to the favicon
+    icon: "/AppIcon.png",  // Adjusted path
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
