@@ -88,7 +88,7 @@ struct ContentView: View {
                                     userName: $onboardingViewModel.userName)
                     .transition(.slide)
             case .home:
-                HomeView()
+                TranscriptionView()
                     .transition(.slide)
             }
         }
