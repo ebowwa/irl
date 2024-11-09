@@ -1,20 +1,19 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "/clients/caringmindWeb/next.config.mjs",
-        "use": "@vercel/next"
-      },
-      {
-        "src": "backend/**/*",
-        "use": "@vercel/python"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/clients/caringmindWeb/$1"
-      }
-    ]
-  }
-  
+  "version": 2,
+  "builds": [
+    {
+      "src": "/clients/caringmindWeb/package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "backend/**/*",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/clients/caringmindWeb/$1"
+    }
+  ]
+}
