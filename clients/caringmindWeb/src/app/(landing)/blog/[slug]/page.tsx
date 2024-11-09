@@ -1,13 +1,13 @@
 // src/app/blog/[slug]/page.tsx
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllPosts, getPostBySlug } from "@/components/(sections)/blog/lib/api";
+import { getAllPosts, getPostBySlug } from "@/components/landing/sections/blog/lib/api";
 import { CMS_NAME } from "@/lib/constants";
-import markdownToHtml from "@/components/(sections)/blog/lib/markdownToHtml";
-import Container from "@/components/(sections)/blog/sections/container";
-import Header from "@/components/(sections)/blog/sections/header";
-import { PostBody } from "@/components/(sections)/blog/sections/post-body";
-import { PostHeader } from "@/components/(sections)/blog/sections/post-header";
+import markdownToHtml from "@/components/landing/sections/blog/lib/markdownToHtml";
+import Container from "@/components/landing/sections/blog/sections/container";
+import Header from "@/components/landing/sections/blog/sections/header";
+import { PostBody } from "@/components/landing/sections/blog/sections/post-body";
+import { PostHeader } from "@/components/landing/sections/blog/sections/post-header";
 
 export default async function Post({ params }: Params) {
   try {
