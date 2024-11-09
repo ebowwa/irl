@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "caringmind",
   description: "the singularity is here",
   icons: {
-    icon: '/clients/app/irlapp/irlapp/Assets.xcassets/AppIcon.appiconset/AppIcon.png',  // Path to the favicon
+    icon: '.github/public/AppIcon.png',  // Path to the favicon
   },
 };
 
