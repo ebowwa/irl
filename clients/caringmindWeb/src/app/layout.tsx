@@ -1,37 +1,68 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
+import { Inter } from "next/font/google";
+import "@/styles/globals.css";
+import {
+  NEXT_SITE_TITLE,
+  NEXT_SITE_DESCRIPTION,
+  HOME_OG_IMAGE_URL,
+  favicon,
+  keywords,
+  authors,
+  creator,
+  publisher,
+  twitterCard,
+  twitterSite,
+  twitterCreator,
+  ogType,
+  robots,
+} from "@/lib/constants";
+import GoogleAnalytics from "@/components/(third-party)/Google/Analytics/client";
+import { NoScript } from "./(meta)/no-script"; // Corrected path
+import { Providers } from "@/utils/provider/theme"; // Corrected path
 
-const geistSans = localFont({
-  src: "/fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "/fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CaringMind",
-  description: "The singularity is here",
-  icons: {
-    icon: "/Caringmind_icon_v1.ico",
+  title: NEXT_SITE_TITLE,
+  description: NEXT_SITE_DESCRIPTION,
+  openGraph: {
+    images: [HOME_OG_IMAGE_URL],
+    type: ogType,
   },
+  twitter: {
+    card: twitterCard,
+    site: twitterSite,
+    creator: twitterCreator,
+  },
+  robots: {
+    index: robots.includes('index'),
+    follow: robots.includes('follow'),
+  },
+  icons: {
+    icon: favicon,
+  },
+  keywords: keywords,
+  authors: authors,
+  creator: creator,
+  publisher: publisher,
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <head>
+        <GoogleAnalytics />
+      </head>
+      <body className={inter.className}>
+        <Providers>
+          <NoScript />
+          {children}
+        </Providers>
       </body>
     </html>
   );
