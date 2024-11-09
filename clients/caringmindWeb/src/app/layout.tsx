@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "CaringMind",
   description: "The singularity is here",
   icons: {
-    icon: "/AppIcon.png",  // Adjusted path
+    icon: "public/Caringmind_icon_v1.ico",  // Adjusted path
   },
 };
 
