@@ -1,4 +1,4 @@
-"Use client"
+/** "Use client"
 import React, { useState } from 'react';
 import { Heart, Moon, Sun, Sparkles } from 'lucide-react';
 
@@ -8,7 +8,7 @@ const PresenceUI = () => {
   return (
     <div className={`w-full h-screen flex flex-col items-center justify-center ${mode === 'day' ? 'bg-white' : 'bg-gray-900'}`}>
       <div className="w-full max-w-md px-8">
-        {/* Header */}
+  
         <div className="flex justify-between items-center mb-8">
           <Heart className={`w-8 h-8 ${mode === 'day' ? 'text-rose-500' : 'text-rose-400'}`} />
           {mode === 'day' ? (
@@ -18,7 +18,7 @@ const PresenceUI = () => {
           )}
         </div>
         
-        {/* Main Interface */}
+  
         <div className={`rounded-2xl p-6 mb-6 ${mode === 'day' ? 'bg-gray-50' : 'bg-gray-800'}`}>
           <div className={`text-lg font-light mb-4 ${mode === 'day' ? 'text-gray-800' : 'text-gray-200'}`}>
             "I notice you're feeling uncertain about tomorrow's presentation. Let's transform that energy into confidence."
@@ -31,7 +31,7 @@ const PresenceUI = () => {
           </div>
         </div>
 
-        {/* Interaction Bubbles */}
+
         <div className="flex justify-around">
           <button className={`rounded-full p-4 ${mode === 'day' ? 'bg-rose-50 text-rose-500' : 'bg-rose-900 text-rose-300'}`}>
             Reflect
@@ -49,3 +49,4 @@ const PresenceUI = () => {
 };
 
 export default PresenceUI;
+*/
