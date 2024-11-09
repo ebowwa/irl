@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Heart, Sparkles, Brain, Orbit } from 'lucide-react';
+import { Heart, Sparkles, Brain } from 'lucide-react'; // Orbit
 
 const SplashPage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
