@@ -1,15 +1,15 @@
 // src/app/(landing)/blog/page.tsx
 
-import Container from "@/components/(sections)/blog/sections/container";
-import HeroPost from "@/components/(sections)/blog/sections/hero-post";
-import { Intro } from "@/components/(sections)/blog/sections/intro";
-import MoreStories from "@/components/(sections)/blog/sections/more-stories";
-import { getAllPosts } from "@/components/(sections)/blog/lib/api";
+import Container from "@/components/landing/sections/blog/sections/container";
+import HeroPost from "@/components/landing/sections/blog/sections/hero-post";
+import { Intro } from "@/components/landing/sections/blog/sections/intro";
+import MoreStories from "@/components/landing/sections/blog/sections/more-stories";
+import { getAllPosts } from "@/components/landing/sections/blog/lib/api";
 import Head from 'next/head';
 import Image from 'next/image';
 import { CMS_NAME } from '@/lib/constants';
 
-import styles from '@/components/(sections)/blog/styles/Tags.module.css'; // Import the CSS module for tags
+import styles from '@/components/landing/sections/blog/styles/Tags.module.css'; // Import the CSS module for tags
 
 export default function Index() {
   const allPosts = getAllPosts();
