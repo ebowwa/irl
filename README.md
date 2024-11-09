@@ -2,7 +2,7 @@
 
 # CaringMind - the singularity is here
 
-![IRL](/.github/public/caringmind-logo/Fq7eDria1uY_EBXGLFGRE_image.webp)
+![IRL](public/caringmind-logo/Fq7eDria1uY_EBXGLFGRE_image.webp)
 
 # MVP Status 
 
@@ -38,7 +38,7 @@ Step into a world where CaringMind listens, remembers, and knows just what you n
 
 With a touch of CaringMind in your pocket, staying present, productive, and connected feels natural, like a little magic working just for you. Let CaringMind take care of the background, so you can stay in the moment.
 
-![EnhancingLife](.github/public/caringmind-logo/wQO_IIZv841U_PN8wubhn_image.webp)
+![EnhancingLife](public/caringmind-logo/wQO_IIZv841U_PN8wubhn_image.webp)
 
 ## Get Started
 
