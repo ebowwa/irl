@@ -17,12 +17,12 @@ from route.features.text.chatgpt_share.index import router as share_oai_chats_ro
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
 from route.features.gemini.gemini_post import router as gemini_router
 from route.features.gemini.gemini_socket import router as gemini_socket_router
-from route.features.user_name_upload_v1 import router as user_name_upload_v1_router
-from route.features.user_name_upload_v2 import router as user_name_upload_v2_router
-from route.features.user_name_upload_v3 import router as user_name_upload_v3_router
+from route.features.gemini.user_name_upload_v1 import router as user_name_upload_v1_router
+from route.features.gemini.user_name_upload_v2 import router as user_name_upload_v2_router
+from route.features.gemini.user_name_upload_v3 import router as user_name_upload_v3_router
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
-from route.features.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
-from route.features.gemini_transcription_v1 import router as gemini_transcription_v1_router
+from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
+from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
 from utils.server.ngrok_utils import start_ngrok
 from utils.server.ngrok_command import router as ngrok_commands_router
 import ngrok 

@@ -1,4 +1,4 @@
-# transcription_router.py
+# backend/route/features/gemini_transcription_v1.py
 
 import os
 import tempfile
@@ -84,7 +84,7 @@ generation_config = {
 
 # Initialize the Generative Model with the specified configuration
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",  # Ensure this is the correct model name
+    model_name="gemini-1.5-flash",
     generation_config=generation_config,
 )
 
@@ -315,3 +315,8 @@ async def transcribe_audio(file: UploadFile = File(...)):
                 logger.info(f"Temporary file {temp_file_path} deleted.")
             except Exception as e:
                 logger.error(f"Error deleting temporary file: {e}")
+"""
+curl -X POST "http://127.0.0.1:9090/transcribe/" \
+  -H "accept: application/json" \
+  -F "file=@/Users/ebowwa/Downloads/audio_file.ogg;type=audio/ogg"
+"""
