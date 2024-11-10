@@ -316,9 +316,20 @@ async def transcribe_audio(file: UploadFile = File(...)):
             except Exception as e:
                 logger.error(f"Error deleting temporary file: {e}")
 
-# Import WebSocket-related dependencies
-from fastapi import WebSocket, WebSocketDisconnect
+# Import necessary dependencies
+import asyncio
+import websockets
+import json
+import logging
+import os
+import tempfile
+import traceback
+from fastapi import WebSocket, WebSocketDisconnect, HTTPException, APIRouter
 from typing import Optional
+
+# Initialize router and logger
+router = APIRouter()
+logger = logging.getLogger("uvicorn")  # Use 'uvicorn' logger or configure as needed
 
 @router.websocket("/ws/transcribe")
 async def websocket_transcribe(websocket: WebSocket):
@@ -326,7 +337,19 @@ async def websocket_transcribe(websocket: WebSocket):
     WebSocket endpoint for live audio transcription and diarization.
     Expects an audio file as binary data through WebSocket messages.
     """
+    client_host = websocket.client.host if websocket.client else "Unknown"
+    client_port = websocket.client.port if websocket.client else "Unknown"
+    logger.info(f"Incoming WebSocket connection from {client_host}:{client_port}")
+
+    # Log WebSocket request headers
+    try:
+        headers = websocket.headers
+        logger.debug(f"WebSocket request headers: {dict(headers)}")
+    except Exception as e:
+        logger.error(f"Failed to retrieve WebSocket headers: {e}")
+
     await websocket.accept()
+    logger.info(f"WebSocket connection accepted for {client_host}:{client_port}")
     temp_file_path: Optional[str] = None
     try:
         # Define supported mime types
@@ -360,6 +383,8 @@ async def websocket_transcribe(websocket: WebSocket):
 
         file_name = file_metadata.get("file_name")
         mime_type = file_metadata.get("mime_type")
+
+        logger.info(f"File Name: {file_name}, MIME Type: {mime_type}")
 
         if not file_name or not mime_type:
             logger.error("Missing 'file_name' or 'mime_type' in metadata.")
@@ -399,6 +424,7 @@ async def websocket_transcribe(websocket: WebSocket):
             while True:
                 try:
                     data = await websocket.receive_bytes()
+                    logger.debug(f"Received {len(data)} bytes of data.")
                 except WebSocketDisconnect:
                     logger.warning("WebSocket disconnected during data transmission.")
                     break
@@ -415,6 +441,8 @@ async def websocket_transcribe(websocket: WebSocket):
                     break
 
                 received_size += len(data)
+                logger.debug(f"Total received size: {received_size} bytes.")
+
                 if received_size > max_file_size:
                     logger.error("Received data exceeds maximum allowed size.")
                     await websocket.send_json({
@@ -470,9 +498,13 @@ async def websocket_transcribe(websocket: WebSocket):
             await websocket.close(code=1009)  # Message Too Big
             return
 
+        logger.info(f"Received audio file '{file_name}' of size {received_size} bytes.")
+
         # Upload the file to Gemini with retry logic
         try:
+            logger.info("Uploading file to Gemini API.")
             uploaded_file = upload_to_gemini(temp_file_path, mime_type=mime_type)
+            logger.info(f"File uploaded to Gemini successfully: {uploaded_file}")
         except HTTPException as he:
             logger.error(f"Error uploading file to Gemini: {he.detail}")
             await websocket.send_json({
@@ -510,7 +542,9 @@ async def websocket_transcribe(websocket: WebSocket):
 
         # Start the chat session
         try:
+            logger.info("Starting chat session with Gemini model.")
             chat_session = model.start_chat(history=chat_history)
+            logger.info("Chat session started successfully.")
         except Exception as e:
             logger.error(f"Error starting chat session: {e}")
             await websocket.send_json({
@@ -521,7 +555,9 @@ async def websocket_transcribe(websocket: WebSocket):
 
         # Send a message to trigger the diarization
         try:
+            logger.info("Sending message to Gemini API to initiate diarization.")
             response = chat_session.send_message("Please provide the audio diarization for the uploaded file.")
+            logger.info("Message sent to Gemini API successfully.")
         except Exception as e:
             logger.error(f"Error sending message to Gemini API: {e}")
             await websocket.send_json({
@@ -537,6 +573,7 @@ async def websocket_transcribe(websocket: WebSocket):
             response_text = response.text.strip()
             logger.debug(f"Gemini API response: {response_text}")
             transcriptions = extract_json_from_response(response_text)
+            logger.debug(f"Extracted transcriptions: {transcriptions}")
         except HTTPException as he:
             logger.error(f"Error extracting JSON from response: {he.detail}")
             await websocket.send_json({
@@ -554,6 +591,7 @@ async def websocket_transcribe(websocket: WebSocket):
 
         # Validate and structure the response using Pydantic models
         try:
+            logger.info("Validating and structuring transcription segments.")
             structured_transcriptions = []
             for segment in transcriptions:
                 # Ensure all required fields are present
@@ -579,6 +617,7 @@ async def websocket_transcribe(websocket: WebSocket):
                     transcription=segment["transcription"],
                 )
                 structured_transcriptions.append(transcription_segment)
+            logger.debug(f"Structured Transcriptions: {structured_transcriptions}")
         except Exception as e:
             logger.error(f"Error structuring transcriptions: {e}")
             await websocket.send_json({
@@ -589,11 +628,12 @@ async def websocket_transcribe(websocket: WebSocket):
 
         # Send transcription results back through WebSocket
         try:
+            logger.info("Sending transcription results back to client.")
             await websocket.send_json({
                 "status": "complete",
                 "transcriptions": [transcription_segment.dict() for transcription_segment in structured_transcriptions]
             })
-            logger.info("Transcription results sent to client.")
+            logger.info("Transcription results sent to client successfully.")
         except Exception as e:
             logger.error(f"Error sending transcription results: {e}")
             await websocket.send_json({
@@ -603,14 +643,18 @@ async def websocket_transcribe(websocket: WebSocket):
             return
 
     except WebSocketDisconnect:
-        logger.info("WebSocket connection closed by client.")
+        logger.info(f"WebSocket connection closed by client {client_host}:{client_port}.")
     except Exception as e:
         logger.error(f"Unexpected error during WebSocket transcription: {e}")
         traceback.print_exc()
         if not websocket.client_state.closed:
-            await websocket.send_json({
-                "error": f"Internal Server Error: {e}"
-            })
+            try:
+                await websocket.send_json({
+                    "error": f"Internal Server Error: {e}"
+                })
+                logger.info("Sent internal server error message to client.")
+            except Exception as send_error:
+                logger.error(f"Failed to send error message to client: {send_error}")
             await websocket.close(code=1011)  # Internal Error
     finally:
         # Clean up the temporary file
@@ -620,9 +664,3 @@ async def websocket_transcribe(websocket: WebSocket):
                 logger.info(f"Temporary file {temp_file_path} deleted.")
             except Exception as e:
                 logger.error(f"Error deleting temporary file: {e}")
-
-"""
-curl -X POST "http://127.0.0.1:9090/transcribe/" \
-  -H "accept: application/json" \
-  -F "file=@/Users/ebowwa/Downloads/audio_file.ogg;type=audio/ogg"
-"""
