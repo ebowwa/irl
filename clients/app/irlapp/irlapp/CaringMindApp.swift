@@ -88,8 +88,9 @@ struct ContentView: View {
                                     userName: $onboardingViewModel.userName)
                     .transition(.slide)
             case .home:
-                TranscriptionView()
-                    .transition(.slide)
+                AGIView(serverURL: "ws://2157-2601-646-a201-db60-00-2386.ngrok-free.app/gemini/ws/transcribe")
+                //TranscriptionView()
+                    //.transition(.slide)
             }
         }
         .animation(.easeInOut, value: router.currentDestination)
