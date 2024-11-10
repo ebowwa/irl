@@ -89,7 +89,7 @@ app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3") # on cli
 
 app.include_router(unzip_audio_batch_v1_router) # this is in test for handling zip batches from the client
 app.include_router(analyze_truth_lie_v1_router)
-app.include_router(gemini_transcription_v1_router)
+app.include_router(gemini_transcription_v1_router, prefix="/gemini") # /ws/transcribe
 
 # app.include_router(ngrok_commands_router, prefix="/ngrok")
 

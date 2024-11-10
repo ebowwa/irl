@@ -315,14 +315,10 @@ async def transcribe_audio(file: UploadFile = File(...)):
                 logger.info(f"Temporary file {temp_file_path} deleted.")
             except Exception as e:
                 logger.error(f"Error deleting temporary file: {e}")
-"""
-curl -X POST "http://127.0.0.1:9090/transcribe/" \
-  -H "accept: application/json" \
-  -F "file=@/Users/ebowwa/Downloads/audio_file.ogg;type=audio/ogg"
-"""
 
 # Import WebSocket-related dependencies
 from fastapi import WebSocket, WebSocketDisconnect
+from typing import Optional
 
 @router.websocket("/ws/transcribe")
 async def websocket_transcribe(websocket: WebSocket):
@@ -331,10 +327,8 @@ async def websocket_transcribe(websocket: WebSocket):
     Expects an audio file as binary data through WebSocket messages.
     """
     await websocket.accept()
+    temp_file_path: Optional[str] = None
     try:
-        # Loop to handle incoming data chunks or commands
-        temp_file_path = None
-
         # Define supported mime types
         supported_mime_types = [
             "audio/wav",
@@ -346,33 +340,161 @@ async def websocket_transcribe(websocket: WebSocket):
         ]
 
         # Receive and handle initial file metadata
-        file_metadata = await websocket.receive_json()
-        file_name = file_metadata.get("file_name", "audio_file.ogg")
-        mime_type = file_metadata.get("mime_type", "audio/ogg")
+        try:
+            file_metadata = await websocket.receive_json()
+            logger.debug(f"Received file metadata: {file_metadata}")
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON received for file metadata: {e}")
+            await websocket.send_json({
+                "error": f"Invalid JSON format for file metadata: {e}"
+            })
+            await websocket.close(code=1003)  # Unsupported Data
+            return
+        except Exception as e:
+            logger.error(f"Error receiving file metadata: {e}")
+            await websocket.send_json({
+                "error": f"Error receiving file metadata: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        file_name = file_metadata.get("file_name")
+        mime_type = file_metadata.get("mime_type")
+
+        if not file_name or not mime_type:
+            logger.error("Missing 'file_name' or 'mime_type' in metadata.")
+            await websocket.send_json({
+                "error": "Missing 'file_name' or 'mime_type' in metadata."
+            })
+            await websocket.close(code=1003)  # Unsupported Data
+            return
+
         if mime_type not in supported_mime_types:
+            logger.error(f"Unsupported file type: {mime_type}")
             await websocket.send_json({
                 "error": f"Unsupported file type: {mime_type}. Supported types: {', '.join(supported_mime_types)}"
             })
+            await websocket.close(code=1003)  # Unsupported Data
             return
 
-        # Save incoming binary data to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file_name)[1]) as temp_file:
-            temp_file_path = temp_file.name
+        # Create a temporary file to save incoming data
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file_name)[1]) as temp_file:
+                temp_file_path = temp_file.name
+                logger.info(f"Temporary file created at {temp_file_path}")
+        except Exception as e:
+            logger.error(f"Failed to create temporary file: {e}")
+            await websocket.send_json({
+                "error": f"Failed to create temporary file: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        # Set a maximum file size limit (e.g., 50 MB)
+        max_file_size = 50 * 1024 * 1024  # 50 MB
+        received_size = 0
+
+        # Receive and write data chunks
+        try:
             while True:
-                # Receive data chunks and write to file
-                data = await websocket.receive_bytes()
+                try:
+                    data = await websocket.receive_bytes()
+                except WebSocketDisconnect:
+                    logger.warning("WebSocket disconnected during data transmission.")
+                    break
+                except Exception as e:
+                    logger.error(f"Error receiving data chunks: {e}")
+                    await websocket.send_json({
+                        "error": f"Error receiving data chunks: {e}"
+                    })
+                    await websocket.close(code=1011)  # Internal Error
+                    return
+
                 if not data:
-                    break  # Stop if no more data is received
-                temp_file.write(data)
+                    logger.info("No more data received from client.")
+                    break
 
-        # File saved, proceed to upload and process it
-        uploaded_file = upload_to_gemini(temp_file_path, mime_type=mime_type)
+                received_size += len(data)
+                if received_size > max_file_size:
+                    logger.error("Received data exceeds maximum allowed size.")
+                    await websocket.send_json({
+                        "error": "Received data exceeds maximum allowed size of 50 MB."
+                    })
+                    await websocket.close(code=1009)  # Message Too Big
+                    return
 
-        # Prepare chat prompt and initiate chat session
+                # Write data to the temporary file
+                try:
+                    with open(temp_file_path, 'ab') as temp_file:
+                        temp_file.write(data)
+                        logger.debug(f"Wrote {len(data)} bytes to temporary file.")
+                except Exception as e:
+                    logger.error(f"Error writing data to temporary file: {e}")
+                    await websocket.send_json({
+                        "error": f"Error writing data to temporary file: {e}"
+                    })
+                    await websocket.close(code=1011)  # Internal Error
+                    return
+
+        except Exception as e:
+            logger.error(f"Unexpected error during data reception: {e}")
+            await websocket.send_json({
+                "error": f"Unexpected error during data reception: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        # Check if the temporary file was created and has content
+        if not temp_file_path or not os.path.exists(temp_file_path):
+            logger.error("Temporary file was not created.")
+            await websocket.send_json({
+                "error": "Temporary file was not created."
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        if received_size == 0:
+            logger.error("No data received for transcription.")
+            await websocket.send_json({
+                "error": "No data received for transcription."
+            })
+            await websocket.close(code=1003)  # Unsupported Data
+            return
+
+        # Check file size
+        if received_size > max_file_size:
+            logger.error("File size exceeds the maximum allowed limit.")
+            await websocket.send_json({
+                "error": "File size exceeds the maximum allowed limit of 50 MB."
+            })
+            await websocket.close(code=1009)  # Message Too Big
+            return
+
+        # Upload the file to Gemini with retry logic
+        try:
+            uploaded_file = upload_to_gemini(temp_file_path, mime_type=mime_type)
+        except HTTPException as he:
+            logger.error(f"Error uploading file to Gemini: {he.detail}")
+            await websocket.send_json({
+                "error": f"Error uploading file to Gemini: {he.detail}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+        except Exception as e:
+            logger.error(f"Unexpected error during file upload: {e}")
+            await websocket.send_json({
+                "error": f"Unexpected error during file upload: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        # Define the chat prompt
         prompt_text = (
             "Generate audio diarization, including transcriptions and speaker information for each transcription, "
             "organized by the time they occurred. Aim for the cleanest transcription."
         )
+
+        # Prepare the chat history
         chat_history = [
             {
                 "role": "user",
@@ -383,35 +505,113 @@ async def websocket_transcribe(websocket: WebSocket):
             },
         ]
 
-        chat_session = model.start_chat(history=chat_history)
-        response = chat_session.send_message("Please provide the audio diarization for the uploaded file.")
-        response_text = response.text.strip()
+        logger.debug("Chat History:")
+        logger.debug(json.dumps(chat_history, indent=2, default=serialize))
 
-        # Extract and parse the JSON transcription response
-        transcriptions = extract_json_from_response(response_text)
-        structured_transcriptions = []
-        for segment in transcriptions:
-            timestamp = Timestamp(start=segment["timestamp"]["start"], end=segment["timestamp"]["end"])
-            transcription_segment = TranscriptionSegment(
-                speaker=segment["speaker"],
-                timestamp=timestamp,
-                transcription=segment["transcription"],
-            )
-            structured_transcriptions.append(transcription_segment)
+        # Start the chat session
+        try:
+            chat_session = model.start_chat(history=chat_history)
+        except Exception as e:
+            logger.error(f"Error starting chat session: {e}")
+            await websocket.send_json({
+                "error": f"Error starting chat session: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        # Send a message to trigger the diarization
+        try:
+            response = chat_session.send_message("Please provide the audio diarization for the uploaded file.")
+        except Exception as e:
+            logger.error(f"Error sending message to Gemini API: {e}")
+            await websocket.send_json({
+                "error": f"Error sending message to Gemini API: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        logger.info("Gemini API response received.")
+
+        # Parse the response text to extract JSON
+        try:
+            response_text = response.text.strip()
+            logger.debug(f"Gemini API response: {response_text}")
+            transcriptions = extract_json_from_response(response_text)
+        except HTTPException as he:
+            logger.error(f"Error extracting JSON from response: {he.detail}")
+            await websocket.send_json({
+                "error": f"Error extracting JSON from response: {he.detail}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+        except Exception as e:
+            logger.error(f"Unexpected error during response parsing: {e}")
+            await websocket.send_json({
+                "error": f"Unexpected error during response parsing: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
+
+        # Validate and structure the response using Pydantic models
+        try:
+            structured_transcriptions = []
+            for segment in transcriptions:
+                # Ensure all required fields are present
+                if not all(k in segment for k in ("speaker", "timestamp", "transcription")):
+                    logger.error("Missing fields in transcription segment.")
+                    await websocket.send_json({
+                        "error": "Missing fields in transcription segment."
+                    })
+                    await websocket.close(code=1011)  # Internal Error
+                    return
+                if not all(k in segment["timestamp"] for k in ("start", "end")):
+                    logger.error("Missing timestamp fields in transcription segment.")
+                    await websocket.send_json({
+                        "error": "Missing timestamp fields in transcription segment."
+                    })
+                    await websocket.close(code=1011)  # Internal Error
+                    return
+
+                timestamp = Timestamp(start=segment["timestamp"]["start"], end=segment["timestamp"]["end"])
+                transcription_segment = TranscriptionSegment(
+                    speaker=segment["speaker"],
+                    timestamp=timestamp,
+                    transcription=segment["transcription"],
+                )
+                structured_transcriptions.append(transcription_segment)
+        except Exception as e:
+            logger.error(f"Error structuring transcriptions: {e}")
+            await websocket.send_json({
+                "error": f"Error structuring transcriptions: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
 
         # Send transcription results back through WebSocket
-        await websocket.send_json({
-            "status": "complete",
-            "transcriptions": [transcription_segment.dict() for transcription_segment in structured_transcriptions]
-        })
+        try:
+            await websocket.send_json({
+                "status": "complete",
+                "transcriptions": [transcription_segment.dict() for transcription_segment in structured_transcriptions]
+            })
+            logger.info("Transcription results sent to client.")
+        except Exception as e:
+            logger.error(f"Error sending transcription results: {e}")
+            await websocket.send_json({
+                "error": f"Error sending transcription results: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
+            return
 
     except WebSocketDisconnect:
         logger.info("WebSocket connection closed by client.")
     except Exception as e:
-        logger.error(f"Error during WebSocket transcription: {e}")
-        await websocket.send_json({
-            "error": f"Internal Server Error: {e}"
-        })
+        logger.error(f"Unexpected error during WebSocket transcription: {e}")
+        traceback.print_exc()
+        if not websocket.client_state.closed:
+            await websocket.send_json({
+                "error": f"Internal Server Error: {e}"
+            })
+            await websocket.close(code=1011)  # Internal Error
     finally:
         # Clean up the temporary file
         if temp_file_path and os.path.exists(temp_file_path):
@@ -420,3 +620,9 @@ async def websocket_transcribe(websocket: WebSocket):
                 logger.info(f"Temporary file {temp_file_path} deleted.")
             except Exception as e:
                 logger.error(f"Error deleting temporary file: {e}")
+
+"""
+curl -X POST "http://127.0.0.1:9090/transcribe/" \
+  -H "accept: application/json" \
+  -F "file=@/Users/ebowwa/Downloads/audio_file.ogg;type=audio/ogg"
+"""
