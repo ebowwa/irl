@@ -23,6 +23,7 @@ from route.features.gemini.user_name_upload_v3 import router as user_name_upload
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
 from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
+from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
 from utils.server.ngrok_utils import start_ngrok
 from utils.server.ngrok_command import router as ngrok_commands_router
 import ngrok 
@@ -70,7 +71,7 @@ app.include_router(share_oai_chats_router, prefix="/retrieve/externalchats")  # 
 
 # app.include_router(media_router, prefix="/media") 
 
-app.include_router(gemini_router, prefix="/post/gemini")  
+app.include_router(gemini_router, prefix="/v1/post/gemini")  
 
 app.include_router(gemini_socket_router, prefix="/socket/gemini")
 
@@ -85,6 +86,8 @@ app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")
 app.include_router(unzip_audio_batch_v1_router) # this is in test for handling zip batches from the client
 app.include_router(analyze_truth_lie_v1_router)
 app.include_router(gemini_transcription_v1_router)
+app.include_router(gemini_post_v2_router, prefix="/v2/post/gemini")
+
 # app.include_router(ngrok_commands_router, prefix="/ngrok")
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately
