@@ -1,5 +1,5 @@
 # File: backend/index.py **DO NOT OMIT ANYTHING FROM THE FOLLOWING CONTENT, INCLUDING & NOT LIMITED TO COMMENTED NOTES
-
+# You can make an audio file available to Gemini in either of the following ways:\n\nUpload the audio file prior to making the prompt request.\nProvide the audio file as inline data to the prompt request.
 from fastapi import FastAPI, HTTPException, Request
 from utils.server.middleware import setup_cors
 from fastapi.openapi.docs import get_swagger_ui_html  
@@ -22,6 +22,7 @@ from route.features.user_name_upload_v2 import router as user_name_upload_v2_rou
 from route.features.user_name_upload_v3 import router as user_name_upload_v3_router
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
 from route.features.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
+from route.features.gemini_transcription_v1 import router as gemini_transcription_v1_router
 from utils.server.ngrok_utils import start_ngrok
 from utils.server.ngrok_command import router as ngrok_commands_router
 import ngrok 
@@ -83,6 +84,7 @@ app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")
 # 
 app.include_router(unzip_audio_batch_v1_router) # this is in test for handling zip batches from the client
 app.include_router(analyze_truth_lie_v1_router)
+app.include_router(gemini_transcription_v1_router)
 # app.include_router(ngrok_commands_router, prefix="/ngrok")
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately

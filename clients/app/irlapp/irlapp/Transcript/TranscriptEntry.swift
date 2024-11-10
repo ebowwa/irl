@@ -5,14 +5,6 @@
 //  Created by Elijah Arbee on 11/9/24.
 //
 
-
-//
-//  TranscriptEntry.swift
-//  YourProjectName
-//
-//  Created by Elijah Arbee on 11/2/24.
-//
-
 import Foundation
 
 // MARK: - TranscriptEntry Model
@@ -94,3 +86,4 @@ extension TranscriptEntry: Equatable {
                lhs.sequenceNumber == rhs.sequenceNumber
     }
 }
+
