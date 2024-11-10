@@ -15,7 +15,7 @@ from route.features.image_generation.fast_sdxl import router as sdxl_router  # F
 from route.features.text.llm_inference.OpenAIRoute import router as openai_router
 from route.features.text.chatgpt_share.index import router as share_oai_chats_router
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
-from route.features.gemini.gemini_post import router as gemini_router
+from route.features.gemini.gemini_post_v1 import router as gemini_router
 from route.features.gemini.gemini_socket import router as gemini_socket_router
 from route.features.gemini.user_name_upload_v1 import router as user_name_upload_v1_router
 from route.features.gemini.user_name_upload_v2 import router as user_name_upload_v2_router
@@ -97,7 +97,7 @@ async def get_openapi():
 async def custom_swagger_ui():
     return get_swagger_ui_html(
         openapi_url="/openapi.json",
-        title="IRL Backend Service API Docs",
+        title="caringmind api docs",
         swagger_favicon_url="https://fastapi.tiangolo.com/img/favicon.png"  # Optional custom favicon
     )
 
