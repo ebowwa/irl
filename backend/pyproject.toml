@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "caringmind-backend"
+version = "0.1.0"
+description = "CaringMind Backend API"
+authors = ["CaringMind Team"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+python-dotenv = "*"
+python-multipart = "*"
+websockets = "*"
+pydantic = "*"
+wsproto = "*"
+numpy = "*"
+gunicorn = "*"
+beautifulsoup4 = "*"
+ollama = "*"
+openai = "*"
+anthropic = "*"
+fal-client = "*"
+tiktoken = "*"
+pyannote-audio = "*"
+torch = "*"
+torchaudio = "*"
+ngrok = "*"
+google-generativeai = "*"
+aiofiles = "*"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.10.0"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+pre-commit = "^3.5.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
