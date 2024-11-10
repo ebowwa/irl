@@ -1,5 +1,5 @@
 # File: /backend/route/features/gemini/gemini_post_v2.py
-
+# need to test that this takes multiple media types since it uses the new google media upload, audio has been tested and as such should be retested last images and video first use curl to extract example media files to use
 from fastapi import APIRouter, HTTPException, Form, File, UploadFile
 from typing import Optional, List
 from services.geminiService import generate_content, configure_gemini, list_models, list_supported_languages

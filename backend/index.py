@@ -60,10 +60,13 @@ app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 app.include_router(claude_router, prefix="/v3/claude") 
 app.include_router(hume_router, prefix="/api/v1/hume") # Hume AI route (speech prosody, emotional analysis)
 app.include_router(embeddings_router, prefix="/text/embeddings") # , prefix="/embeddings")
+
 # app.include_router(fluxlora_router, prefix="/api")  # Disabled: FluxLora model
+
 app.include_router(sdxl_router, prefix="/image/generation")  # Fast-SDXL image generation
 # app.include_router(transcription_router, prefix="/api",tags=["Transcription"]) 
 # OpenAI GPT model routes (GPT-4o-mini, configurable models)
+
 app.include_router(openai_router, prefix="/text/response")
 # app.include_router(diarization_router, prefix="/api")
 
@@ -72,24 +75,26 @@ app.include_router(share_oai_chats_router, prefix="/retrieve/externalchats")  # 
 # app.include_router(media_router, prefix="/media") 
 
 app.include_router(gemini_router, prefix="/v1/post/gemini")  
+app.include_router(gemini_post_v2_router, prefix="/v2/post/gemini")
 
 app.include_router(gemini_socket_router, prefix="/socket/gemini")
 
 app.include_router(user_name_upload_v1_router, prefix="/onboarding/v1") # + /process-audio
 app.include_router(user_name_upload_v2_router, prefix="/onboarding/v2") 
-app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3") 
-# double-try correct user name 
+app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3") # on client side implement double-try correct user name 
+
 # one-liner & Day in the life Q's
-# general diarization, transcription, otherwise route
-# media upload should preserve for 1 day min with bucket?
-# 
+
+# google_media_upload
+
 app.include_router(unzip_audio_batch_v1_router) # this is in test for handling zip batches from the client
 app.include_router(analyze_truth_lie_v1_router)
 app.include_router(gemini_transcription_v1_router)
-app.include_router(gemini_post_v2_router, prefix="/v2/post/gemini")
 
 # app.include_router(ngrok_commands_router, prefix="/ngrok")
+
 # ------------------ OpenAPI & Swagger UI ---------------------------
+
 # Serve the OpenAPI schema separately
 @app.get("/openapi.json", include_in_schema=False)
 async def get_openapi():

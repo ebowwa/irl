@@ -18,7 +18,7 @@ configure_gemini()
 router = APIRouter()
 
 # 3. Setup directories and logging
-upload_dir = pathlib.Path("uploaded_audio")
+upload_dir = pathlib.Path("uploads")
 upload_dir.mkdir(exist_ok=True)
 
 logging.basicConfig(level=logging.INFO)

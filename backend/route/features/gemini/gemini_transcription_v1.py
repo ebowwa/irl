@@ -320,3 +320,103 @@ curl -X POST "http://127.0.0.1:9090/transcribe/" \
   -H "accept: application/json" \
   -F "file=@/Users/ebowwa/Downloads/audio_file.ogg;type=audio/ogg"
 """
+
+# Import WebSocket-related dependencies
+from fastapi import WebSocket, WebSocketDisconnect
+
+@router.websocket("/ws/transcribe")
+async def websocket_transcribe(websocket: WebSocket):
+    """
+    WebSocket endpoint for live audio transcription and diarization.
+    Expects an audio file as binary data through WebSocket messages.
+    """
+    await websocket.accept()
+    try:
+        # Loop to handle incoming data chunks or commands
+        temp_file_path = None
+
+        # Define supported mime types
+        supported_mime_types = [
+            "audio/wav",
+            "audio/mpeg",
+            "audio/aiff",
+            "audio/aac",
+            "audio/ogg",
+            "audio/flac",
+        ]
+
+        # Receive and handle initial file metadata
+        file_metadata = await websocket.receive_json()
+        file_name = file_metadata.get("file_name", "audio_file.ogg")
+        mime_type = file_metadata.get("mime_type", "audio/ogg")
+        if mime_type not in supported_mime_types:
+            await websocket.send_json({
+                "error": f"Unsupported file type: {mime_type}. Supported types: {', '.join(supported_mime_types)}"
+            })
+            return
+
+        # Save incoming binary data to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file_name)[1]) as temp_file:
+            temp_file_path = temp_file.name
+            while True:
+                # Receive data chunks and write to file
+                data = await websocket.receive_bytes()
+                if not data:
+                    break  # Stop if no more data is received
+                temp_file.write(data)
+
+        # File saved, proceed to upload and process it
+        uploaded_file = upload_to_gemini(temp_file_path, mime_type=mime_type)
+
+        # Prepare chat prompt and initiate chat session
+        prompt_text = (
+            "Generate audio diarization, including transcriptions and speaker information for each transcription, "
+            "organized by the time they occurred. Aim for the cleanest transcription."
+        )
+        chat_history = [
+            {
+                "role": "user",
+                "parts": [
+                    prompt_text,
+                    uploaded_file,
+                ],
+            },
+        ]
+
+        chat_session = model.start_chat(history=chat_history)
+        response = chat_session.send_message("Please provide the audio diarization for the uploaded file.")
+        response_text = response.text.strip()
+
+        # Extract and parse the JSON transcription response
+        transcriptions = extract_json_from_response(response_text)
+        structured_transcriptions = []
+        for segment in transcriptions:
+            timestamp = Timestamp(start=segment["timestamp"]["start"], end=segment["timestamp"]["end"])
+            transcription_segment = TranscriptionSegment(
+                speaker=segment["speaker"],
+                timestamp=timestamp,
+                transcription=segment["transcription"],
+            )
+            structured_transcriptions.append(transcription_segment)
+
+        # Send transcription results back through WebSocket
+        await websocket.send_json({
+            "status": "complete",
+            "transcriptions": [transcription_segment.dict() for transcription_segment in structured_transcriptions]
+        })
+
+    except WebSocketDisconnect:
+        logger.info("WebSocket connection closed by client.")
+    except Exception as e:
+        logger.error(f"Error during WebSocket transcription: {e}")
+        await websocket.send_json({
+            "error": f"Internal Server Error: {e}"
+        })
+    finally:
+        # Clean up the temporary file
+        if temp_file_path and os.path.exists(temp_file_path):
+            try:
+                os.remove(temp_file_path)
+                logger.info(f"Temporary file {temp_file_path} deleted.")
+            except Exception as e:
+                logger.error(f"Error deleting temporary file: {e}")
