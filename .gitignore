@@ -5,7 +5,7 @@ backend/.env
 venv/
 env/
 
-
+data/waitlist_data.db
 # Ignore macOS system files
 .DS_Store
 **/.DS_Store

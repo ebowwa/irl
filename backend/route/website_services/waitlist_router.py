@@ -2,18 +2,28 @@
 
 # we need to allow an additional string comment to be saved alongside this waitlist
 # the ui will have it answer `What excites you most about our platform?` the user will respond and we need to collect this as well alongisde the email and name
-
 from datetime import datetime
 from typing import List, Optional
+import os
+from pathlib import Path
 
 import databases
 import sqlalchemy
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import Column, DateTime, Integer, String, Table, func
+from sqlalchemy.exc import IntegrityError  # Import IntegrityError
 
-# Database URL for SQLite with a more descriptive name
-DATABASE_URL = "sqlite+aiosqlite:///./waitlist_data.db" # how can this store the db in `/caringmind/data`
+# Define the absolute path for the database
+BASE_DIR = Path("/home/pi/caringmind/data")  # Adjust this path as needed
+DATABASE_NAME = "waitlist_data.db"
+DATABASE_PATH = BASE_DIR / DATABASE_NAME
+
+# Ensure the directory exists
+BASE_DIR.mkdir(parents=True, exist_ok=True)
+
+# Database URL for SQLite stored in /home/pi/caringmind/data
+DATABASE_URL = f"sqlite+aiosqlite:///{DATABASE_PATH.as_posix()}"
 
 # For PostgreSQL in production, use:
 # DATABASE_URL = "postgresql+asyncpg://user:password@localhost/dbname"
@@ -22,7 +32,7 @@ DATABASE_URL = "sqlite+aiosqlite:///./waitlist_data.db" # how can this store the
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
 
-# Define the waitlist table
+# Define the waitlist table with an additional 'comment' column
 waitlist_table = Table(
     "waitlist",
     metadata,
@@ -30,6 +40,7 @@ waitlist_table = Table(
     Column("name", String, nullable=False),
     Column("email", String, unique=True, index=True, nullable=False),
     Column("ip_address", String, nullable=True),
+    Column("comment", String, nullable=True),  # New column
     Column("created_at", DateTime, default=func.now(), nullable=False),
 )
 
@@ -45,13 +56,13 @@ metadata.create_all(engine)
 # Initialize the router
 router = APIRouter(prefix="/waitlist", tags=["Waitlist CRUD"])
 
-
 # Pydantic Models
 class WaitlistEntry(BaseModel):
     id: int
     name: str
     email: EmailStr
     ip_address: Optional[str]
+    comment: Optional[str]  # New field
     created_at: datetime
 
     class Config:
@@ -61,15 +72,16 @@ class WaitlistEntry(BaseModel):
 class WaitlistCreate(BaseModel):
     name: str
     email: EmailStr
+    comment: Optional[str] = None  # New field
 
 
 class WaitlistUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
+    comment: Optional[str] = None  # New field
 
 
 # CRUD Endpoints
-
 
 @router.post(
     "/",
@@ -79,7 +91,7 @@ class WaitlistUpdate(BaseModel):
 )
 async def create_entry(entry: WaitlistCreate, request: Request):
     """
-    Create a new waitlist entry with the provided name and email.
+    Create a new waitlist entry with the provided name, email, and optional comment.
     The client's IP address is recorded from the request headers.
     """
     # Extract client IP
@@ -89,15 +101,16 @@ async def create_entry(entry: WaitlistCreate, request: Request):
     else:
         ip_address = request.client.host
 
-    # Insert the new entry
+    # Insert the new entry, including the comment
     query = waitlist_table.insert().values(
         name=entry.name,
         email=entry.email,
         ip_address=ip_address,
+        comment=entry.comment,  # Include comment
     )
     try:
         last_record_id = await database.execute(query)
-    except databases.UniqueViolationError:
+    except IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="An entry with this email already exists.",
@@ -141,10 +154,10 @@ async def list_entries():
 )
 async def update_entry(entry_id: int, entry: WaitlistUpdate):
     """
-    Update an existing waitlist entry's name and/or email.
+    Update an existing waitlist entry's name, email, and/or comment.
     Only provided fields will be updated.
     """
-    # Prepare the update data
+    # Prepare the update data, including the comment
     update_data = {k: v for k, v in entry.dict().items() if v is not None}
     if not update_data:
         raise HTTPException(
@@ -160,7 +173,7 @@ async def update_entry(entry_id: int, entry: WaitlistUpdate):
     )
     try:
         await database.execute(query)
-    except databases.UniqueViolationError:
+    except IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="An entry with this email already exists.",

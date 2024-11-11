@@ -9,9 +9,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
-
 from route.dev import socket_ping
-
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
 from route.features.gemini.gemini_post_v1 import router as gemini_router
 from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
