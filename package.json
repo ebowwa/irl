@@ -1,0 +1,8 @@
+{
+	"dependencies": {
+		"lucide-react": "^0.456.0"
+	},
+	"devDependencies": {
+		"dotenv": "^16.4.5"
+	}
+}
