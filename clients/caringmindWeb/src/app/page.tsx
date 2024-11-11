@@ -1,7 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Heart, Sparkles, Brain, X } from 'lucide-react';
+import { Heart, Sparkles, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import {
   Dialog,
@@ -17,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
+const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/';
+
 const SplashPage = () => {
   const { t, ready } = useTranslation(['home', 'common']);
   const [mounted, setMounted] = useState(false);
@@ -25,11 +28,6 @@ const SplashPage = () => {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-
-  // Handle client-side mounting
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -56,6 +54,11 @@ const SplashPage = () => {
     }
   ];
 
+  // Handle client-side mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       if (!isHovering) {
@@ -78,7 +81,7 @@ const SplashPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/', {
+      const response = await fetch(WAITLIST_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,12 +99,12 @@ const SplashPage = () => {
 
       toast({
         title: "Success!",
-        description: "You've been added to our waitlist. We'll be in touch soon!",
+        description: "You&apos;ve been added to our waitlist. We&apos;ll be in touch soon!",
       });
 
       setIsWaitlistOpen(false);
       setFormData({ name: '', email: '', interests: '' });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "There was a problem joining the waitlist. Please try again.",
@@ -153,10 +156,13 @@ const SplashPage = () => {
                 index === activeIndex ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
               }`}
             >
-              <img
+              <Image
                 src={image.url}
                 alt={image.title}
-                className="w-full h-full object-cover"
+                className="object-cover"
+                fill
+                priority={index === 0}
+                sizes="(max-width: 1280px) 100vw, 1280px"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
                 <h3 className="text-3xl font-bold text-white mb-2">{image.title}</h3>
@@ -191,7 +197,7 @@ const SplashPage = () => {
               <DialogHeader>
                 <DialogTitle>Join our Waitlist</DialogTitle>
                 <DialogDescription>
-                  Be among the first to experience our platform. We'll notify you as soon as we launch!
+                  Be among the first to experience our platform. We&apos;ll notify you as soon as we launch!
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
