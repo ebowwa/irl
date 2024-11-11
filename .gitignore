@@ -22,7 +22,8 @@ __pycache__/
 *.pyo
 *.pyd
 *.so
-
+backend/waitlist_data.db
+waitlist_data.db
 # Explicitly include all Python files and directories
 !**/*.py
 !**/
@@ -1942,3 +1943,7 @@ yarn-error.log*
 next-env.d.ts
 pnpm-lock.yaml
 clients/caringmindWeb/pnpm-lock.yaml
+backend/waitlist_data.db
+backend/waitlist_data.db
+backend/waitlist_data.db
+backend/waitlist_data.db

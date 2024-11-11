@@ -2,30 +2,62 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Sparkles, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/';
 
 const SplashPage = () => {
-  const { t } = useTranslation(['home', 'common']);
+  const { t, ready } = useTranslation(['home', 'common']);
+  const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    interests: ''
+  });
 
   const images = [
     {
       url: "/api/placeholder/1200/800",
-      title: t('home:carousel.personal_growth.title'),
-      description: t('home:carousel.personal_growth.description')
+      title: ready ? t('home:carousel.personal_growth.title') : '',
+      description: ready ? t('home:carousel.personal_growth.description') : ''
     },
     {
       url: "/api/placeholder/1200/800",
-      title: t('home:carousel.deep_connection.title'),
-      description: t('home:carousel.deep_connection.description')
+      title: ready ? t('home:carousel.deep_connection.title') : '',
+      description: ready ? t('home:carousel.deep_connection.description') : ''
     },
     {
       url: "/api/placeholder/1200/800",
-      title: t('home:carousel.emotional_intelligence.title'),
-      description: t('home:carousel.emotional_intelligence.description')
+      title: ready ? t('home:carousel.emotional_intelligence.title') : '',
+      description: ready ? t('home:carousel.emotional_intelligence.description') : ''
     }
   ];
+
+  // Handle client-side mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -35,6 +67,58 @@ const SplashPage = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [isHovering, images.length]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(WAITLIST_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          interests: formData.interests
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to join waitlist');
+      }
+
+      toast({
+        title: "Success!",
+        description: "You&apos;ve been added to our waitlist. We&apos;ll be in touch soon!",
+      });
+
+      setIsWaitlistOpen(false);
+      setFormData({ name: '', email: '', interests: '' });
+    } catch {
+      toast({
+        title: "Error",
+        description: "There was a problem joining the waitlist. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Don't render anything until client-side mounted and translations are ready
+  if (!mounted || !ready) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -53,6 +137,7 @@ const SplashPage = () => {
         <div className="absolute top-4 right-4">
           <LanguageSwitcher />
         </div>
+        
         <h1 className="text-6xl font-bold mb-4 text-gray-900">
           {t('home:hero.title')}
         </h1>
@@ -71,10 +156,13 @@ const SplashPage = () => {
                 index === activeIndex ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
               }`}
             >
-              <img
+              <Image
                 src={image.url}
                 alt={image.title}
-                className="w-full h-full object-cover"
+                className="object-cover"
+                fill
+                priority={index === 0}
+                sizes="(max-width: 1280px) 100vw, 1280px"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
                 <h3 className="text-3xl font-bold text-white mb-2">{image.title}</h3>
@@ -99,9 +187,62 @@ const SplashPage = () => {
 
         {/* CTA Buttons */}
         <div className="flex space-x-4">
-          <button className="px-8 py-3 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transform hover:scale-105 transition-all">
-            {t('common:actions.get_started')}
-          </button>
+          <Dialog open={isWaitlistOpen} onOpenChange={setIsWaitlistOpen}>
+            <DialogTrigger asChild>
+              <button className="px-8 py-3 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transform hover:scale-105 transition-all">
+                {t('common:actions.get_started')}
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Join our Waitlist</DialogTitle>
+                <DialogDescription>
+                  Be among the first to experience our platform. We&apos;ll notify you as soon as we launch!
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="interests">What excites you most about our platform?</Label>
+                  <Textarea
+                    id="interests"
+                    name="interests"
+                    placeholder="Tell us what interests you..."
+                    value={formData.interests}
+                    onChange={handleInputChange}
+                    className="h-24"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Join Waitlist'}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
           <button className="px-8 py-3 border border-purple-200 text-purple-600 rounded-full font-medium hover:bg-purple-50 transform hover:scale-105 transition-all">
             {t('common:actions.learn_more')}
           </button>
@@ -114,24 +255,36 @@ const SplashPage = () => {
           <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <Brain className="w-6 h-6 text-purple-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home:features.deep_understanding.title')}</h3>
-          <p className="text-gray-600">{t('home:features.deep_understanding.description')}</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">
+            {t('home:features.deep_understanding.title')}
+          </h3>
+          <p className="text-gray-600">
+            {t('home:features.deep_understanding.description')}
+          </p>
         </div>
 
         <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
           <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
             <Heart className="w-6 h-6 text-pink-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home:features.emotional_intelligence.title')}</h3>
-          <p className="text-gray-600">{t('home:features.emotional_intelligence.description')}</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">
+            {t('home:features.emotional_intelligence.title')}
+          </h3>
+          <p className="text-gray-600">
+            {t('home:features.emotional_intelligence.description')}
+          </p>
         </div>
 
         <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
           <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
             <Sparkles className="w-6 h-6 text-blue-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home:features.personal_growth.title')}</h3>
-          <p className="text-gray-600">{t('home:features.personal_growth.description')}</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">
+            {t('home:features.personal_growth.title')}
+          </h3>
+          <p className="text-gray-600">
+            {t('home:features.personal_growth.description')}
+          </p>
         </div>
       </div>
 
