@@ -1,6 +1,7 @@
 # backend/route/features/gemini_transcription_v1.py
 # we need to seriously leverage the google upload audio files, we need to track exactly and map audio files to times (sequentially) by user
 # with the index - short term retrievalable audio we will run inference i.e. sockets, asking Q's later, batches, etc.
+# maybe a persistant socket connection is needed, this socket connection would retain persistance across the full connection.  
 import os
 import tempfile
 import json
