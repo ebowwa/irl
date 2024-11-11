@@ -19,7 +19,7 @@ async function translateText(text: string, targetLang: string): Promise<string> 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama2',
+        model: 'llama3.2:1b',
         prompt: `Translate the following English text to ${targetLang} maintaining any formatting and placeholders: "${text}"`,
         stream: false,
       }),
