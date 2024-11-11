@@ -2,6 +2,8 @@
 
 # we need to allow an additional string comment to be saved alongside this waitlist
 # the ui will have it answer `What excites you most about our platform?` the user will respond and we need to collect this as well alongisde the email and name
+# will add telegram next to update me on waitlist status, may want to include referal source on the waitlist 
+# 
 # backend/route/website_services/waitlist_router.py
 
 from datetime import datetime
