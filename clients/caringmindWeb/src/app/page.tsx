@@ -139,7 +139,7 @@ const SplashPage = () => {
       // Display a success toast notification to the user
       toast({
         title: "Success!",
-        description: "You've been added to our waitlist. We'll be in touch soon!",
+        description: "You&apos;ve been added to our waitlist. We&apos;ll be in touch soon!",
       });
 
       // Close the waitlist dialog
@@ -147,7 +147,7 @@ const SplashPage = () => {
 
       // Reset the form fields
       setFormData({ name: '', email: '', comment: '' }); // Reset 'comment' field
-    } catch (error) {
+    } catch {
       // Display an error toast notification to the user
       toast({
         title: "Error",
@@ -254,7 +254,7 @@ const SplashPage = () => {
               <DialogHeader>
                 <DialogTitle>Join our Waitlist</DialogTitle>
                 <DialogDescription>
-                  Be among the first to experience our platform. We'll notify you as soon as we launch!
+                  Be among the first to experience our platform. We&apos;ll notify you as soon as we launch!
                 </DialogDescription>
               </DialogHeader>
               {/* Waitlist Form */}
