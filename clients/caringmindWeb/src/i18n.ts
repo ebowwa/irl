@@ -16,8 +16,14 @@ i18n
     },
 
     backend: {
-      loadPath: '/locales/{{lng}}/translation.json',
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
+
+    // Default namespace used if not specified
+    defaultNS: 'common',
+
+    // Namespaces that need to be loaded
+    ns: ['common', 'home', 'auth', 'profile', 'features'],
 
     detection: {
       order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
