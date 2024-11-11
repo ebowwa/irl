@@ -78,7 +78,7 @@ const SplashPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:9090/waitlist/', {
+      const response = await fetch('https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
