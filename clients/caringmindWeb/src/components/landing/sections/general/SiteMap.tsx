@@ -23,7 +23,7 @@ export default function SiteMap({ siteMap }: SiteMapProps) {
             Site Map
           </h1>
           <p className="text-gray-500 dark:text-gray-400">
-            This site is built with Typescript and Nextjs 14. All code within this site is modular, self-encapsulating, and easily portable. Everything that can be within this app is run locally on the client-side. As a developer expanding my tool belt, I'm excited to share this
+            This site is built with Typescript and Nextjs 14. All code within this site is modular, self-encapsulating, and easily portable. Everything that can be within this app is run locally on the client-side. As a developer expanding my tool belt, I&apos;m excited to share this
             work in progress. Please feel free to explore and provide feedback.
           </p>
         </div>

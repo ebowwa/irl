@@ -1,6 +1,6 @@
 "use client"; // src/components/blog/container.tsx
 
-import React, { useState } from "react";
+import React from "react";
 import Alert from '../components/alert';
 
 type Props = {
@@ -12,7 +12,7 @@ const Container = ({ children }: Props) => {
     return (
     <div>
     <div suppressHydrationWarning>
-      
+
         <div className="min-h-screen">
         <Alert preview={true} />
         {children}

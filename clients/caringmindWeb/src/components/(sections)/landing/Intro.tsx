@@ -1,6 +1,6 @@
 // components/tally/TallyHeader.tsx
-import { Button } from "@/components/ui/button";
-import { FileIcon, PenIcon, CheckIcon }  from "@/components/ui/icons/system";
+import { Button } from "@/components/landing/ui/button";
+import { FileIcon, PenIcon, CheckIcon }  from "@/components/landing/ui/icons";
 import { useRouter } from 'next/navigation';
 
 type TallyHeaderContent = {

@@ -6,33 +6,43 @@
 import React from 'react';
 import Link from 'next/link';
 import { TwitterIcon, InstagramIcon, FacebookIcon, YouTubeIcon } from '@/components/icons/socialmedia';
-import landingFooterContent from '../../../../../../public/raw_data/landing-footer-content.json';
+import landingFooterContent from '@/../../public/raw_data/landing-footer-content.json';
 
-interface FooterLogo {
-  href: string;
-  repo: string;
-  path: string;
-  assetType: 'image';
-}
-
-interface FooterLink {
+// Link interface is used by the JSON content
+interface Link {
   label: string;
   href: string;
 }
 
+interface FooterContent {
+  companyName?: string;
+  companyDescription?: string;
+  email?: string;
+  address?: string;
+  companyLinks?: Link[];
+  plansAndPricingLinks?: Link[];
+  developersLinks?: Link[];
+  assistantsLinks?: Link[];
+  solutionsLinks?: Link[];
+  helpLinks?: Link[];
+}
+
+// Cast the imported JSON to our FooterContent type
+const footerContent: FooterContent = landingFooterContent;
+
 export function LandingFooter() {
   const {
-    companyName,
-    companyDescription,
-    email,
-    address,
-    companyLinks,
-    plansAndPricingLinks,
-    developersLinks,
-    assistantsLinks,
-    solutionsLinks, // Added solutionsLinks
-    helpLinks
-  } = landingFooterContent;
+    companyName = "CaringMind",
+    companyDescription = "Mental health and wellness platform",
+    email = "info@caringmind.com",
+    address = "Made with ❤️",
+    companyLinks = [],
+    plansAndPricingLinks = [],
+    developersLinks = [],
+    assistantsLinks = [],
+    solutionsLinks = [], // Added solutionsLinks
+    helpLinks = []
+  } = footerContent;
 
   return (
     <footer className="bg-gray-100 dark:bg-gray-900 py-12 sm:py-16">

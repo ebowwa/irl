@@ -7,15 +7,23 @@ Real-Time Tracking: This approach is suitable for real-time tracking of user int
 import { useEffect } from 'react';
 import Script from 'next/script';
 
+// Extend Window interface to include dataLayer
+declare global {
+  interface Window {
+    dataLayer: unknown[];
+  }
+}
+
 const GA_MEASUREMENT_ID = 'G-ZF2GEYRMSS';
-// TODO: need to make this configurable to the env or a constants not hard coded into this single script
+
 const GoogleAnalytics = () => {
   useEffect(() => {
     const handleLoad = () => {
-      (window as any).dataLayer = (window as any).dataLayer || [];
-      function gtag(...args: any[]) {
-        (window as any).dataLayer.push(arguments);
-      }
+      window.dataLayer = window.dataLayer || [];
+      // Type the gtag function properly
+      const gtag = (..._args: unknown[]): void => {
+        window.dataLayer.push(_args);
+      };
       gtag('js', new Date());
       gtag('config', GA_MEASUREMENT_ID);
     };

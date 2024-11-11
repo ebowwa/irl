@@ -1,8 +1,17 @@
 // src/lib/blog/api.ts
 
 import { z } from 'zod';
-import rawData from '@/public/raw_data/posts.json';
 import PostType from '@/components/landing/sections/blog/lib/interfaces/post';
+import fs from 'fs';
+import path from 'path';
+
+// Load the JSON data
+const rawData = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), 'public/raw_data/posts.json'),
+    'utf8'
+  )
+);
 
 // Zod schema for individual post
 const PostSchema = z.object({

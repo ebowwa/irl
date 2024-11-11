@@ -4,6 +4,7 @@
 * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
 **/
 import Link from 'next/link';
+import { SVGProps } from 'react';
 export function Transparent() {
   return (
     <Link href="https://github.com/ebowwar/simulation" passHref>
@@ -18,7 +19,7 @@ export function Transparent() {
   )
 }
 
-function GithubIcon(props) {
+function GithubIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

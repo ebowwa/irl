@@ -1,7 +1,7 @@
 import { FC, SVGProps } from "react";
 import React from 'react';
 
-export interface IconProps extends React.SVGProps<SVGSVGElement> { }
+export type IconProps = React.SVGProps<SVGSVGElement>;
 
 export function CalendarIcon(props: IconProps) {
   return (
@@ -204,7 +204,7 @@ export const TwitterIcon: FC<SVGProps<SVGSVGElement>> = (props) => {
     </svg>
   );
 };
-interface ShareIconProps extends React.SVGProps<SVGSVGElement> {}
+type ShareIconProps = React.SVGProps<SVGSVGElement>;
 
 export const ShareIcon: FC<ShareIconProps> = (props) => {
   return (
@@ -227,7 +227,7 @@ export const ShareIcon: FC<ShareIconProps> = (props) => {
   );
 };
 
-interface BotIconProps extends React.SVGProps<SVGSVGElement> {}
+type BotIconProps = React.SVGProps<SVGSVGElement>;
 
 
 export const BotIcon: React.FC<BotIconProps> = (props) => {
@@ -254,7 +254,7 @@ export const BotIcon: React.FC<BotIconProps> = (props) => {
   );
 };
 
-interface DownloadIconProps extends React.SVGProps<SVGSVGElement> {}
+type DownloadIconProps = React.SVGProps<SVGSVGElement>;
 
 export const DownloadIcon: FC<DownloadIconProps> = (props) => {
   return (
@@ -306,7 +306,7 @@ export const CopyIcon: FC<CopyIconProps> = (props) => {
 };
 
 
-interface MicroscopeIconProps extends React.SVGProps<SVGSVGElement> {}
+type MicroscopeIconProps = React.SVGProps<SVGSVGElement>;
 
 
 export function MicroscopeIcon(props: MicroscopeIconProps) {
@@ -333,7 +333,7 @@ export function MicroscopeIcon(props: MicroscopeIconProps) {
   );
 }
 
-interface ArrowRightIconProps extends React.SVGProps<SVGSVGElement> {}
+type ArrowRightIconProps = React.SVGProps<SVGSVGElement>;
 
 
 export function ArrowRightIcon(props: ArrowRightIconProps) {
@@ -456,7 +456,7 @@ export function ImageIcon(props: IconProps) {
   );
 }
 
-export function PencilIcon(props: IconProps) {
+export function PenIcon(props: IconProps) {
   return (
     <svg
       {...props}
@@ -539,3 +539,42 @@ export const GrabIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   );
 };
 
+export function SearchIcon(props: IconProps) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
+
+export function FileIcon(props: IconProps) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
+    </svg>
+  );
+}

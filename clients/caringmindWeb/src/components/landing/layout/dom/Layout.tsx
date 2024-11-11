@@ -2,11 +2,14 @@
 'use client'
 
 import { useRef } from 'react'
-import dynamic from 'next/dynamic'
-const Scene = dynamic(() => import('@/components/three/assets/canvas/Scene'), { ssr: false })
+// const Scene = dynamic(() => import('@/components/three/assets/canvas/Scene'), { ssr: false })
 
-const Layout = ({ children }) => {
-  const ref = useRef()
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
+  const ref = useRef<HTMLDivElement>(null)
 
   return (
     <div
@@ -20,6 +23,7 @@ const Layout = ({ children }) => {
       }}
     >
       {children}
+      {/* Scene component temporarily commented out
       <Scene
         style={{
           position: 'fixed',
@@ -32,6 +36,7 @@ const Layout = ({ children }) => {
         eventSource={ref}
         eventPrefix='client'
       />
+      */}
     </div>
   )
 }

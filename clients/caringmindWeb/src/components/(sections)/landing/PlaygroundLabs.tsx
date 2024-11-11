@@ -1,8 +1,8 @@
 // src/components/sections/PlaygroundLabs.tsx
 import Link from "next/link";
 import Image from 'next/image';
-import { Input } from "@/components/ui/input";
-import { SearchIcon } from "@/components/ui/icons/system";
+import { Input } from "@/components/landing/ui/input";
+import { SearchIcon } from "@/components/landing/ui/icons";
 
 export interface Playground {
   id: string;

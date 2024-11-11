@@ -5,6 +5,7 @@
 ADD next link and add kofi link
 **/
 import Link from 'next/link';
+import { SVGProps } from 'react';
 
 export function BuyMeACoffeeWhiteButton() {
   return (
@@ -20,7 +21,7 @@ export function BuyMeACoffeeWhiteButton() {
   )
 }
 
-function CoffeeIcon(props) {
+function CoffeeIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

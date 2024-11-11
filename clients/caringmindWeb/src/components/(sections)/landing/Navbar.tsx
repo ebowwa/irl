@@ -1,21 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { UserProvider } from '@/utils/storage/context/UserContext';
+// import { UserProvider } from '@/utils/storage/context/UserContext';
 import { usePathname } from 'next/navigation';
-import { Menu, MenuItem, ProductItem } from "@/components/ui/navbar-menu";
-import AuthButtons from '@/components/(third-party)/supabase/AuthButton';
+// import { Menu, MenuItem, ProductItem } from "@/components/landing/ui/navbar-menu";
+// import AuthButtons from '@/components/(third-party)/supabase/AuthButton';
 import Image from 'next/image';
 import { Menu as MenuIcon, X } from 'lucide-react';
-import { menuItemsContent } from './Navbar/menuItemsContent'
+// import { menuItemsContent } from './Navbar/menuItemsContent'
 
 const TallyNavbar: React.FC = () => {
-  const [activeItem, setActiveItem] = useState<string | null>(null);
+  // const [activeItem, setActiveItem] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    setActiveItem(null);
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
@@ -24,10 +23,12 @@ const TallyNavbar: React.FC = () => {
   };
 
   return (
-    <UserProvider>
+    <>
+      {/* <UserProvider> */}
       <nav className="flex justify-between items-center py-4 px-4 md:px-8 border-b">
-      <Image src="https://cdn.jsdelivr.net/gh/ebowwar/asset-store@main/un-automated/pixelcut-export-5.svg" alt="Logo" width={150} height={50} />        
+      <Image src="https://cdn.jsdelivr.net/gh/ebowwar/asset-store@main/un-automated/pixelcut-export-5.svg" alt="Logo" width={150} height={50} />
       <div className="hidden md:flex items-center">
+          {/* Menu components temporarily commented out
           <Menu setActive={setActiveItem}>
             {Object.entries(menuItemsContent).map(([key, content]) => (
               <MenuItem key={key} setActive={setActiveItem} active={activeItem} item={content.title}>
@@ -49,7 +50,8 @@ const TallyNavbar: React.FC = () => {
               </MenuItem>
             ))}
           </Menu>
-          <AuthButtons />
+          */}
+          {/* <AuthButtons /> */}
         </div>
         <div className="md:hidden">
           <button onClick={toggleMobileMenu}>
@@ -59,6 +61,7 @@ const TallyNavbar: React.FC = () => {
       </nav>
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white w-full">
+          {/* Mobile menu items temporarily commented out
           {Object.entries(menuItemsContent).map(([key, content]) => (
             <div key={key} className="px-4 py-2 border-b">
               <h2 className="font-bold">{content.title}</h2>
@@ -71,12 +74,14 @@ const TallyNavbar: React.FC = () => {
               </ul>
             </div>
           ))}
+          */}
           <div className="px-4 py-2">
-            <AuthButtons />
+            {/* <AuthButtons /> */}
           </div>
         </div>
       )}
-    </UserProvider>
+      {/* </UserProvider> */}
+    </>
   );
 };
 
