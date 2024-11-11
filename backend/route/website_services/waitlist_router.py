@@ -1,4 +1,7 @@
-# waitlist_router.py
+# backend/route/website_services/waitlist_router.py 
+
+# we need to allow an additional string comment to be saved alongside this waitlist
+# the ui will have it answer `What excites you most about our platform?` the user will respond and we need to collect this as well alongisde the email and name
 
 from datetime import datetime
 from typing import List, Optional
@@ -10,7 +13,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import Column, DateTime, Integer, String, Table, func
 
 # Database URL for SQLite with a more descriptive name
-DATABASE_URL = "sqlite+aiosqlite:///./waitlist_data.db"
+DATABASE_URL = "sqlite+aiosqlite:///./waitlist_data.db" # how can this store the db in `/caringmind/data`
 
 # For PostgreSQL in production, use:
 # DATABASE_URL = "postgresql+asyncpg://user:password@localhost/dbname"
