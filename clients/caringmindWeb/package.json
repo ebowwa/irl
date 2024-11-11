@@ -1,13 +1,4 @@
 {
-  "name": "caringmindweb",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
     "@next/bundle-analyzer": "^15.0.3",
@@ -29,12 +20,16 @@
     "date-fns": "^4.1.0",
     "file-loader": "^6.2.0",
     "html-escaper": "^3.0.3",
+    "i18next": "^23.16.5",
+    "i18next-browser-languagedetector": "^8.0.0",
+    "i18next-http-backend": "^2.6.2",
     "lucide-react": "^0.445.0",
     "next": "14.2.13",
     "next-themes": "^0.4.3",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.2",
+    "react-i18next": "^15.1.1",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "stripe": "^17.3.1",
@@ -51,10 +46,25 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/three": "^0.169.0",
+    "dotenv": "^16.4.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.13",
+    "nodemon": "^3.1.7",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
-  }
+  },
+  "name": "caringmindweb",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "build:with-translations": "./scripts/build-with-translations.sh",
+    "dev": "next dev",
+    "lint": "next lint",
+    "start": "next start",
+    "translate": "ts-node scripts/translate.ts",
+    "translate:watch": "nodemon --watch public/locales/en --ext json --exec 'pnpm translate'"
+  },
+  "version": "0.1.0"
 }
