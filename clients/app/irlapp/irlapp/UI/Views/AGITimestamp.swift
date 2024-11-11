@@ -1,5 +1,5 @@
 //
-//  AGITimestamp.swift
+//  WebsocketAudioView.swift
 //   CaringMind
 //
 //  Created by Elijah Arbee on 11/10/24.
@@ -11,7 +11,9 @@
 //  Created by Elijah Arbee on 11/10/24.
 //
 
-// the audio files shouldnt erase automatically, rather we should take advantage of googles media uploads, this will allow revisiting audio data with additional questions or tasks later on 
+// the audio files shouldnt erase automatically, rather we should take advantage of googles media uploads, this will allow revisiting audio data with additional questions or tasks later on
+
+// this seems to only allow processing once
 
 // MARK: - Audio Recording Service
 import SwiftUI
