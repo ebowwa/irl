@@ -66,6 +66,5 @@
     "translate": "ts-node scripts/translate.ts",
     "translate:watch": "nodemon --watch public/locales/en --ext json --exec 'pnpm translate'"
   },
-  "type": "module",
   "version": "0.1.0"
 }
