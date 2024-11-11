@@ -82,6 +82,6 @@ Your contributions have been instrumental in shaping our project!
 
 ## Liability
 
-We just want to build cool stuff.. Use this at your own risk! 
+We just want to build cool stuff.. Use this at your own risk! Plz don't use if a citizen of the EU..
 
 ---
