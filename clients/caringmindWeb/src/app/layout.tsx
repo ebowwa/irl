@@ -19,7 +19,8 @@ import {
 } from "@/lib/constants";
 import GoogleAnalytics from "@/components/(third-party)/Google/Analytics/client";
 import { NoScript } from "./(meta)/no-script"; // Corrected path
-import { Providers } from "@/utils/provider/theme"; // Corrected path
+import { Providers as ThemeProvider } from "@/utils/provider/theme";
+import { Providers as I18nProvider } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -59,10 +60,12 @@ export default function RootLayout({
         <GoogleAnalytics />
       </head>
       <body className={inter.className}>
-        <Providers>
-          <NoScript />
-          {children}
-        </Providers>
+        <ThemeProvider>
+          <I18nProvider>
+            <NoScript />
+            {children}
+          </I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

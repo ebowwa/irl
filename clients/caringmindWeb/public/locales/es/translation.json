@@ -1,0 +1,20 @@
+{
+  "common": {
+    "get_started": "Comenzar",
+    "learn_more": "M\u00e1s Informaci\u00f3n",
+    "sign_in": "Iniciar Sesi\u00f3n",
+    "sign_up": "Registrarse"
+  },
+  "footer": {
+    "contact_us": "Cont\u00e1ctenos",
+    "privacy_policy": "Pol\u00edtica de Privacidad",
+    "terms": "T\u00e9rminos de Servicio"
+  },
+  "navigation": {
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "home": "Inicio",
+    "services": "Servicios"
+  },
+  "welcome": "Bienvenido a CaringMind"
+}
