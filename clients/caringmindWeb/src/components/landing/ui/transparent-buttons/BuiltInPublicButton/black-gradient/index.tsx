@@ -5,6 +5,7 @@
 */
 
 import Link from 'next/link';
+import { SVGProps } from 'react';
 
 // src/components/build-in-public-gradient-button.tsx
 export function BuildInPublicGradientButton() {
@@ -21,7 +22,7 @@ export function BuildInPublicGradientButton() {
   )
 }
 
-function GithubIcon(props) {
+function GithubIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

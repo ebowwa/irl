@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface IconProps extends React.SVGProps<SVGSVGElement> {}
+export type IconProps = React.SVGProps<SVGSVGElement>;
 
 const TwitterIcon: React.FC<IconProps> = (props) => (
   <svg

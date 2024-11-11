@@ -1,0 +1,31 @@
+{
+    "companyName": "CaringMind",
+    "companyDescription": "Mental health and wellness platform",
+    "email": "info@caringmind.com",
+    "address": "123 Main St, City, Country",
+    "phone": "+1 123 456 7890",
+    "socialLinks": {
+      "twitter": "https://twitter.com/caringmind",
+      "instagram": "https://instagram.com/caringmind",
+      "facebook": "https://facebook.com/caringmind",
+      "youtube": "https://youtube.com/caringmind"
+    },
+    "footerLinks": [
+      {
+        "label": "About Us",
+        "href": "/about"
+      },
+      {
+        "label": "Contact",
+        "href": "/contact"
+      },
+      {
+        "label": "Privacy Policy",
+        "href": "/privacy"
+      },
+      {
+        "label": "Terms of Service",
+        "href": "/terms"
+      }
+    ]
+  }

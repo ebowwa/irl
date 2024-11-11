@@ -3,18 +3,15 @@
  * @see https://v0.dev/t/lx4R3ouckNH
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-// 
+//
 "use client"
 import Link from "next/link";
 import { ChurchIcon, HeartIcon, CalendarIcon } from "@/components/landing/ui/icons";
 import textData from "@public/html/homepage.json";
-import dynamic from 'next/dynamic';
+
 import Image from 'next/image'
 
-// Import the CoinContainer using dynamic import with ssr: false
-const CoinContainer = dynamic(() => import("@/components/three/assets/coin/CoinContainer"), {
-    ssr: false,
-});
+// 3D coin animation temporarily removed
 
 export default function LandingContainer() {
     return (
@@ -44,9 +41,7 @@ export default function LandingContainer() {
                                 {textData.learnMoreLabel}
                             </Link>
                         </div>
-                        <div className="w-64 h-64" suppressHydrationWarning>
-                            <CoinContainer />
-                        </div>
+                        {/* Temporarily removed 3D coin animation */}
                     </div>
                 </div>
             </section>

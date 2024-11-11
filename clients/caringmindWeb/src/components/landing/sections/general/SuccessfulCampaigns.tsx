@@ -1,6 +1,7 @@
 // SuccessfulCampaigns.tsx
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 export interface Bot {
     bot: string;
     idea: string;
@@ -46,12 +47,13 @@ const SuccessfulCampaigns: React.FC<SuccessfulCampaignsProps> = ({ title, descri
                                         <h3 className="text-2xl font-bold">{bot.bot}</h3>
                                         <p className="text-lg">{bot.idea}</p>
                                     </div>
-                                    <img
+                                    <Image
                                         alt={`Portfolio ${index + 1}`}
                                         className="mb-4 aspect-[4/3] w-full rounded-lg object-cover h-[300px]"
-                                        height="300"
+                                        height={300}
                                         src={bot.image}
-                                        width="400"
+                                        width={400}
+                                        priority={index === 0}
                                     />
                                 </div>
                             </Link>

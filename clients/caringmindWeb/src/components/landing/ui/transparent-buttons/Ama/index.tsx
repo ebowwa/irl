@@ -1,5 +1,6 @@
 // @/components/AskMeAnythingButton.tsx
 import Link from 'next/link';
+import { SVGProps } from 'react';
 
 export function AskMeAnythingButton() {
   return (
@@ -15,7 +16,7 @@ export function AskMeAnythingButton() {
   );
 }
 
-function QuestionIcon(props) {
+function QuestionIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
