@@ -1,25 +1,25 @@
 python-dotenv
 python-multipart
 uvicorn[standard]
-websockets 
+websockets
 pydantic
-fastapi 
-uvicorn 
+fastapi
+uvicorn
 wsproto
-numpy 
+numpy
 gunicorn
 
 # aioredis @removed for now
 beautifulsoup4 # retrieving existing oai shared chats
 ollama
-openai 
-anthropic 
+openai
+anthropic
 fal-client # ai inference provider over image models
 tiktoken # counts tokens
 # gunicorn # in prod
 # firebase-admin @removed for now
-pyannote.audio 
-torch 
+pyannote.audio
+torch
 torchaudio
 ngrok
 
@@ -30,3 +30,8 @@ ngrok
 google-generativeai
 aiofiles
 python-magic
+sqlalchemy
+databases
+asyncpg
+aiosqlite
+pydantic

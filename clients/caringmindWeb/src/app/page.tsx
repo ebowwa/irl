@@ -12,18 +12,18 @@ const SplashPage = () => {
   const images = [
     {
       url: "/api/placeholder/1200/800",
-      title: t('home:carousel.personal_growth.title'),
-      description: t('home:carousel.personal_growth.description')
+      title: t('home.carousel.personal_growth.title'),
+      description: t('home.carousel.personal_growth.description')
     },
     {
       url: "/api/placeholder/1200/800",
-      title: t('home:carousel.deep_connection.title'),
-      description: t('home:carousel.deep_connection.description')
+      title: t('home.carousel.deep_connection.title'),
+      description: t('home.carousel.deep_connection.description')
     },
     {
       url: "/api/placeholder/1200/800",
-      title: t('home:carousel.emotional_intelligence.title'),
-      description: t('home:carousel.emotional_intelligence.description')
+      title: t('home.carousel.emotional_intelligence.title'),
+      description: t('home.carousel.emotional_intelligence.description')
     }
   ];
 
@@ -54,9 +54,9 @@ const SplashPage = () => {
           <LanguageSwitcher />
         </div>
         <h1 className="text-6xl font-bold mb-4 text-gray-900">
-          {t('home:hero.title')}
+          {t('home.title')}
         </h1>
-        <p className="text-2xl text-gray-600 mb-12">{t('home:hero.subtitle')}</p>
+        <p className="text-2xl text-gray-600 mb-12">{t('home.subtitle')}</p>
 
         {/* Image Carousel */}
         <div
@@ -100,10 +100,10 @@ const SplashPage = () => {
         {/* CTA Buttons */}
         <div className="flex space-x-4">
           <button className="px-8 py-3 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transform hover:scale-105 transition-all">
-            {t('common:actions.get_started')}
+            {t('common.get_started')}
           </button>
           <button className="px-8 py-3 border border-purple-200 text-purple-600 rounded-full font-medium hover:bg-purple-50 transform hover:scale-105 transition-all">
-            {t('common:actions.learn_more')}
+            {t('common.learn_more')}
           </button>
         </div>
       </div>
@@ -114,31 +114,31 @@ const SplashPage = () => {
           <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <Brain className="w-6 h-6 text-purple-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home:features.deep_understanding.title')}</h3>
-          <p className="text-gray-600">{t('home:features.deep_understanding.description')}</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home.features.deep_understanding.title')}</h3>
+          <p className="text-gray-600">{t('home.features.deep_understanding.description')}</p>
         </div>
 
         <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
           <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
             <Heart className="w-6 h-6 text-pink-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home:features.emotional_intelligence.title')}</h3>
-          <p className="text-gray-600">{t('home:features.emotional_intelligence.description')}</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home.features.emotional_intelligence.title')}</h3>
+          <p className="text-gray-600">{t('home.features.emotional_intelligence.description')}</p>
         </div>
 
         <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
           <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
             <Sparkles className="w-6 h-6 text-blue-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home:features.personal_growth.title')}</h3>
-          <p className="text-gray-600">{t('home:features.personal_growth.description')}</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home.features.personal_growth.title')}</h3>
+          <p className="text-gray-600">{t('home.features.personal_growth.description')}</p>
         </div>
       </div>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-100 py-8 text-center text-gray-600">
         <p className="text-sm">
-          {t('common:footer.copyright')}
+          {t('footer.copyright')}
         </p>
       </footer>
     </div>
