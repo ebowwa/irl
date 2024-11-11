@@ -1,5 +1,6 @@
 # backend/route/features/gemini_transcription_v1.py
-
+# we need to seriously leverage the google upload audio files, we need to track exactly and map audio files to times (sequentially) by user
+# with the index - short term retrievalable audio we will run inference i.e. sockets, asking Q's later, batches, etc.
 import os
 import tempfile
 import json
@@ -24,11 +25,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Initialize FastAPI router
-router = APIRouter(
-    prefix="/transcribe",
-    tags=["Transcription"],
-    responses={404: {"description": "Not found"}},
-)
+router = APIRouter()
 
 # Retrieve and configure the Gemini API key
 API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -37,7 +34,7 @@ if not API_KEY:
 
 genai.configure(api_key=API_KEY)
 
-# Define Pydantic models for response validation
+### MODELS ###
 
 class Timestamp(BaseModel):
     start: float
@@ -51,7 +48,8 @@ class TranscriptionSegment(BaseModel):
 class TranscriptionResponse(BaseModel):
     transcriptions: List[TranscriptionSegment]
 
-# Define the JSON schema for the response configuration
+# the JSON schema for the response configuration
+# TODO: can this be a class so its easier to use in the websocket; name the class TranscriptionDiarizationResponseSchema
 response_schema = content.Schema(
     type=content.Type.ARRAY,
     items=content.Schema(
@@ -72,7 +70,8 @@ response_schema = content.Schema(
     ),
 )
 
-# Define the generation configuration
+# the generation configuration
+# TODO: the client request should pass the configurations, sure defaults are okay, but ideally the client (optionally) sends the onfigs
 generation_config = {
     "temperature": 1,
     "top_p": 0.95,
@@ -240,6 +239,9 @@ async def transcribe_audio(file: UploadFile = File(...)):
         )
 
         # Prepare the chat history
+        # TODO: handle cases in which many audio files are used
+        # gemini flash allows 9.5 hours max in a request, unlimted files - it will automatically mege the files 
+        # in a chat session, i.e. user is having a conversation with someone else, or even themselves we will likely chunk up these audio files or even maybe the entirety of the day in the life user's audio
         chat_history = [
             {
                 "role": "user",
@@ -316,7 +318,9 @@ async def transcribe_audio(file: UploadFile = File(...)):
             except Exception as e:
                 logger.error(f"Error deleting temporary file: {e}")
 
-# Import necessary dependencies
+# gemini_transcription_ws_v1.py
+# 
+
 import asyncio
 import websockets
 import json
@@ -526,13 +530,14 @@ async def websocket_transcribe(websocket: WebSocket):
             "organized by the time they occurred. Aim for the cleanest transcription."
         )
 
-        # Prepare the chat history
+        # chat history - can we use anything to keep a history of this by user? 
+        # maybe postgres, maybe something similar(sqlite) that we can leverage embeddings
         chat_history = [
             {
                 "role": "user",
                 "parts": [
                     prompt_text,
-                    uploaded_file,
+                    uploaded_file, # we need to allow many of these, but they are just urls i think 
                 ],
             },
         ]
