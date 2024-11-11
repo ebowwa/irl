@@ -1,15 +1,30 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Heart, Sparkles, Brain } from 'lucide-react'; // Orbit
+import { Heart, Sparkles, Brain } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 const SplashPage = () => {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
-  
+
   const images = [
-    { url: "/api/placeholder/1200/800", title: "Personal Growth", description: "Expand your consciousness" },
-    { url: "/api/placeholder/1200/800", title: "Deep Connection", description: "Understanding that transcends language" },
-    { url: "/api/placeholder/1200/800", title: "Emotional Intelligence", description: "Feel understood, always" }
+    {
+      url: "/api/placeholder/1200/800",
+      title: t('home.carousel.personal_growth.title'),
+      description: t('home.carousel.personal_growth.description')
+    },
+    {
+      url: "/api/placeholder/1200/800",
+      title: t('home.carousel.deep_connection.title'),
+      description: t('home.carousel.deep_connection.description')
+    },
+    {
+      url: "/api/placeholder/1200/800",
+      title: t('home.carousel.emotional_intelligence.title'),
+      description: t('home.carousel.emotional_intelligence.description')
+    }
   ];
 
   useEffect(() => {
@@ -26,7 +41,7 @@ const SplashPage = () => {
       {/* Hero Section */}
       <div className="relative h-screen flex flex-col items-center justify-center px-4">
         <div className="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-transparent" />
-        
+
         {/* Logo Animation */}
         <div className="relative w-32 h-32 mb-8">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-pink-50 rounded-full animate-pulse" />
@@ -35,13 +50,16 @@ const SplashPage = () => {
           </div>
         </div>
 
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <h1 className="text-6xl font-bold mb-4 text-gray-900">
-          CaringMind
+          {t('home.title')}
         </h1>
-        <p className="text-2xl text-gray-600 mb-12">Your consciousness companion</p>
-        
+        <p className="text-2xl text-gray-600 mb-12">{t('home.subtitle')}</p>
+
         {/* Image Carousel */}
-        <div 
+        <div
           className="relative w-full max-w-4xl h-96 mb-12 rounded-2xl overflow-hidden shadow-2xl"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
@@ -64,7 +82,7 @@ const SplashPage = () => {
               </div>
             </div>
           ))}
-          
+
           {/* Carousel Controls */}
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
             {images.map((_, index) => (
@@ -82,10 +100,10 @@ const SplashPage = () => {
         {/* CTA Buttons */}
         <div className="flex space-x-4">
           <button className="px-8 py-3 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transform hover:scale-105 transition-all">
-            Get Started
+            {t('common.get_started')}
           </button>
           <button className="px-8 py-3 border border-purple-200 text-purple-600 rounded-full font-medium hover:bg-purple-50 transform hover:scale-105 transition-all">
-            Learn More
+            {t('common.learn_more')}
           </button>
         </div>
       </div>
@@ -96,31 +114,31 @@ const SplashPage = () => {
           <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <Brain className="w-6 h-6 text-purple-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">Deep Understanding</h3>
-          <p className="text-gray-600">Experience AI that truly gets you</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home.features.deep_understanding.title')}</h3>
+          <p className="text-gray-600">{t('home.features.deep_understanding.description')}</p>
         </div>
-        
+
         <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
           <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
             <Heart className="w-6 h-6 text-pink-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">Emotional Intelligence</h3>
-          <p className="text-gray-600">Connect on a deeper level</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home.features.emotional_intelligence.title')}</h3>
+          <p className="text-gray-600">{t('home.features.emotional_intelligence.description')}</p>
         </div>
-        
+
         <div className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
           <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
             <Sparkles className="w-6 h-6 text-blue-600" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">Personal Growth</h3>
-          <p className="text-gray-600">Evolve with every interaction</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-900">{t('home.features.personal_growth.title')}</h3>
+          <p className="text-gray-600">{t('home.features.personal_growth.description')}</p>
         </div>
       </div>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-100 py-8 text-center text-gray-600">
         <p className="text-sm">
-          © 2025 CaringMind. Transforming consciousness, with care.
+          {t('footer.copyright')}
         </p>
       </footer>
     </div>
