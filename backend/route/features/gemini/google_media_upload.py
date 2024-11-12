@@ -1,270 +1,98 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
-from typing import List, Optional
-from pydantic import BaseModel
-import aiofiles
+# backend/route/features/upload_to_gemini.py
+# FastAPI router for uploading files (audio, video, image) to Google Gemini
+
 import os
-import asyncio
+import tempfile
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
+import google.generativeai as genai
 import logging
-from datetime import datetime, timedelta
-import hashlib
-import mimetypes
-import magic  # python-magic for better MIME type detection
 
-router = APIRouter()
-
-# Configuration
-UPLOAD_DIR = "/tmp/uploads"  # Temporary storage
-MAX_FILE_SIZE = {
-    "audio": 2_147_483_648,  # 2GB for audio
-    "image": 104_857_600,    # 100MB for images
-    "video": 2_147_483_648,  # 2GB for video
-    "document": 524_288_000  # 500MB for documents
-}
-SUPPORTED_MIME_TYPES = {
-    # Audio
-    'audio/wav': 'audio',
-    'audio/mp3': 'audio', 
-    'audio/aiff': 'audio',
-    'audio/aac': 'audio',
-    'audio/ogg': 'audio',
-    'audio/flac': 'audio',
-
-    # Images
-    'image/jpeg': 'image',
-    'image/png': 'image',
-    'image/gif': 'image',
-    'image/webp': 'image',
-
-    # Video 
-    'video/mp4': 'video',
-    'video/webm': 'video',
-
-    # Documents
-    'application/pdf': 'document',
-    'text/plain': 'document',
-    'text/html': 'document'
-}
-
-# Response Models
-class FileMetadata(BaseModel):
-    file_id: str
-    original_name: str
-    mime_type: str
-    size: int
-    upload_time: datetime
-    expiry_time: datetime
-    category: str
-
-class UploadResponse(BaseModel):
-    success: bool
-    message: str
-    file_info: Optional[FileMetadata] = None
-
-# Setup logging
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Ensure upload directory exists
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# 1. Load environment variables from .env
+load_dotenv()
 
-# Utility Functions
-def get_file_hash(file_content: bytes) -> str:
-    """Generate a unique hash for the file content"""
-    return hashlib.sha256(file_content).hexdigest()
+# 2. Initialize the FastAPI router
+router = APIRouter()
 
-async def cleanup_expired_files(background_tasks: BackgroundTasks):
-    """Remove files that are older than 48 hours"""
+# 3. Retrieve and configure the Gemini API key
+google_api_key = os.getenv("GOOGLE_API_KEY")
+if not google_api_key:
+    raise EnvironmentError("GEMINI_API_KEY not found in environment variables.")
+
+genai.configure(api_key=google_api_key)
+
+def upload_to_gemini(file_path: str, mime_type: str = None):
+    """
+    Uploads the given file to Gemini.
+
+    Args:
+        file_path (str): Path to the file to upload.
+        mime_type (str, optional): MIME type of the file. Defaults to None.
+
+    Returns:
+        Uploaded file object.
+    """
     try:
-        current_time = datetime.now()
-        for filename in os.listdir(UPLOAD_DIR):
-            file_path = os.path.join(UPLOAD_DIR, filename)
-            file_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
-            if current_time - file_modified > timedelta(hours=48):
-                os.remove(file_path)
-                logger.info(f"Cleaned up expired file: {filename}")
+        uploaded_file = genai.upload_file(file_path, mime_type=mime_type)
+        logger.info(f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}")
+        return uploaded_file  # Return the file object directly
     except Exception as e:
-        logger.error(f"Error during cleanup: {str(e)}")
+        logger.error(f"Error uploading file: {e}")
+        raise HTTPException(status_code=500, detail="Failed to upload file to Gemini.")
 
-async def validate_file(file: UploadFile) -> tuple[bool, str, str]:
+@router.post("/upload-to-gemini")
+async def upload_file_to_gemini(file: UploadFile = File(...)):
     """
-    Validate the uploaded file
-    Returns: (is_valid, error_message, category)
+    Endpoint to upload a file to Gemini, handling various file modalities.
+
+    Args:
+        file (UploadFile): The file to upload.
+
+    Returns:
+        JSONResponse: The result from the upload to Gemini.
     """
-    try:
-        # Read first 2048 bytes for MIME detection
-        header = await file.read(2048)
-        await file.seek(0)  # Reset file position
+    # Define supported MIME types for different modalities
+    supported_mime_types = [
+    "audio/wav", "audio/mp3", "audio/aiff", "audio/aac", "audio/ogg", "audio/flac",
+    "image/jpeg", "image/png", "image/gif",
+    "video/mp4", "video/quicktime",
+    "application/octet-stream" ] # maybe remove
 
-        # Use python-magic for accurate MIME type detection
-        mime_type = magic.from_buffer(header, mime=True)
-
-        if mime_type not in SUPPORTED_MIME_TYPES:
-            return False, f"Unsupported file type: {mime_type}", ""
-
-        category = SUPPORTED_MIME_TYPES[mime_type]
-
-        # Check file size
-        file_size = 0
-        async for chunk in file.stream():
-            file_size += len(chunk)
-            if file_size > MAX_FILE_SIZE[category]:
-                return False, f"File too large for {category}. Maximum size: {MAX_FILE_SIZE[category] / (1024*1024)}MB", ""
-
-        await file.seek(0)  # Reset file position again
-        return True, "", category
-
-    except Exception as e:
-        return False, f"Error validating file: {str(e)}", ""
-
-# Routes
-@router.post("/upload/", response_model=UploadResponse)
-async def upload_file(
-    file: UploadFile = File(...),
-    background_tasks: BackgroundTasks = BackgroundTasks()
-):
-    """
-    Upload a media file for processing with Gemini API
-    - Supports audio, image, video, and document files
-    - Files are stored for 48 hours
-    - Returns a file ID that can be used with the Gemini API
-    """
-    try:
-        # Validate file
-        is_valid, error_message, category = await validate_file(file)
-        if not is_valid:
-            raise HTTPException(status_code=400, detail=error_message)
-
-        # Read file content
-        content = await file.read()
-        file_hash = get_file_hash(content)
-
-        # Create filename with category prefix
-        extension = mimetypes.guess_extension(file.content_type) or ''
-        filename = f"{category}_{file_hash}{extension}"
-        file_path = os.path.join(UPLOAD_DIR, filename)
-
-        # Save file
-        async with aiofiles.open(file_path, 'wb') as out_file:
-            await out_file.write(content)
-
-        # Record metadata
-        upload_time = datetime.now()
-        expiry_time = upload_time + timedelta(hours=48)
-
-        file_info = FileMetadata(
-            file_id=file_hash,
-            original_name=file.filename,
-            mime_type=file.content_type,
-            size=len(content),
-            upload_time=upload_time,
-            expiry_time=expiry_time,
-            category=category
+    # Check if the file's MIME type is supported
+    if file.content_type not in supported_mime_types:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type: {file.content_type}. Supported types: {supported_mime_types}",
         )
 
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_expired_files, background_tasks)
-
-        return UploadResponse(
-            success=True,
-            message="File uploaded successfully",
-            file_info=file_info
-        )
-
-    except HTTPException as he:
-        raise he
-    except Exception as e:
-        logger.error(f"Error uploading file: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
-
-@router.get("/files/{file_id}", response_model=FileMetadata)
-async def get_file_info(file_id: str):
-    """Get metadata for an uploaded file"""
     try:
-        # Search for file in upload directory
-        for filename in os.listdir(UPLOAD_DIR):
-            if file_id in filename:
-                file_path = os.path.join(UPLOAD_DIR, filename)
-                category = filename.split('_')[0]
+        # Save the uploaded file temporarily on the server
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as temp_file:
+            temp_file.write(await file.read())
+            temp_file_path = temp_file.name
 
-                # Get file stats
-                stats = os.stat(file_path)
-                upload_time = datetime.fromtimestamp(stats.st_mtime)
-                expiry_time = upload_time + timedelta(hours=48)
+        # Upload the file to Gemini and retrieve the file object
+        uploaded_file = upload_to_gemini(temp_file_path, mime_type=file.content_type)
 
-                # Detect MIME type
-                mime_type = magic.from_file(file_path, mime=True)
+        # Remove the temporary file after upload
+        os.remove(temp_file_path)
 
-                return FileMetadata(
-                    file_id=file_id,
-                    original_name=filename,
-                    mime_type=mime_type,
-                    size=stats.st_size,
-                    upload_time=upload_time,
-                    expiry_time=expiry_time,
-                    category=category
-                )
+        # Return response with the uploaded file's URI and display name
+        return JSONResponse(content={
+            "message": "File uploaded successfully to Gemini.",
+            "file_uri": uploaded_file.uri,
+            "display_name": uploaded_file.display_name
+        })
 
-        raise HTTPException(status_code=404, detail="File not found")
-
-    except HTTPException as he:
-        raise he
-    except Exception as e:
-        logger.error(f"Error retrieving file info: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving file info: {str(e)}")
-
-@router.delete("/files/{file_id}")
-async def delete_file(file_id: str):
-    """Delete an uploaded file"""
-    try:
-        # Search for file in upload directory
-        for filename in os.listdir(UPLOAD_DIR):
-            if file_id in filename:
-                file_path = os.path.join(UPLOAD_DIR, filename)
-                os.remove(file_path)
-                return JSONResponse(content={
-                    "success": True,
-                    "message": f"File {file_id} deleted successfully"
-                })
-
-        raise HTTPException(status_code=404, detail="File not found")
-
-    except HTTPException as he:
-        raise he
-    except Exception as e:
-        logger.error(f"Error deleting file: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error deleting file: {str(e)}")
-
-@router.get("/files/", response_model=List[FileMetadata])
-async def list_files():
-    """List all uploaded files"""
-    try:
-        files = []
-        for filename in os.listdir(UPLOAD_DIR):
-            file_path = os.path.join(UPLOAD_DIR, filename)
-            category = filename.split('_')[0]
-            file_id = filename.split('_')[1].split('.')[0]
-
-            # Get file stats
-            stats = os.stat(file_path)
-            upload_time = datetime.fromtimestamp(stats.st_mtime)
-            expiry_time = upload_time + timedelta(hours=48)
-
-            # Detect MIME type
-            mime_type = magic.from_file(file_path, mime=True)
-
-            files.append(FileMetadata(
-                file_id=file_id,
-                original_name=filename,
-                mime_type=mime_type,
-                size=stats.st_size,
-                upload_time=upload_time,
-                expiry_time=expiry_time,
-                category=category
-            ))
-
-        return files
+    except HTTPException as e:
+        logger.error(f"Error in file upload: {e.detail}")
+        raise
 
     except Exception as e:
-        logger.error(f"Error listing files: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error listing files: {str(e)}")
+        logger.error(f"Unexpected error during file upload: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error during file upload.")

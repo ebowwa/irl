@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from route.dev import socket_ping
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
 from route.features.gemini.gemini_post_v1 import router as gemini_router
-from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
+# from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
 from route.features.gemini.gemini_socket import router as gemini_socket_router
 from route.features.gemini.gemini_transcription_v1 import (
     router as gemini_transcription_v1_router,
@@ -27,6 +27,7 @@ from route.features.gemini.user_name_upload_v2 import (
 from route.features.gemini.user_name_upload_v3 import (
     router as user_name_upload_v3_router,
 )
+from route.features.gemini.google_media_upload import router as google_media_upload_router
 from route.features.humeclient import router as hume_router
 from route.features.image_generation.fast_sdxl import (
     router as sdxl_router,  # Fast-SDXL model
@@ -97,7 +98,7 @@ app.include_router(
 # app.include_router(media_router, prefix="/media")
 
 app.include_router(gemini_router, prefix="/v1/post/gemini")
-app.include_router(gemini_post_v2_router, prefix="/v2/post/gemini")
+# app.include_router(gemini_post_v2_router, prefix="/v2/post/gemini")
 
 app.include_router(gemini_socket_router, prefix="/socket/gemini")
 
@@ -118,7 +119,7 @@ app.include_router(
 )  # this is in test for handling zip batches from the client
 app.include_router(analyze_truth_lie_v1_router)
 app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # /ws/transcribe
-
+app.include_router(google_media_upload_router)
 # app.include_router(ngrok_commands_router, prefix="/ngrok")
 app.include_router(web_waitlist_crud_router)
 # ------------------ OpenAPI & Swagger UI ---------------------------
