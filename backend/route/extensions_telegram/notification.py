@@ -1,17 +1,18 @@
-# backend/route/website_services/notification.py
-# telegram should provide admin updates
+# backend/route/telegram/notification.py
+
 import os
 import logging
-import requests
 from typing import Optional
+from aiogram import Bot, types
+import asyncio
+from dotenv import load_dotenv
+
+# Load environment variables from a .env file (if you choose to use one)
+load_dotenv()
 
 class TelegramNotifier:
-    """
-    A reusable notifier class for sending Telegram messages.
-    """
-
     def __init__(self):
-        # Configure logging for the notification module
+        # Initialize logger
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.INFO)
         handler = logging.StreamHandler()
@@ -22,51 +23,47 @@ class TelegramNotifier:
         if not self.logger.handlers:
             self.logger.addHandler(handler)
 
-        # Load Telegram credentials from environment variables
+        # Load environment variables
         self.TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
         self.TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
+        # Validate environment variables
         if not self.TELEGRAM_BOT_TOKEN or not self.TELEGRAM_CHAT_ID:
             self.logger.error("Telegram credentials are not set in environment variables.")
             raise ValueError("Missing Telegram configuration.")
 
-        self.TELEGRAM_API_URL = f"https://api.telegram.org/bot{self.TELEGRAM_BOT_TOKEN}/sendMessage"
+        # Initialize the bot
+        self.bot = Bot(token=self.TELEGRAM_BOT_TOKEN)
         self.logger.info("TelegramNotifier initialized successfully.")
 
-    def send_message(self, message: str) -> None:
-        """
-        Sends a Telegram message with the provided text.
-
-        Args:
-            message (str): The message text to send.
-        """
-        payload = {
-            "chat_id": self.TELEGRAM_CHAT_ID,
-            "text": message,
-            "parse_mode": "Markdown"
-        }
-
+    async def send_message(self, message: str) -> None:
         self.logger.debug(f"Sending Telegram message: {message}")
         try:
-            response = requests.post(self.TELEGRAM_API_URL, data=payload)
-            response.raise_for_status()
+            await self.bot.send_message(
+                chat_id=self.TELEGRAM_CHAT_ID,
+                text=message,
+                parse_mode="Markdown"  # Use string literals instead of types.ParseMode
+            )
             self.logger.info("Telegram notification sent successfully.")
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             self.logger.error(f"Failed to send Telegram notification: {e}")
             raise
 
-    def send_new_waitlist_entry(self, name: str, email: str, comment: Optional[str] = None) -> None:
-        """
-        Sends a Telegram message specifically formatted for new waitlist entries.
-
-        Args:
-            name (str): Name of the user.
-            email (str): Email of the user.
-            comment (Optional[str]): Optional comment from the user.
-        """
+    async def send_new_waitlist_entry(self, name: str, email: str, comment: Optional[str] = None) -> None:
         message = f"🆕 *New Waitlist Entry:*\n\n*Name:* {name}\n*Email:* {email}"
         if comment:
             message += f"\n*Comment:* {comment}"
 
         self.logger.debug("Formatted message for new waitlist entry.")
-        self.send_message(message)
+        await self.send_message(message)
+
+    async def close(self) -> None:
+        await self.bot.session.close()
+
+if __name__ == "__main__":
+    async def main():
+        notifier = TelegramNotifier()
+        await notifier.send_new_waitlist_entry("John Doe", "john@example.com", "Looking forward!")
+        await notifier.close()
+
+    asyncio.run(main())

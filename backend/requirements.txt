@@ -35,3 +35,4 @@ databases
 asyncpg
 aiosqlite
 pydantic
+aiogram
