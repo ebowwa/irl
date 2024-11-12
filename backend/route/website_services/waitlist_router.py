@@ -18,7 +18,7 @@ from sqlalchemy import Column, DateTime, Integer, String, Table, func
 from sqlalchemy.exc import IntegrityError  # Import IntegrityError
 
 # 1. Import the TelegramNotifier class from the notification module
-from ..extensions_telegram.notification import TelegramNotifier  # Adjust the import path as necessary
+from utils.extensions_telegram.notification import TelegramNotifier  # Adjust the import path as necessary
 
 # Configure logging
 logging.basicConfig(
@@ -198,7 +198,7 @@ async def get_entry(entry_id: int):
     logger.info(f"Entry found: {entry}")
     return entry
 
-
+# TODO: DUE TO THE notifications with telegram we no longer need to make the list accessable via post requests i believe, its highly unsafe and bad user usage
 @router.get(
     "/", response_model=List[WaitlistEntry], summary="List all waitlist entries"
 )
