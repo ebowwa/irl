@@ -1,37 +1,58 @@
-python-dotenv
-python-multipart
-uvicorn[standard]
-websockets
-pydantic
-fastapi
-uvicorn
-wsproto
-numpy
-gunicorn
+# Environment and Multipart Utilities
+python-dotenv         # Manages environment variables
+python-multipart      # Parses multipart form data (necessary for file uploads in FastAPI)
 
-# aioredis @removed for now
-beautifulsoup4 # retrieving existing oai shared chats
-ollama
-openai
-anthropic
-fal-client # ai inference provider over image models
-tiktoken # counts tokens
-# gunicorn # in prod
-# firebase-admin @removed for now
-pyannote.audio
-torch
-torchaudio
-ngrok
+# ASGI Server and WebSocket Libraries
+uvicorn[standard]     # ASGI server for FastAPI in development
+uvicorn               # Base version; may not need both `uvicorn` and `uvicorn[standard]`
+websockets            # WebSocket support; might be redundant if `wsproto` covers all needs
+wsproto               # Low-level WebSocket protocol library, check redundancy with `websockets`
 
-# hydra-core --upgrade
-# nemo_toolkit
-# --upgrade huggingface_hub
-# moviepy
-google-generativeai
-aiofiles
-python-magic
-sqlalchemy
-databases
-asyncpg
-aiosqlite
-pydantic
+# FastAPI and Related Libraries
+pydantic              # Data validation and settings management for FastAPI (in multiple areas)
+fastapi               # API framework, main dependency
+
+# Gunicorn Server (Commented for Optional Use in Production)
+gunicorn              # Production-grade server; redundant if `uvicorn` works well alone
+
+# AI Inference and Token Counting Libraries
+ollama                # AI inference provider for image models (Falcon, etc.)
+openai                # OpenAI API for language models
+anthropic             # Anthropics language models
+fal-client            # AI inference provider for image models, likely overlaps with `ollama`
+tiktoken              # Token counting for OpenAI/Anthropic APIs
+
+# Speech and Audio Processing
+pyannote.audio        # Speaker diarization, possibly overkill if only minimal audio processing is needed
+torch                 # Core PyTorch, a dependency of `pyannote.audio`
+torchaudio            # Audio utilities for PyTorch, likely required if `pyannote.audio` used
+
+# ngrok for Local Development Tunneling
+ngrok                 # Provides a tunnel to localhost for testing
+
+# Google Generative AI
+google-generativeai   # Specific to Google’s Generative AI; confirm API requirements
+
+# Database Utilities and Async ORM
+sqlalchemy            # Core SQL ORM, check redundancy with `databases` or `asyncpg` if only one ORM is needed
+databases             # Async SQL toolkit, redundant if `sqlalchemy` alone suffices
+asyncpg               # PostgreSQL driver, necessary if using PostgreSQL (but could be redundant with `databases`)
+aiosqlite             # Async SQLite support, likely redundant with `databases` if both SQLite and PostgreSQL are used
+
+# Asynchronous File Handling
+aiofiles              # Async file I/O for handling files within FastAPI
+
+# Additional Parsing and Magic Libraries
+python-magic          # File type identification
+beautifulsoup4        # For web scraping; check if usage is frequent or if a lighter library suffices
+
+# Async Telegram Bot
+aiogram               # Async Telegram Bot framework; only retain if Telegram bot functionality is essential
+
+# Libraries Removed or Commented Out
+# aioredis            # Removed; reconsider if async Redis caching is required
+# firebase-admin      # Removed; only include if Firebase services become necessary
+# hydra-core          # Upgrade recommended if configuration complexity increases
+# nemo_toolkit        # Check necessity for additional audio models
+# huggingface_hub     # Upgrade recommended for Hugging Face API, though redundancy with `torch` possible
+# moviepy             # For video editing, only include if multimedia features are required
