@@ -17,7 +17,8 @@ data/waitlist_data.db
 *.swiftdoc
 *.swiftinterface
 *.swiftsourceinfo
-
+backend/data/app_user_identification.db
+backend/data/website_waitlist_data.db
 # Ignore Python cache and compiled files
 __pycache__/
 *.pyc
