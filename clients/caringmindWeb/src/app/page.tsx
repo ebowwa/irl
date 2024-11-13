@@ -18,7 +18,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams } from 'next/navigation'; // 2. Import useSearchParams for accessing URL query parameters
 
 const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/';
 // TODO: 
@@ -26,7 +25,7 @@ const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.ap
 // set a second definition for the url as base server
 // handleSubmit currently fetches the WAITLIST_ENDPOINT and we need to be sure not to break this 
 
-// 3. Define the form data interface without referral_source
+// 2. Define the form data interface without referral_source
 interface FormData {
   name: string;
   email: string;
@@ -35,7 +34,6 @@ interface FormData {
 
 const SplashPage: React.FC = () => {
   const { t, ready } = useTranslation(['home', 'common']);
-  const searchParams = useSearchParams(); // 4. Initialize useSearchParams to access URL parameters
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
@@ -44,7 +42,7 @@ const SplashPage: React.FC = () => {
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
   const { toast } = useToast();
 
-  // 5. Initialize formData without referral_source
+  // 3. Initialize formData without referral_source
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -69,13 +67,15 @@ const SplashPage: React.FC = () => {
     }
   ];
 
-  // 6. Capture referral_source from URL parameters or referrer
+  // 4. Capture referral_source from URL parameters or referrer
   useEffect(() => {
-    // 6.1. Extract UTM and custom referral parameters from the URL
-    const utmSource = searchParams.get('utm_source');
-    const utmMedium = searchParams.get('utm_medium');
-    const utmCampaign = searchParams.get('utm_campaign');
-    const customReferral = searchParams.get('referral');
+    // 4.1. Extract UTM and custom referral parameters from the URL
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const utmSource = urlParams.get('utm_source');
+    const utmMedium = urlParams.get('utm_medium');
+    const utmCampaign = urlParams.get('utm_campaign');
+    const customReferral = urlParams.get('referral');
 
     let referral = '';
 
@@ -85,11 +85,11 @@ const SplashPage: React.FC = () => {
     if (customReferral) referral += `referral:${customReferral};`;
 
     if (referral) {
-      // 6.2. Store referral_source in localStorage and cookies for persistence
+      // 4.2. Store referral_source in localStorage and cookies for persistence
       localStorage.setItem('referral_source', referral);
       document.cookie = `referral_source=${encodeURIComponent(referral)}; path=/; max-age=${60 * 60 * 24 * 30}`; // Expires in 30 days
     } else {
-      // 6.3. If no UTM params, check document.referrer
+      // 4.3. If no UTM params, check document.referrer
       const referrer = document.referrer;
       if (referrer) {
         // Only set if referral_source is not already set
@@ -100,7 +100,7 @@ const SplashPage: React.FC = () => {
           document.cookie = `referral_source=${encodeURIComponent(refSource)}; path=/; max-age=${60 * 60 * 24 * 30}`;
         }
       } else {
-        // 6.4. Try to retrieve referral_source from cookies if not present in URL or referrer
+        // 4.4. Try to retrieve referral_source from cookies if not present in URL or referrer
         const cookies = document.cookie.split(';').reduce((acc: { [key: string]: string }, cookie) => {
           const [key, value] = cookie.trim().split('=');
           acc[key] = value;
@@ -112,14 +112,14 @@ const SplashPage: React.FC = () => {
         }
       }
     }
-  }, [searchParams]); // 6.5. Dependency array includes searchParams to react to URL changes
+  }, []); // 4.5. Empty dependency array, runs once on mount
 
-  // 7. Set mounted to true after component mounts to avoid hydration mismatches
+  // 5. Set mounted to true after component mounts to avoid hydration mismatches
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // 8. Handle image carousel autoplay with hover pause
+  // 6. Handle image carousel autoplay with hover pause
   useEffect(() => {
     const timer = setInterval(() => {
       if (!isHovering) {
@@ -130,7 +130,7 @@ const SplashPage: React.FC = () => {
     return () => clearInterval(timer);
   }, [isHovering, images.length]);
 
-  // 9. Handle form input changes
+  // 7. Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -139,12 +139,12 @@ const SplashPage: React.FC = () => {
     }));
   };
 
-  // 10. Handle form submission, including referral_source
+  // 8. Handle form submission, including referral_source
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // 10.1. Retrieve referral_source from localStorage
+    // 8.1. Retrieve referral_source from localStorage
     const storedReferralSource = localStorage.getItem('referral_source') || '';
 
     try {
@@ -157,7 +157,7 @@ const SplashPage: React.FC = () => {
           name: formData.name,
           email: formData.email,
           comment: formData.comment,
-          referral_source: storedReferralSource // 10.2. Include referral_source in the POST request
+          referral_source: storedReferralSource // 8.2. Include referral_source in the POST request
         }),
       });
 
@@ -165,18 +165,18 @@ const SplashPage: React.FC = () => {
         throw new Error('Failed to join waitlist');
       }
 
-      // 10.3. Close the waitlist dialog and show the thank you dialog
+      // 8.3. Close the waitlist dialog and show the thank you dialog
       setIsWaitlistOpen(false);
       setShowThankYouDialog(true);
 
-      // 10.4. Reset the form
+      // 8.4. Reset the form
       setFormData({ name: '', email: '', comment: '' });
 
-      // 10.5. Optionally, remove the referral_source from localStorage and cookies after submission
+      // 8.5. Optionally, remove the referral_source from localStorage and cookies after submission
       localStorage.removeItem('referral_source');
       document.cookie = `referral_source=; path=/; max-age=0`; // Deletes the cookie
     } catch {
-      // 10.6. Show error toast if submission fails
+      // 8.6. Show error toast if submission fails
       toast({
         title: "Error",
         description: "There was a problem joining the waitlist. Please try again.",
@@ -187,7 +187,7 @@ const SplashPage: React.FC = () => {
     }
   };
 
-  // 11. Thank You Dialog Component
+  // 9. Thank You Dialog Component
   const ThankYouDialog: React.FC = () => (
     <Dialog open={showThankYouDialog} onOpenChange={setShowThankYouDialog}>
       <DialogContent className="sm:max-w-md">
@@ -217,7 +217,7 @@ const SplashPage: React.FC = () => {
     </Dialog>
   );
 
-  // 12. Prevent rendering until the component is mounted and translations are ready
+  // 10. Prevent rendering until the component is mounted and translations are ready
   if (!mounted || !ready) {
     return null;
   }
@@ -302,7 +302,7 @@ const SplashPage: React.FC = () => {
                   Be among the first to experience our platform. We&apos;ll notify you as soon as we launch!
                 </DialogDescription>
               </DialogHeader>
-              {/* 13. Remove the referral_source input field as it's handled in the background */}
+              {/* 11. Remove the referral_source input field as it's handled in the background */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
@@ -338,7 +338,7 @@ const SplashPage: React.FC = () => {
                     className="h-24"
                   />
                 </div>
-                {/* 14. Optionally, display referral_source for debugging purposes */}
+                {/* 12. Optionally, display referral_source for debugging purposes */}
                 {/* 
                 <div className="space-y-2">
                   <Label htmlFor="referral_source_display">Referral Source</Label>
