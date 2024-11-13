@@ -39,6 +39,7 @@ from route.features.text.llm_inference.OpenAIRoute import router as openai_route
 from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
 from route.features.whisper_socket import whisper_tts
 from route.website_services.waitlist_router import router as web_waitlist_crud_router
+from route.features.device_registration import router as device_registration_router
 from utils.server.FindTerminateServerPIDs import (  # sees If port is open if so closes the port so the server can init
     FindTerminateServerPIDs,
 )
@@ -83,9 +84,7 @@ app.include_router(share_oai_chats_router, prefix="/retrieve/externalchats")  # 
 
 
 ### ----------------------------------------------------------------------
-##      NEXT.JS SITE
-
-
+##      NEXT.JS SITEß
 app.include_router(web_waitlist_crud_router)
 
 ### -----------------------------------------------------------------------
@@ -93,7 +92,9 @@ app.include_router(web_waitlist_crud_router)
 app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")  # + /process-audio; TODO: on client side implement double-try correct user name
 app.include_router(analyze_truth_lie_v1_router)
 # TODO: one-liner & Day in the life Q's
-
+# -------------------------------------------------------------------------
+## Auth 
+app.include_router(device_registration_router)
 ### ------------------------------------------------------------------------
 ##      GEMINI
 app.include_router(gemini_router, prefix="/v1/post/gemini")

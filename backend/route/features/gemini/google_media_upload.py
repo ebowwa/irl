@@ -1,6 +1,6 @@
 # backend/route/features/upload_to_gemini.py
 # FastAPI router for uploading files (audio, video, image) to Google Gemini
-
+# audio works tbd about any other modalities 
 import os
 import tempfile
 from fastapi import APIRouter, UploadFile, File, HTTPException
