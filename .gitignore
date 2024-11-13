@@ -11,7 +11,7 @@ data/waitlist_data.db
 # Ignore macOS system files
 .DS_Store
 **/.DS_Store
-
+backend/data
 # Ignore Swift build artifacts
 *.swiftmodule
 *.swiftdoc
