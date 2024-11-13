@@ -24,7 +24,15 @@ const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.ap
 // the endpoint should just be the route
 // set a second definition for the url as base server
 // handleSubmit currently fetches the WAITLIST_ENDPOINT and we need to be sure not to break this 
-const SplashPage = () => {
+
+interface FormData {
+  name: string;
+  email: string;
+  comment: string;
+  referral_source?: string; // 1. Define the referral_source in the form data interface
+}
+
+const SplashPage: React.FC = () => {
   const { t, ready } = useTranslation(['home', 'common']);
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -34,10 +42,12 @@ const SplashPage = () => {
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
+  // 2. Extend the formData state to include referral_source
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
-    comment: ''
+    comment: '',
+    referral_source: '' // 3. Initialize referral_source in the form state
   });
 
   const images = [
@@ -72,6 +82,7 @@ const SplashPage = () => {
     return () => clearInterval(timer);
   }, [isHovering, images.length]);
 
+  // 4. Update the handleInputChange to handle referral_source
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -80,6 +91,7 @@ const SplashPage = () => {
     }));
   };
 
+  // 5. Modify the handleSubmit function to include referral_source
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -93,7 +105,8 @@ const SplashPage = () => {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          comment: formData.comment
+          comment: formData.comment,
+          referral_source: formData.referral_source // 6. Include referral_source in the POST request
         }),
       });
 
@@ -101,12 +114,12 @@ const SplashPage = () => {
         throw new Error('Failed to join waitlist');
       }
 
-      // Close the waitlist dialog and show the thank you dialog
+      // 7. Close the waitlist dialog and show the thank you dialog
       setIsWaitlistOpen(false);
       setShowThankYouDialog(true);
 
-      // Reset the form
-      setFormData({ name: '', email: '', comment: '' });
+      // 8. Reset the form
+      setFormData({ name: '', email: '', comment: '', referral_source: '' });
     } catch {
       toast({
         title: "Error",
@@ -119,7 +132,7 @@ const SplashPage = () => {
   };
 
   // Thank You Dialog Component
-  const ThankYouDialog = () => (
+  const ThankYouDialog: React.FC = () => (
     <Dialog open={showThankYouDialog} onOpenChange={setShowThankYouDialog}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -232,6 +245,7 @@ const SplashPage = () => {
                   Be among the first to experience our platform. We&apos;ll notify you as soon as we launch!
                 </DialogDescription>
               </DialogHeader>
+              {/* 9. Update the form to include the referral_source input field */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
@@ -265,6 +279,17 @@ const SplashPage = () => {
                     value={formData.comment}
                     onChange={handleInputChange}
                     className="h-24"
+                  />
+                </div>
+                {/* 10. Add the referral_source input field */}
+                <div className="space-y-2">
+                  <Label htmlFor="referral_source">Referral Source</Label>
+                  <Input
+                    id="referral_source"
+                    name="referral_source"
+                    placeholder="How did you hear about us?"
+                    value={formData.referral_source}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="flex justify-end">

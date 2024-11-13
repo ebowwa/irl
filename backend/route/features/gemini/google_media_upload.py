@@ -1,6 +1,9 @@
 # backend/route/features/upload_to_gemini.py
 # FastAPI router for uploading files (audio, video, image) to Google Gemini
 # audio works tbd about any other modalities 
+# TODO: the server responds with a url to the file, i would like to save each entry with a timestamp, googlesign:userdevice, and media type and full crud to use this data later on with the user experience
+# - we will likely modify/scale this db later with transcriptions, inferences ran on media, embedding, &OR otherwise
+# - will need the crud for the upload references the references will likely autodelete by googles genai server's within 48 hours and can have a max uploaded capacity of 20gbs(with scale this may grow so we should be able to redefine this)
 import os
 import tempfile
 from fastapi import APIRouter, UploadFile, File, HTTPException

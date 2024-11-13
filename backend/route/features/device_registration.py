@@ -1,4 +1,7 @@
 # backend/route/features/device_registration.py
+# TODO: 
+# - remove Telegram & notifications
+# - 
 # need to handle cases to the register endpoint to be sure check before crud op
 from datetime import datetime
 from typing import List, Optional
@@ -11,9 +14,6 @@ from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy import Column, DateTime, Integer, String, Table, func
 from sqlalchemy.exc import IntegrityError
-
-# Import the TelegramNotifier class from the notification module (if needed)
-# from utils.extensions_telegram.notification import TelegramNotifier  # Adjust the import path as necessary
 
 # Configure logging
 logging.basicConfig(
@@ -286,11 +286,7 @@ async def shutdown():
         logger.info("Database disconnected successfully.")
     except Exception as e:
         logger.error(f"Error disconnecting from the database: {e}")
-"""
+
     if notifier:
-        try:
-            await notifier.close()
-            logger.info("TelegramNotifier closed successfully.")
-        except Exception as e:
-            logger.error(f"Failed to close TelegramNotifier: {e}")
-"""
+        print()
+        pass
