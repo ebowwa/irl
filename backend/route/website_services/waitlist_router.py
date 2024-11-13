@@ -1,6 +1,6 @@
 # backend/route/website_services/waitlist_router.py 
 
-# may want to include referal source on the waitlist 
+# may want to include referral source on the waitlist 
 
 # will add telegram next to update me on waitlist status
 
@@ -60,7 +60,7 @@ logger.info(f"Using DATABASE_URL: {DATABASE_URL}")
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
 
-# Define the waitlist table with an additional 'comment' column
+# Define the waitlist table with an additional 'referral_source' column
 waitlist_table = Table(
     "waitlist",
     metadata,
@@ -68,7 +68,8 @@ waitlist_table = Table(
     Column("name", String, nullable=False),
     Column("email", String, unique=True, index=True, nullable=False),
     Column("ip_address", String, nullable=True),
-    Column("comment", String, nullable=True),  # New column
+    Column("comment", String, nullable=True),  # Existing column
+    Column("referral_source", String, nullable=True),  # New column for referral source
     Column("created_at", DateTime, default=func.now(), nullable=False),
 )
 
@@ -91,7 +92,8 @@ class WaitlistEntry(BaseModel):
     name: str
     email: EmailStr
     ip_address: Optional[str]
-    comment: Optional[str]  # New field
+    comment: Optional[str]
+    referral_source: Optional[str]  # New field
     created_at: datetime
 
     class Config:
@@ -101,13 +103,15 @@ class WaitlistEntry(BaseModel):
 class WaitlistCreate(BaseModel):
     name: str
     email: EmailStr
-    comment: Optional[str] = None  # New field
+    comment: Optional[str] = None
+    referral_source: Optional[str] = None  # New field
 
 
 class WaitlistUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
-    comment: Optional[str] = None  # New field
+    comment: Optional[str] = None
+    referral_source: Optional[str] = None  # New field
 
 
 # 2. Initialize a global variable for the TelegramNotifier
@@ -123,7 +127,7 @@ notifier: Optional[TelegramNotifier] = None
 )
 async def create_entry(entry: WaitlistCreate, request: Request):
     """
-    Create a new waitlist entry with the provided name, email, and optional comment.
+    Create a new waitlist entry with the provided name, email, comment, and optional referral_source.
     The client's IP address is recorded from the request headers.
     """
     logger.info(f"Creating entry: {entry.dict()}")
@@ -136,12 +140,13 @@ async def create_entry(entry: WaitlistCreate, request: Request):
         ip_address = request.client.host
     logger.info(f"Client IP address: {ip_address}")
 
-    # Insert the new entry, including the comment
+    # Insert the new entry, including the comment and referral_source
     query = waitlist_table.insert().values(
         name=entry.name,
         email=entry.email,
         ip_address=ip_address,
-        comment=entry.comment,  # Include comment
+        comment=entry.comment,
+        referral_source=entry.referral_source,  # Include referral_source
     )
     try:
         last_record_id = await database.execute(query)
@@ -170,7 +175,8 @@ async def create_entry(entry: WaitlistCreate, request: Request):
             await notifier.send_new_waitlist_entry(
                 name=new_entry['name'],
                 email=new_entry['email'],
-                comment=new_entry['comment']
+                comment=new_entry['comment'],
+                referral_source=new_entry['referral_source'],  # Include referral_source
             )
             logger.info(f"Telegram notification sent for entry ID: {last_record_id}")
         except Exception as e:
@@ -198,7 +204,7 @@ async def get_entry(entry_id: int):
     logger.info(f"Entry found: {entry}")
     return entry
 
-# TODO: DUE TO THE notifications with telegram we no longer need to make the list accessable via post requests i believe, its highly unsafe and bad user usage
+# TODO: DUE TO THE notifications with telegram we no longer need to make the list accessible via post requests i believe, its highly unsafe and bad user usage
 @router.get(
     "/", response_model=List[WaitlistEntry], summary="List all waitlist entries"
 )
@@ -218,12 +224,12 @@ async def list_entries():
 )
 async def update_entry(entry_id: int, entry: WaitlistUpdate):
     """
-    Update an existing waitlist entry's name, email, and/or comment.
+    Update an existing waitlist entry's name, email, comment, and/or referral_source.
     Only provided fields will be updated.
     """
     logger.info(f"Updating entry ID {entry_id} with data: {entry.dict(exclude_unset=True)}")
 
-    # Prepare the update data, including the comment
+    # Prepare the update data, including the comment and referral_source
     update_data = {k: v for k, v in entry.dict().items() if v is not None}
     if not update_data:
         logger.warning("No fields provided for update.")
@@ -261,6 +267,21 @@ async def update_entry(entry_id: int, entry: WaitlistUpdate):
         logger.warning(f"Entry with ID {entry_id} not found after update.")
         raise HTTPException(status_code=404, detail="Entry not found")
     logger.info(f"Updated entry retrieved: {updated_entry}")
+
+    # 4. Optionally, send a Telegram notification about the update
+    if notifier:
+        try:
+            await notifier.send_updated_waitlist_entry(
+                name=updated_entry['name'],
+                email=updated_entry['email'],
+                comment=updated_entry['comment'],
+                referral_source=updated_entry['referral_source'],
+            )
+            logger.info(f"Telegram notification sent for updated entry ID: {entry_id}")
+        except Exception as e:
+            logger.error(f"Failed to send Telegram notification for update: {e}")
+            # Decide whether to raise an exception or continue
+
     return updated_entry
 
 

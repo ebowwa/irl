@@ -141,6 +141,7 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
     logger.info(f"New device registration retrieved: {new_entry}")
 
     # Send Telegram notification
+    """
     if notifier:
         try:
             await notifier.send_new_device_registration(
@@ -152,7 +153,7 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
         except Exception as e:
             logger.error(f"Failed to send Telegram notification: {e}")
             # Optionally, decide whether to fail the request or continue
-
+    """
     return new_entry
 
 @router.get(
@@ -271,12 +272,12 @@ async def startup():
         raise
 
     # Initialize TelegramNotifier
-    global notifier
-    try:
+    #global notifier
+    #try:
         # notifier = TelegramNotifier()
-        logger.info("TelegramNotifier initialized successfully.")
-    except Exception as e:
-        logger.error(f"Failed to initialize TelegramNotifier: {e}")
+        #logger.info("TelegramNotifier initialized successfully.")
+    #except Exception as e:
+        #logger.error(f"Failed to initialize TelegramNotifier: {e}")
 
 @router.on_event("shutdown")
 async def shutdown():
@@ -287,6 +288,5 @@ async def shutdown():
     except Exception as e:
         logger.error(f"Error disconnecting from the database: {e}")
 
-    if notifier:
-        print()
-        pass
+    #if notifier:
+        #pass

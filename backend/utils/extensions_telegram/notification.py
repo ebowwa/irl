@@ -1,5 +1,6 @@
 # backend/route/extensions_telegram/notification.py
 # probably use this to notify me if the server ever goes down
+
 import os
 import logging
 from typing import Optional
@@ -49,12 +50,36 @@ class TelegramNotifier:
             self.logger.error(f"Failed to send Telegram notification: {e}")
             raise
 
-    async def send_new_waitlist_entry(self, name: str, email: str, comment: Optional[str] = None) -> None:
+    async def send_new_waitlist_entry(
+        self, 
+        name: str, 
+        email: str, 
+        comment: Optional[str] = None, 
+        referral_source: Optional[str] = None
+    ) -> None:
         message = f"🆕 *New Waitlist Entry:*\n\n*Name:* {name}\n*Email:* {email}"
         if comment:
             message += f"\n*Comment:* {comment}"
+        if referral_source:
+            message += f"\n*Referral Source:* {referral_source}"
 
         self.logger.debug("Formatted message for new waitlist entry.")
+        await self.send_message(message)
+
+    async def send_updated_waitlist_entry(
+        self, 
+        name: str, 
+        email: str, 
+        comment: Optional[str] = None, 
+        referral_source: Optional[str] = None
+    ) -> None:
+        message = f"🔄 *Waitlist Entry Updated*\n\n*Name:* {name}\n*Email:* {email}"
+        if comment:
+            message += f"\n*Comment:* {comment}"
+        if referral_source:
+            message += f"\n*Referral Source:* {referral_source}"
+
+        self.logger.debug("Formatted message for updated waitlist entry.")
         await self.send_message(message)
 
     async def close(self) -> None:
@@ -63,7 +88,7 @@ class TelegramNotifier:
 if __name__ == "__main__":
     async def main():
         notifier = TelegramNotifier()
-        await notifier.send_new_waitlist_entry("John Doe", "john@example.com", "Looking forward!")
+        await notifier.send_new_waitlist_entry("John Doe", "john@example.com", "Looking forward!", "referral:google")
         await notifier.close()
 
     asyncio.run(main())
