@@ -85,14 +85,3 @@ Your contributions have been instrumental in shaping our project!
 We just want to build cool stuff.. Use this at your own risk! Plz don't use if a citizen of the EU..
 
 ---
-
-## Git Hooks Setup
-This repository uses git hooks to maintain code quality and prevent committing unnecessary files. To install the hooks:
-
-1. Navigate to the repository root
-2. Run: `.hooks/install-hooks.sh`
-
-The hooks will prevent committing:
-- Python cache files (__pycache__, *.pyc, etc.)
-- macOS system files (.DS_Store)
-- And perform other code quality checks

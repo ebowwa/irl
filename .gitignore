@@ -4,7 +4,9 @@ backend/.env
 # Ignore Python virtual environment
 venv/
 env/
-
+backend/data/app_user_identification.db
+backend/data
+backend/data/website_waitlist_data.db
 data/waitlist_data.db
 # Ignore macOS system files
 .DS_Store

@@ -41,7 +41,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 #   backend/route/website_services/waitlist_router.py -> backend/route/website_services -> backend/route -> backend -> project root
 # - / "data" appends the "data" directory to the project root
 
-DATABASE_NAME = "waitlist_data.db"
+DATABASE_NAME = "website_waitlist_data.db"
 DATABASE_PATH = BASE_DIR / DATABASE_NAME
 
 # Ensure the directory exists
