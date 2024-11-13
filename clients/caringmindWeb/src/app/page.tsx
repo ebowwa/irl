@@ -126,10 +126,10 @@ const SplashPage = () => {
           <DialogTitle className="text-center text-xl">Thank You for Joining!</DialogTitle>
           <DialogDescription className="text-center">
             <p className="mt-2">
-              Thank you for your interest in our platform, {formData.name}! We're thrilled to have you join our waitlist.
+              Thank you for your interest in our platform, {formData.name}! We&apos;re thrilled to have you join our waitlist.
             </p>
             <p className="mt-4">
-              We'll keep you updated on our progress and notify you as soon as we launch. In the meantime, keep an eye on your inbox for exclusive updates and early access opportunities!
+              We&apos;ll keep you updated on our progress and notify you as soon as we launch. In the meantime, keep an eye on your inbox for exclusive updates and early access opportunities!
             </p>
           </DialogDescription>
         </DialogHeader>
@@ -226,7 +226,7 @@ const SplashPage = () => {
               <DialogHeader>
                 <DialogTitle>Join our Waitlist</DialogTitle>
                 <DialogDescription>
-                  Be among the first to experience our platform. We'll notify you as soon as we launch!
+                  Be among the first to experience our platform. We&apos;ll notify you as soon as we launch!
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
