@@ -16,7 +16,6 @@ from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import Column, DateTime, Integer, String, Table, func
 from sqlalchemy.exc import IntegrityError  # Import IntegrityError
-
 # 1. Import the TelegramNotifier class from the notification module
 from utils.extensions_telegram.notification import TelegramNotifier  # Adjust the import path as necessary
 

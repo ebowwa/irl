@@ -11,7 +11,7 @@ data/waitlist_data.db
 # Ignore macOS system files
 .DS_Store
 **/.DS_Store
-backend/data
+**caringmind/backend/data
 # Ignore Swift build artifacts
 *.swiftmodule
 *.swiftdoc
@@ -1950,3 +1950,8 @@ backend/waitlist_data.db
 backend/waitlist_data.db
 backend/waitlist_data.db
 backend/data/device_registration.db
+backend/data/app_user_identification.db
+backend/data/app_user_identification.db
+backend/data/app_user_identification.db
+backend/data/app_user_identification.db
+backend/data/app_user_identification.db
