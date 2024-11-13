@@ -73,7 +73,7 @@ setup_cors(app)
 # Socket-based routes (ping, whisper-tts)
 app.include_router(socket_ping.router)  # Ping route for WebSocket health check
 app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
-# Post 
+# Post
 app.include_router(claude_router, prefix="/v3/claude")
 app.include_router(hume_router, prefix="/api/v1/hume")  # Hume AI route (speech prosody, emotional analysis)
 app.include_router(embeddings_router, prefix="/text/embeddings")  # , prefix="/embeddings")
