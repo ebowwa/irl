@@ -83,7 +83,7 @@ app.include_router(analyze_truth_lie_v1_router)
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
 ## Auth 
-app.include_router(device_registration_router) # CRUD backend/data/device_registration.db `http://server/register/..`
+app.include_router(device_registration_router, prefix="/device") # CRUD backend/data/device_registration.db `http://server/register/..`
 ### ------------------------------------------------------------------------
 ##      GEMINI
 app.include_router(gemini_router, prefix="/v1/post/gemini")
