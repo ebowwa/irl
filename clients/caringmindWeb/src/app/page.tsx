@@ -20,7 +20,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
 const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/';
-
+// TODO: 
+// the endpoint should just be the route
+// set a second definition for the url as base server
+// handleSubmit currently fetches the WAITLIST_ENDPOINT and we need to be sure not to break this 
 const SplashPage = () => {
   const { t, ready } = useTranslation(['home', 'common']);
   const [mounted, setMounted] = useState(false);

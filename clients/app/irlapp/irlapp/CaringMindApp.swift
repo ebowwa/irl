@@ -16,7 +16,7 @@ import GoogleSignIn
 import GoogleSignInSwift
 
 @main
-struct IRLApp: App {
+struct irlApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     @StateObject private var router = AppRouterViewModel()

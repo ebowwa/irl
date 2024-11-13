@@ -2,7 +2,7 @@
 # You can make an audio file available to Gemini in either of the following ways:\n\nUpload the audio file prior to making the prompt request.\nProvide the audio file as inline data to the prompt request.
 import logging
 import os
-
+# TODO: need some way to have server update clients(nextjs website, swift apps) on the servers url and other constants
 import ngrok
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
@@ -14,24 +14,14 @@ from route.dev import socket_ping
 from route.features.gemini.gemini_post_v1 import router as gemini_router
 # from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
 from route.features.gemini.gemini_socket import router as gemini_socket_router
-from route.features.gemini.gemini_transcription_v1 import (
-    router as gemini_transcription_v1_router,
-)
+from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
 from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
-from route.features.gemini.user_name_upload_v1 import (
-    router as user_name_upload_v1_router,
-)
-from route.features.gemini.user_name_upload_v2 import (
-    router as user_name_upload_v2_router,
-)
-from route.features.gemini.user_name_upload_v3 import (
-    router as user_name_upload_v3_router,
-)
+from route.features.gemini.user_name_upload_v1 import router as user_name_upload_v1_router
+from route.features.gemini.user_name_upload_v2 import router as user_name_upload_v2_router
+from route.features.gemini.user_name_upload_v3 import router as user_name_upload_v3_router
 from route.features.gemini.google_media_upload import router as google_media_upload_router
 from route.features.humeclient import router as hume_router
-from route.features.image_generation.fast_sdxl import (
-    router as sdxl_router,  # Fast-SDXL model
-)
+from route.features.image_generation.fast_sdxl import router as sdxl_router 
 from route.features.text.chatgpt_share.index import router as share_oai_chats_router
 from route.features.text.embedding.index import router as embeddings_router
 from route.features.text.llm_inference.claude import router as claude_router
@@ -40,9 +30,7 @@ from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_route
 from route.features.whisper_socket import whisper_tts
 from route.website_services.waitlist_router import router as web_waitlist_crud_router
 from route.features.device_registration import router as device_registration_router
-from utils.server.FindTerminateServerPIDs import (  # sees If port is open if so closes the port so the server can init
-    FindTerminateServerPIDs,
-)
+from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs # sees If port is open if so closes the port so the server can init
 from utils.server.middleware import setup_cors
 from utils.server.ngrok_command import router as ngrok_commands_router
 from utils.server.ngrok_utils import start_ngrok
