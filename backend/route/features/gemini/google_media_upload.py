@@ -1,4 +1,4 @@
-# backend/route/features/upload_to_gemini.py
+# backend/route/features/gemini_media_upload.py
 # FastAPI router for uploading files (audio, video, image) to Google Gemini
 # audio works tbd about any other modalities 
 # TODO: the server responds with a url to the file, i would like to save each entry with a timestamp, googlesign:userdevice, and media type and full crud to use this data later on with the user experience

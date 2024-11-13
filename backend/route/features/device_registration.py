@@ -1,8 +1,8 @@
 # backend/route/features/device_registration.py
 # TODO: 
-# - remove Telegram & notifications
-# - 
-# need to handle cases to the register endpoint to be sure check before crud op
+# - integrate this db either as the same db for the google media upload (which is likely the cleanest) or map a new db to the entries of device registration
+# - Modularize so that db isnt created by both and intiialized by both + scalablility https://chatgpt.com/share/67350cef-7334-800f-9bd9-a2c2b633bd6d
+# - need to handle cases to the register endpoint to be sure check before crud op
 from datetime import datetime
 from typing import List, Optional
 from pathlib import Path
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 # === Database Configuration ===
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent / "data"
-DATABASE_NAME = "device_registration.db"
+DATABASE_NAME = "app_user_identification.db"
 DATABASE_PATH = BASE_DIR / DATABASE_NAME
 
 # Ensure the directory exists
@@ -51,7 +51,7 @@ device_registration_table = Table(
     Column("device_uuid", String, unique=True, index=True, nullable=False),
     Column("id_token", String, nullable=False),
     Column("access_token", String, nullable=False),
-    Column("referral_source", String, nullable=True),
+    # Column("referral_source", String, nullable=True),
     Column("created_at", DateTime, default=func.now(), nullable=False),
 )
 
@@ -76,7 +76,7 @@ class DeviceRegistrationEntry(BaseModel):
     device_uuid: str
     id_token: str
     access_token: str
-    referral_source: Optional[str]
+    # referral_source: Optional[str]
     created_at: datetime
 
     class Config:
@@ -87,14 +87,14 @@ class DeviceRegistrationCreate(BaseModel):
     device_uuid: str = Field(..., example="550e8400-e29b-41d4-a716-446655440000")
     id_token: str = Field(..., example="eyJhbGciOiJIUzI1NiIsInR5cCI6...")
     access_token: str = Field(..., example="ya29.a0AfH6SMC...")
-    referral_source: Optional[str] = Field(None, example="Campaign XYZ")
+    # referral_source: Optional[str] = Field(None, example="Campaign XYZ")
 
 class DeviceRegistrationUpdate(BaseModel):
     google_account_id: Optional[str] = None
     device_uuid: Optional[str] = None
     id_token: Optional[str] = None
     access_token: Optional[str] = None
-    referral_source: Optional[str] = None
+    # referral_source: Optional[str] = None
 
 # === Telegram Notifier Initialization ===
 
@@ -117,7 +117,7 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
         device_uuid=entry.device_uuid,
         id_token=entry.id_token,
         access_token=entry.access_token,
-        referral_source=entry.referral_source,
+        # referral_source=entry.referral_source,
     )
     try:
         last_record_id = await database.execute(query)
@@ -147,7 +147,7 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
             await notifier.send_new_device_registration(
                 google_account_id=new_entry['google_account_id'],
                 device_uuid=new_entry['device_uuid'],
-                referral_source=new_entry['referral_source']
+                # referral_source=new_entry['referral_source']
             )
             logger.info(f"Telegram notification sent for device registration ID: {last_record_id}")
         except Exception as e:
