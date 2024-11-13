@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/router'; // Import useRouter from Next.js
 
 const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/';
 // TODO: 
@@ -29,11 +30,12 @@ interface FormData {
   name: string;
   email: string;
   comment: string;
-  referral_source?: string; // 1. Define the referral_source in the form data interface
+  // referral_source?: string; // 1. Removed referral_source from the form data interface as it's handled in the background
 }
 
 const SplashPage: React.FC = () => {
   const { t, ready } = useTranslation(['home', 'common']);
+  const router = useRouter(); // Initialize useRouter
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
@@ -42,12 +44,11 @@ const SplashPage: React.FC = () => {
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
   const { toast } = useToast();
 
-  // 2. Extend the formData state to include referral_source
+  // 2. Initialize formData without referral_source
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
-    comment: '',
-    referral_source: '' // 3. Initialize referral_source in the form state
+    comment: ''
   });
 
   const images = [
@@ -68,6 +69,57 @@ const SplashPage: React.FC = () => {
     }
   ];
 
+  // 1. Capture referral_source from URL parameters or referrer
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const { query } = router;
+    let referral = '';
+
+    // Capture UTM parameters
+    const utmSource = query.utm_source as string | undefined;
+    const utmMedium = query.utm_medium as string | undefined;
+    const utmCampaign = query.utm_campaign as string | undefined;
+
+    if (utmSource) referral += `source:${utmSource};`;
+    if (utmMedium) referral += `medium:${utmMedium};`;
+    if (utmCampaign) referral += `campaign:${utmCampaign};`;
+
+    // Check for a custom referral parameter
+    if (!referral && query.referral) {
+      referral = `referral:${query.referral}`;
+    }
+
+    // If referral is found, store it in local storage and cookies
+    if (referral) {
+      localStorage.setItem('referral_source', referral);
+      // Optionally, set a cookie for referral_source
+      document.cookie = `referral_source=${encodeURIComponent(referral)}; path=/; max-age=${60 * 60 * 24 * 30}`; // Expires in 30 days
+    } else {
+      // If no referral in URL, try to get it from referrer
+      const referrer = document.referrer;
+      if (referrer) {
+        const existingReferral = localStorage.getItem('referral_source');
+        if (!existingReferral) { // Only set if not already set
+          const refSource = `referrer:${referrer}`;
+          localStorage.setItem('referral_source', refSource);
+          document.cookie = `referral_source=${encodeURIComponent(refSource)}; path=/; max-age=${60 * 60 * 24 * 30}`;
+        }
+      } else {
+        // Try to retrieve from cookies
+        const cookies = document.cookie.split(';').reduce((acc: { [key: string]: string }, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {});
+
+        if (cookies.referral_source) {
+          localStorage.setItem('referral_source', decodeURIComponent(cookies.referral_source));
+        }
+      }
+    }
+  }, [router.isReady, router.query]);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -82,7 +134,7 @@ const SplashPage: React.FC = () => {
     return () => clearInterval(timer);
   }, [isHovering, images.length]);
 
-  // 4. Update the handleInputChange to handle referral_source
+  // 3. Update the handleInputChange to exclude referral_source
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -91,10 +143,13 @@ const SplashPage: React.FC = () => {
     }));
   };
 
-  // 5. Modify the handleSubmit function to include referral_source
+  // 4. Modify the handleSubmit function to include referral_source from local storage
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Retrieve referral_source from local storage
+    const storedReferralSource = localStorage.getItem('referral_source') || '';
 
     try {
       const response = await fetch(WAITLIST_ENDPOINT, {
@@ -106,7 +161,7 @@ const SplashPage: React.FC = () => {
           name: formData.name,
           email: formData.email,
           comment: formData.comment,
-          referral_source: formData.referral_source // 6. Include referral_source in the POST request
+          referral_source: storedReferralSource // Include referral_source
         }),
       });
 
@@ -114,12 +169,16 @@ const SplashPage: React.FC = () => {
         throw new Error('Failed to join waitlist');
       }
 
-      // 7. Close the waitlist dialog and show the thank you dialog
+      // Close the waitlist dialog and show the thank you dialog
       setIsWaitlistOpen(false);
       setShowThankYouDialog(true);
 
-      // 8. Reset the form
-      setFormData({ name: '', email: '', comment: '', referral_source: '' });
+      // Reset the form
+      setFormData({ name: '', email: '', comment: '' });
+
+      // Optionally, remove the referral_source from local storage and cookies after submission
+      localStorage.removeItem('referral_source');
+      document.cookie = `referral_source=; path=/; max-age=0`; // Delete the cookie
     } catch {
       toast({
         title: "Error",
@@ -245,7 +304,7 @@ const SplashPage: React.FC = () => {
                   Be among the first to experience our platform. We&apos;ll notify you as soon as we launch!
                 </DialogDescription>
               </DialogHeader>
-              {/* 9. Update the form to include the referral_source input field */}
+              {/* 5. Remove the referral_source input field */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
@@ -281,17 +340,19 @@ const SplashPage: React.FC = () => {
                     className="h-24"
                   />
                 </div>
-                {/* 10. Add the referral_source input field */}
+                {/* 6. Optionally, display referral_source for debugging (remove in production) */}
+                {/* 
                 <div className="space-y-2">
-                  <Label htmlFor="referral_source">Referral Source</Label>
+                  <Label htmlFor="referral_source_display">Referral Source</Label>
                   <Input
-                    id="referral_source"
-                    name="referral_source"
-                    placeholder="How did you hear about us?"
-                    value={formData.referral_source}
-                    onChange={handleInputChange}
+                    id="referral_source_display"
+                    name="referral_source_display"
+                    placeholder="Referral Source (auto)"
+                    value={storedReferralSource}
+                    readOnly
                   />
                 </div>
+                */}
                 <div className="flex justify-end">
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? 'Submitting...' : 'Join Waitlist'}
