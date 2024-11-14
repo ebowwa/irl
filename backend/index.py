@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from route.dev import socket_ping
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
 from route.features.gemini.gemini_post_v1 import router as gemini_router
+from route.features.gemini.gemini_post_v1B import router as gemini_v1B_router
 # from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
 from route.features.gemini.gemini_socket import router as gemini_socket_router
 from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
@@ -84,9 +85,13 @@ app.include_router(analyze_truth_lie_v1_router)
 # -------------------------------------------------------------------------
 ## Auth 
 app.include_router(device_registration_router, prefix="/device") # CRUD backend/data/device_registration.db `http://server/register/..`
+app.include_router(device_registration_router)
+
 ### ------------------------------------------------------------------------
 ##      GEMINI
 app.include_router(gemini_router, prefix="/v1/post/gemini")
+app.include_router(gemini_v1B_router, prefix="/v1B/post/gemini")
+
 # app.include_router(gemini_post_v2_router, prefix="/v2/post/gemini")
 app.include_router(gemini_socket_router, prefix="/socket/gemini")
 app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # + add `/ws/transcribe`

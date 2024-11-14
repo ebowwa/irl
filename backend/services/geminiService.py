@@ -1,6 +1,7 @@
 # services/gemini_service.py
 
 import os
+import asyncio
 import google.generativeai as genai
 from utils.gemini_config import MODEL_VARIANTS, SUPPORTED_RESPONSE_MIME_TYPES, SUPPORTED_LANGUAGES
 from fastapi import HTTPException
@@ -20,7 +21,7 @@ def configure_gemini():
     genai.configure(api_key=GOOGLE_API_KEY)
     logger.info("Gemini API client configured.")
 
-def generate_content(model: str, contents: list, config: dict, safety_settings: dict, stream: bool):
+async def generate_content(model: str, contents: list, config: dict, safety_settings: dict, stream: bool):
     """
     Generates content using the specified Gemini model and configuration.
 
@@ -31,8 +32,10 @@ def generate_content(model: str, contents: list, config: dict, safety_settings: 
         safety_settings (dict): Safety settings for content generation.
         stream (bool): Whether to stream the response.
 
+    Yields:
+        str: Chunks of the response when streaming.
     Returns:
-        response: The raw response object from the Gemini API.
+        response: The full response object when not streaming.
     """
     logger.info(f"Generating content using model: {model}")
 
@@ -55,16 +58,39 @@ def generate_content(model: str, contents: list, config: dict, safety_settings: 
     gemini_model = genai.GenerativeModel(model_name=model)
     logger.info("Initialized Gemini GenerativeModel.")
 
-    # Call the model to generate content
     try:
-        response = gemini_model.generate_content(
-            contents=contents,
-            generation_config=config,
-            safety_settings=safety_settings,
-            stream=stream
-        )
-        logger.info("Content generation successful.")
-        return response  # Return the raw response object
+        if stream:
+            # Handle streaming response
+            loop = asyncio.get_event_loop()
+
+            def blocking_stream():
+                return gemini_model.generate_content(
+                    contents=contents,
+                    generation_config=config,
+                    safety_settings=safety_settings,
+                    stream=True
+                )
+
+            response_iterator = await loop.run_in_executor(None, blocking_stream)
+
+            for chunk in response_iterator:
+                # Adjust based on the actual structure of the chunk
+                yield chunk.text if hasattr(chunk, 'text') else chunk
+        else:
+            # Handle non-streaming response
+            loop = asyncio.get_event_loop()
+
+            def blocking_call():
+                return gemini_model.generate_content(
+                    contents=contents,
+                    generation_config=config,
+                    safety_settings=safety_settings,
+                    stream=False
+                )
+
+            response = await loop.run_in_executor(None, blocking_call)
+            logger.info("Content generation successful.")
+            return response
     except Exception as e:
         logger.error(f"Generation failed: {e}")
         raise HTTPException(status_code=500, detail=f"Generation failed: {e}")

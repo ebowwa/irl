@@ -1,4 +1,4 @@
-//
+/**
 //  TranscriptEntry.swift
 //   CaringMind
 //
@@ -87,3 +87,4 @@ extension TranscriptEntry: Equatable {
     }
 }
 
+*/

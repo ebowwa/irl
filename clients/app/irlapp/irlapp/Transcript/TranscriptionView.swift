@@ -1,4 +1,4 @@
-//
+/**
 //  TranscriptionView.swift
 //   CaringMind
 //
@@ -201,3 +201,4 @@ struct CalibrationView: View {
         }
     }
 }
+*/

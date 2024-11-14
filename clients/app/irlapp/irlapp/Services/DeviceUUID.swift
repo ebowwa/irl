@@ -1,10 +1,9 @@
 //
 //  DeviceUUID.swift
-//   CaringMind
+//  CaringMind
 //
 //  Created by Elijah Arbee on 11/12/24.
 //
-
 
 import Foundation
 import Security
@@ -29,7 +28,12 @@ struct DeviceUUID {
                 kSecAttrAccount as String: key,
                 kSecValueData as String: data
             ]
-            SecItemAdd(query as CFDictionary, nil)
+            // Delete any existing item before adding to prevent duplicates
+            SecItemDelete(query as CFDictionary)
+            let status = SecItemAdd(query as CFDictionary, nil)
+            if status != errSecSuccess {
+                print("Failed to save UUID to Keychain with status: \(status)")
+            }
         }
     }
 
@@ -50,3 +54,27 @@ struct DeviceUUID {
         return nil
     }
 }
+//
+//  RegistrationStatus.swift
+//  CaringMind
+//
+//  Created by Elijah Arbee on 11/12/24.
+//
+
+import Foundation
+
+struct RegistrationStatus {
+    private static let registrationKey = "isDeviceRegistered"
+
+    static func isDeviceRegistered() -> Bool {
+        let status = UserDefaults.standard.bool(forKey: registrationKey)
+        print("RegistrationStatus.isDeviceRegistered: \(status)")
+        return status
+    }
+
+    static func setDeviceRegistered(_ registered: Bool) {
+        UserDefaults.standard.set(registered, forKey: registrationKey)
+        print("RegistrationStatus.setDeviceRegistered: \(registered)")
+    }
+}
+

@@ -1,4 +1,4 @@
-//
+/**
 //  Created by Elijah Arbee on 11/2/24.
 //
 
@@ -482,3 +482,4 @@ class TranscriptionManager: NSObject, ObservableObject {
         print("TranscriptionManager deinitialized and resources cleaned up.")
     }
 }
+*/
