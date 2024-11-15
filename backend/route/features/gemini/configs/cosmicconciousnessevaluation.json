@@ -1,0 +1,39 @@
+{
+    "prompt_text": "# Cosmic Consciousness Evaluation\nEvaluate the user’s speech for signs of cosmic consciousness or awareness of a universal mind. Look for expressions that suggest enlightenment, existential awe, or a connection to cosmic truths. Identify key phrases that may resonate with universal principles or reveal a profound sense of unity.\n\n# Steps\n\n1.) Transcribe the speech, focusing on any expressions of wonder or unity.\n2.) Detect language that suggests cosmic or existential awareness.\n3.) Measure the level of cosmic consciousness or alignment with universal truths.\n4.) Provide insights into the user’s perceived connection to the cosmos.\n\n# Important Notes\n- Avoid traditional emotional analysis; focus on grand, existential themes.\n- Look beyond literal meanings, sensing for deeper cosmic or universal resonance.\n",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": [
+        "transcription",
+        "cosmic_expressions",
+        "consciousness_level",
+        "universal_alignment",
+        "cosmic_insight_summary"
+      ],
+      "properties": {
+        "transcription": {
+          "type": "STRING",
+          "description": "Transcription of the user's speech."
+        },
+        "cosmic_expressions": {
+          "type": "ARRAY",
+          "items": {
+            "type": "STRING"
+          },
+          "description": "Words or phrases expressing cosmic awareness."
+        },
+        "consciousness_level": {
+          "type": "INTEGER",
+          "description": "Perceived level of cosmic consciousness (e.g., 1-10)."
+        },
+        "universal_alignment": {
+          "type": "STRING",
+          "description": "Degree of alignment with universal truths or principles."
+        },
+        "cosmic_insight_summary": {
+          "type": "STRING",
+          "description": "Summary of cosmic consciousness insights."
+        }
+      }
+    }
+  }
+  

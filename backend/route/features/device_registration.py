@@ -1,5 +1,5 @@
 # backend/route/features/device_registration.py
-
+# https://chatgpt.com/share/6736848d-b160-800f-a532-f6dabf4d1d23
 """
 Device Registration Module
 ==========================

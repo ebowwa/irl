@@ -1,0 +1,42 @@
+{
+    "prompt_text": "# Temporal Identity Flux\nAnalyze the user's speech for shifts in their sense of time and identity. Look for language that oscillates between past, present, and future influences, and determine if they display a unified or fragmented temporal identity. Note any signs of timelessness or temporal fluidity in their self-expression.\n\n# Steps\n\n1.) Transcribe the user’s speech, focusing on time-based language.\n2.) Detect shifts between past, present, and future influences.\n3.) Assess any indications of temporal fluidity or timelessness.\n4.) Summarize their temporal identity profile, noting unified or fragmented states.\n\n# Important Notes\n- Do not interpret statements in a linear manner; look for cyclical or fluid temporal cues.\n- Capture both literal and abstract expressions of time.\n",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": [
+        "transcription",
+        "temporal_markers",
+        "identity_unity",
+        "timelessness_indicators",
+        "temporal_profile"
+      ],
+      "properties": {
+        "transcription": {
+          "type": "STRING",
+          "description": "Transcription of the user's speech."
+        },
+        "temporal_markers": {
+          "type": "ARRAY",
+          "items": {
+            "type": "STRING"
+          },
+          "description": "Phrases or words indicating past, present, or future identity."
+        },
+        "identity_unity": {
+          "type": "STRING",
+          "description": "Assessment of identity unity across temporal states."
+        },
+        "timelessness_indicators": {
+          "type": "ARRAY",
+          "items": {
+            "type": "STRING"
+          },
+          "description": "Markers indicating timelessness or temporal fluidity."
+        },
+        "temporal_profile": {
+          "type": "STRING",
+          "description": "Summary of the user's temporal identity profile."
+        }
+      }
+    }
+  }
+  

@@ -83,7 +83,7 @@ metadata.create_all(engine)
 logger.info("Media uploads table created or already exist.")
 
 # 2. Initialize the FastAPI router
-router = APIRouter(prefix="", tags=["Gemini Media Upload"])
+router = APIRouter()
 
 # 3. Retrieve and configure the Gemini API key
 google_api_key = os.getenv("GOOGLE_API_KEY")

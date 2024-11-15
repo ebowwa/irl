@@ -14,15 +14,20 @@ from route.dev import socket_ping
 from route.features.gemini.gemini_post_v1 import router as gemini_router
 from route.features.gemini.gemini_post_v1B import router as gemini_v1B_router
 # from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
+from route.features.gemini.gemini_postv3 import router as gemini_post_v3_router
 from route.features.gemini.gemini_socket import router as gemini_socket_router
 from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
 from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 from route.features.gemini.user_name_upload_v1 import router as user_name_upload_v1_router
 from route.features.gemini.user_name_upload_v2 import router as user_name_upload_v2_router
 from route.features.gemini.user_name_upload_v3 import router as user_name_upload_v3_router
+from route.features.gemini.user_name_upload_v4 import router as user_name_upload_v4_router
+from route.features.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
+from route.features.gemini.user_name_upload_v6 import router as user_name_upload_v6_router
 from route.features.gemini.google_media_upload import router as google_media_upload_router
 from route.features.humeclient import router as hume_router
 from route.features.gemini.google_media_upload_v2 import router as google_media_upload_v2_router
+from route.features.gemini.google_media_upload_v3 import router as google_media_upload_v3_router
 from route.features.image_generation.fast_sdxl import router as sdxl_router 
 from route.features.text.chatgpt_share.index import router as share_oai_chats_router
 from route.features.text.embedding.index import router as embeddings_router
@@ -80,12 +85,14 @@ app.include_router(web_waitlist_crud_router) # CRUD backend/data/waitlist_data.d
 ### -----------------------------------------------------------------------
 ##      ONBOARDING (NO-AUTH)
 app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")  # + /process-audio; TODO: on client side implement double-try correct user name
+app.include_router(user_name_upload_v4_router, prefix="/onboarding/v4")  # + /process-audio; TODO: on client side implement double-try correct user name
+app.include_router(user_name_upload_v5_router, prefix="/onboarding/v5") 
+app.include_router(user_name_upload_v6_router, prefix="/onboarding/v6")
 app.include_router(analyze_truth_lie_v1_router)
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
 ## Auth 
 app.include_router(device_registration_router, prefix="/device") # CRUD backend/data/device_registration.db `http://server/register/..`
-app.include_router(device_registration_router)
 
 ### ------------------------------------------------------------------------
 ##      GEMINI
@@ -97,6 +104,8 @@ app.include_router(gemini_socket_router, prefix="/socket/gemini")
 app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # + add `/ws/transcribe`
 app.include_router(google_media_upload_router) # `https://server/upload-to-gemini`
 app.include_router(google_media_upload_v2_router, prefix="/v2") # `https://server/v2/upload-to-gemini`
+app.include_router(google_media_upload_v3_router, prefix="/v3")
+app.include_router(gemini_post_v3_router, prefix="/v3") 
 
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
