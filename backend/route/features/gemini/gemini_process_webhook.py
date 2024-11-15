@@ -7,7 +7,6 @@ import json
 from fastapi import HTTPException
 import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
-
 # Configure logging
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,45 @@
+{
+  "prompt_text": "# Audio Transcription Analysis\nProvide a detailed transcription of the audio with accurate timing information for each segment. Focus on capturing every spoken word and maintaining proper sequence.\n\n# Analysis Requirements:\n1. Transcribe all spoken content with high accuracy\n2. Include precise start and end timestamps\n3. Maintain proper sequence order\n\nPlease transcribe the audio with complete timing details.",
+  "response_schema": {
+    "type": "OBJECT",
+    "required": ["segments"],
+    "properties": {
+      "segments": {
+        "type": "ARRAY",
+        "description": "Array of transcription segments",
+        "items": {
+          "type": "OBJECT",
+          "required": [
+            "transcription_text",
+            "speaker_id",
+            "start_time",
+            "end_time",
+            "sequence_id"
+          ],
+          "properties": {
+            "transcription_text": {
+              "type": "STRING",
+              "description": "The transcribed text for this segment"
+            },
+            "speaker_id": {
+              "type": "STRING",
+              "description": "Identifier for the speaker in this segment"
+            },
+            "start_time": {
+              "type": "STRING",
+              "description": "Start timestamp of the segment"
+            },
+            "end_time": {
+              "type": "STRING",
+              "description": "End timestamp of the segment"
+            },
+            "sequence_id": {
+              "type": "INTEGER",
+              "description": "Sequential identifier for ordering segments"
+            }
+          }
+        }
+      }
+    }
+  }
+}

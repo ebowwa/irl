@@ -20,7 +20,6 @@ router = APIRouter()
 #    tags=["Gemini Models V2"],
 #    responses={401: {"description": "Unauthorized"}}
 
-
 @router.post("/generate", summary="Generate Content with Media Support")
 async def generate_content_route(
     model: str = Form(..., description="Model variant to use", example="gemini-1.5-flash-8b"),
