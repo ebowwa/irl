@@ -11,10 +11,10 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from route.dev import socket_ping
 # from route.post.audio.transcription.falIndex import router as transcription_router removed to use gemini
-from route.features.gemini.gemini_post_v1 import router as gemini_router
-from route.features.gemini.gemini_post_v1B import router as gemini_v1B_router
+# from route.features.gemini.gemini_post_v1 import router as gemini_router
+# from route.features.gemini.gemini_post_v1B import router as gemini_v1B_router
 # from route.features.gemini.gemini_post_v2 import router as gemini_post_v2_router
-from route.features.gemini.gemini_postv3 import router as gemini_post_v3_router
+# from route.features.gemini.gemini_postv3 import router as gemini_post_v3_router
 # from route.features.gemini.@depreciated.gemini_socket import router as gemini_socket_router
 from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
 from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
@@ -23,7 +23,7 @@ from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_
 # from route.features.gemini.user_name_upload_v3 import router as user_name_upload_v3_router
 # from route.features.gemini.user_name_upload_v4 import router as user_name_upload_v4_router
 from route.features.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
-from route.features.gemini.user_name_upload_v6 import router as user_name_upload_v6_router
+from route.features.gemini.gemini_audio_handling import router as user_name_upload_v6_router
 from route.features.gemini.google_media_upload import router as google_media_upload_router
 from route.features.humeclient import router as hume_router
 from route.features.gemini.google_media_upload_v2 import router as google_media_upload_v2_router
@@ -96,8 +96,8 @@ app.include_router(device_registration_router, prefix="/device") # CRUD backend/
 
 ### ------------------------------------------------------------------------
 ##      GEMINI
-app.include_router(gemini_router, prefix="/v1/post/gemini")
-app.include_router(gemini_v1B_router, prefix="/v1B/post/gemini")
+# app.include_router(gemini_router, prefix="/v1/post/gemini")
+# app.include_router(gemini_v1B_router, prefix="/v1B/post/gemini")
 
 # app.include_router(gemini_post_v2_router, prefix="/v2/post/gemini")
 # app.include_router(gemini_socket_router, prefix="/socket/gemini")
@@ -105,7 +105,7 @@ app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # + add `/
 app.include_router(google_media_upload_router) # `https://server/upload-to-gemini`
 app.include_router(google_media_upload_v2_router, prefix="/v2") # `https://server/v2/upload-to-gemini`
 app.include_router(google_media_upload_v3_router, prefix="/v3")
-app.include_router(gemini_post_v3_router, prefix="/v3") 
+# app.include_router(gemini_post_v3_router, prefix="/v3") 
 
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
