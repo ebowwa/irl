@@ -1,17 +1,14 @@
-# backend/route/features/upload_endpoint.py
-# FastAPI router for uploading audio and initiating Gemini processing
-
 import os
-import tempfile
-from fastapi import APIRouter, UploadFile, File, HTTPException
+import asyncio
+from fastapi import APIRouter, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
+from typing import List, Optional, Union
 from dotenv import load_dotenv
 import google.generativeai as genai
 import logging
 import traceback
-import os
-
-from .gemini_process_webhook import process_with_gemini_webhook
+from tenacity import retry, stop_after_attempt, wait_exponential
+from .gemini_process_webhook_v2 import process_with_gemini_webhook
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -23,72 +20,169 @@ load_dotenv()
 # Initialize FastAPI router
 router = APIRouter()
 
-# Retrieve and configure the Gemini API key
+# Configure Gemini
 google_api_key = os.getenv("GOOGLE_API_KEY")
 if not google_api_key:
     raise EnvironmentError("GOOGLE_API_KEY not found in environment variables.")
 
 genai.configure(api_key=google_api_key)
 
-def upload_to_gemini(file_path: str, mime_type: str = None):
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+def upload_to_gemini(file_content: bytes, mime_type: Optional[str] = None) -> object:
     """
-    Uploads the given file to Gemini.
-
+    Uploads the given file content directly to Gemini with retry logic.
+    
     Args:
-        file_path (str): Path to the file to upload.
-        mime_type (str, optional): MIME type of the file. Defaults to None.
-
+        file_content (bytes): The file content to upload.
+        mime_type (str, optional): MIME type of the file.
+    
     Returns:
-        Uploaded file object.
+        object: Uploaded file object.
+    
+    Raises:
+        Exception: If upload fails after retries.
     """
     try:
-        uploaded_file = genai.upload_file(file_path, mime_type=mime_type)
-        logger.info(f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}")
-        return uploaded_file  # Return the file object directly
+        import io
+        file_obj = io.BytesIO(file_content)
+        uploaded_file = genai.upload_file(file_obj, mime_type=mime_type)
+        logger.info(f"Successfully uploaded file as: {uploaded_file.uri}")
+        return uploaded_file
     except Exception as e:
         logger.error(f"Error uploading file: {e}")
         raise
 
-@router.post("/process-audio")
-async def process_audio(file: UploadFile = File(...)):
+async def process_single_file(file: UploadFile) -> object:
     """
-    Endpoint to upload an audio file and send it to the internal Gemini webhook for processing.
-
+    Process a single file asynchronously.
+    
     Args:
-        file (UploadFile): The audio file to process.
-
+        file (UploadFile): The file to process.
+    
     Returns:
-        JSONResponse: The analysis result from Gemini.
+        object: Uploaded file object
+    
+    Raises:
+        HTTPException: If file processing fails.
     """
-    supported_mime_types = [
-        "audio/wav",
-        "audio/mp3",
-        "audio/aiff",
-        "audio/aac",
-        "audio/ogg",
-        "audio/flac",
-    ]
-    if file.content_type not in supported_mime_types:
+    try:
+        content = await file.read()
+        loop = asyncio.get_running_loop()
+        uploaded_file = await loop.run_in_executor(
+            None,
+            lambda: upload_to_gemini(content, file.content_type)
+        )
+        return uploaded_file
+    except Exception as e:
+        logger.error(f"Error processing file {file.filename}: {e}")
         raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported file type: {file.content_type}. Supported types: {supported_mime_types}",
+            status_code=500,
+            detail=f"Failed to process file {file.filename}: {str(e)}"
         )
 
+@router.post("/process-audio")
+async def process_audio(
+    files: List[UploadFile] = File(...),
+    prompt_type: str = Query("default", description="Type of prompt and schema to use"),
+    batch: bool = Query(False, description="Flag for batch processing")
+):
+    """
+    Process multiple audio files. If `batch=True`, process them as a single batch.
+    
+    Args:
+        files (List[UploadFile]): List of uploaded audio files.
+        prompt_type (str): Type of prompt and schema to use.
+        batch (bool): Flag indicating whether to process files in batch.
+    
+    Returns:
+        JSONResponse: Results of the processing.
+    """
+    supported_mime_types = {
+        "audio/wav", "audio/mp3", "audio/aiff",
+        "audio/aac", "audio/ogg", "audio/flac"
+    }
+
+    if not files:
+        raise HTTPException(status_code=400, detail="No files uploaded.")
+
+    # Validate file types
+    for file in files:
+        if file.content_type not in supported_mime_types:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported file type: {file.content_type}. Supported types: {supported_mime_types}"
+            )
+
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as temp_file:
-            temp_file.write(await file.read())
-            temp_file_path = temp_file.name
+        if batch:
+            # Collect all file contents for batch processing
+            batch_contents = []
+            for file in files:
+                content = await file.read()
+                batch_contents.append({
+                    "content": content,
+                    "mime_type": file.content_type,
+                    "name": file.filename
+                })
 
-        uploaded_file = upload_to_gemini(temp_file_path, mime_type=file.content_type)
-        
-        # Call the internal webhook for Gemini processing
-        gemini_result = process_with_gemini_webhook(uploaded_file)
+            logger.info(f"Processing {len(batch_contents)} files in batch mode.")
 
-        os.remove(temp_file_path)
+            # Process batch with Gemini webhook
+            gemini_result = await asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda: process_with_gemini_webhook(
+                    uploaded_files=batch_contents,
+                    prompt_type=prompt_type,
+                    batch=True
+                )
+            )
 
-        return JSONResponse(content=gemini_result)
+            return JSONResponse(content={"results": [gemini_result]})
+
+        else:
+            # Process files individually
+            processing_tasks = [process_single_file(file) for file in files]
+            uploaded_files = await asyncio.gather(*processing_tasks, return_exceptions=True)
+
+            results = []
+            for file, uploaded_file in zip(files, uploaded_files):
+                if isinstance(uploaded_file, Exception):
+                    logger.error(f"Error processing file {file.filename}: {uploaded_file}")
+                    results.append({
+                        "file": file.filename,
+                        "status": "failed",
+                        "error": str(uploaded_file)
+                    })
+                    continue
+
+                try:
+                    gemini_result = await asyncio.get_event_loop().run_in_executor(
+                        None,
+                        lambda: process_with_gemini_webhook(
+                            uploaded_files=uploaded_file,
+                            prompt_type=prompt_type,
+                            batch=False
+                        )
+                    )
+                    results.append({
+                        "file": file.filename,
+                        "status": "processed",
+                        "data": gemini_result
+                    })
+                except Exception as e:
+                    logger.error(f"Error in Gemini processing for {file.filename}: {e}")
+                    results.append({
+                        "file": file.filename,
+                        "status": "failed",
+                        "error": str(e)
+                    })
+
+            return JSONResponse(content={"results": results})
 
     except Exception as e:
-        logger.error(f"Error processing audio: {e}")
+        logger.error(f"Unexpected error in process_audio: {e}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Internal Server Error. Please check the server logs.")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal Server Error. Please check the server logs."
+        )

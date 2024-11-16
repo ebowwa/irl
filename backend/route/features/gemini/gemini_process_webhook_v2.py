@@ -134,12 +134,8 @@ def process_with_gemini_webhook(
 
         if batch:
             # Create chat history with all uploaded files and prompt for batch processing
-            # Concatenate all files' URIs or necessary identifiers
-            file_references = "\n".join([f"File: {file.display_name} URI: {file.uri}" for file in uploaded_files])
-            full_prompt = f"{prompt_text}\n\n{file_references}"
-
-            chat_history = [{"role": "user", "content": full_prompt}]
-            logger.debug(f"Batch prompt constructed: {full_prompt}")
+            chat_history = [{"role": "user", "parts": uploaded_files + [prompt_text]}]
+            logger.debug(f"Batch prompt constructed with files and prompt.")
 
         else:
             # Process a single file
@@ -165,6 +161,7 @@ def process_with_gemini_webhook(
     except Exception as e:
         logger.error(f"Unexpected error in process_with_gemini_webhook: {e}")
         raise HTTPException(status_code=500, detail="Gemini processing failed")
+
 
 def extract_json_from_response(response_text: str) -> Dict:
     """
