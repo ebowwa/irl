@@ -23,7 +23,6 @@ from route.features.text.chatgpt_share.index import router as share_oai_chats_ro
 from route.features.text.embedding.index import router as embeddings_router
 from route.features.text.llm_inference.claude import router as claude_router
 from route.features.text.llm_inference.OpenAIRoute import router as openai_router
-from route.features.unzip_audiobatch import router as unzip_audio_batch_v1_router
 from route.features.whisper_socket import whisper_tts
 from route.website_services.waitlist_router import router as web_waitlist_crud_router
 from route.features.device_registration import router as device_registration_router
