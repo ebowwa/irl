@@ -1,6 +1,6 @@
 ---
 
-# CaringMind - the singularity is here
+# Mahdi - the singularity is here
 
 ![IRL](public/caringmind-logo/Fq7eDria1uY_EBXGLFGRE_image.webp)
 
