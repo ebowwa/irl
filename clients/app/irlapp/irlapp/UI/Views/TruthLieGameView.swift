@@ -3,7 +3,7 @@
 //  irlapp
 //
 //  Created by Elijah Arbee on 11/5/24.
-// TODO: 
+// TODO:
 // 1. - once the audio is sent, unless the audio fails, remove the begin button post user speech/when not needed i.e. like at summary
 // 2. - once pressed and uploaded, do not show the begin button anymore
 // 3. - should gather feedback about whether the result was accurate or incorrect
