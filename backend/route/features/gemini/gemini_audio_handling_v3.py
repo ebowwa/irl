@@ -1,17 +1,29 @@
+# backend/route/features/gemini/gemini_audio_handling.py
 # Stateless API Design
+
 # audio handling
-# client - manage the file urls to send included in the requests..  to manage chats/longer context
+
+# client - manage the file urls to send included in the requests.. to manage chats/longer context
+
 # GEMINI RULES: Each project can store up to 20GB of files, with each individual file not exceeding 2GB in size, Prompt Constraints: While there's no explicit limit on the number of audio files in a single prompt, the combined length of all audio files in a prompt must not exceed 9.5 hours.
+
 import os
 import asyncio
+import json
+from datetime import datetime
+from typing import List, Optional, Tuple, Union
+
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
-from typing import List, Optional, Tuple, Union
+
 from dotenv import load_dotenv
 import google.generativeai as genai
+
 import logging
 import traceback
+
 from tenacity import retry, stop_after_attempt, wait_exponential
+
 from .gemini_process_webhook_v2 import process_with_gemini_webhook  # Ensure this module exists and is correctly implemented
 
 # Configure logging for this module
@@ -20,11 +32,19 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
+# Import the database module and tables
+from database.device_registration_db import (
+    database,
+    device_registration_table,
+    processed_audio_files_table
+)
+
 # Initialize FastAPI router
 router = APIRouter()
 
 # Configure Gemini API
 google_api_key = os.getenv("GOOGLE_API_KEY")
+
 if not google_api_key:
     logger.critical("GOOGLE_API_KEY not found in environment variables.")
     raise EnvironmentError("GOOGLE_API_KEY not found in environment variables.")
@@ -96,11 +116,45 @@ def process_individual_file(filename: str, uploaded_file: object, prompt_type: s
         traceback.print_exc()
         return e
 
+async def store_processed_file(user_id: int, file_name: str, gemini_result: object):
+    """
+    Stores the processed file information in the database.
+    """
+    try:
+        query = processed_audio_files_table.insert().values(
+            user_id=user_id,
+            file_name=file_name,
+            gemini_result=json.dumps(gemini_result),
+            uploaded_at=datetime.utcnow(),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        await database.execute(query)
+        logger.info(f"Stored processed file {file_name} for user ID {user_id}.")
+    except Exception as e:
+        logger.error(f"Error storing processed file {file_name}: {e}")
+        traceback.print_exc()
+        # Optionally, handle the exception as needed
+
+async def store_processed_files(user_id: int, file_names: List[str], gemini_result: object):
+    """
+    Stores the processed files information in the database for batch processing.
+    """
+    try:
+        for file_name in file_names:
+            await store_processed_file(user_id, file_name, gemini_result)
+    except Exception as e:
+        logger.error(f"Error storing processed files: {e}")
+        traceback.print_exc()
+        # Optionally, handle the exception as needed
+
 @router.post("/process-audio")
 async def process_audio(
     files: List[UploadFile] = File(...),
     prompt_type: str = Query("default", description="Type of prompt and schema to use"),
-    batch: bool = Query(False, description="Process files in batch if True")
+    batch: bool = Query(False, description="Process files in batch if True"),
+    google_account_id: Optional[str] = Query(None, description="Google Account ID for user identification"),
+    device_uuid: Optional[str] = Query(None, description="Device UUID for user identification")
 ):
     """
     Process multiple audio files concurrently with improved error handling.
@@ -122,6 +176,32 @@ async def process_audio(
                 status_code=400,
                 detail=f"Unsupported file type: {file.content_type}. Supported types: {supported_mime_types}"
             )
+
+    # User identification
+    if not google_account_id and not device_uuid:
+        logger.warning("No user identification provided.")
+        raise HTTPException(status_code=400, detail="User identification required.")
+
+    # Build the query based on provided identifiers
+    query = device_registration_table.select()
+    if google_account_id and device_uuid:
+        query = query.where(
+            (device_registration_table.c.google_account_id == google_account_id) &
+            (device_registration_table.c.device_uuid == device_uuid)
+        )
+    elif google_account_id:
+        query = query.where(device_registration_table.c.google_account_id == google_account_id)
+    elif device_uuid:
+        query = query.where(device_registration_table.c.device_uuid == device_uuid)
+
+    # Execute the query
+    user_entry = await database.fetch_one(query)
+    if not user_entry:
+        logger.warning("User not registered.")
+        raise HTTPException(status_code=401, detail="User not registered.")
+
+    user_id = user_entry['id']
+    logger.info(f"Processing audio files for user ID {user_id}.")
 
     try:
         # Process files concurrently for uploading
@@ -166,6 +246,8 @@ async def process_audio(
                     "data": gemini_result
                 })
                 logger.debug("Batch processing with Gemini webhook successful.")
+                # Store the result in the database
+                await store_processed_files(user_id, [filename for filename, _ in valid_uploaded_files], gemini_result)
             except Exception as e:
                 logger.error(f"Error in Gemini processing (batch): {e}")
                 traceback.print_exc()
@@ -199,6 +281,8 @@ async def process_audio(
                         "status": "processed",
                         "data": gemini_result
                     })
+                    # Store the result in the database
+                    await store_processed_file(user_id, fname, gemini_result)
                 else:
                     logger.error(f"Unexpected result type for file {filename}: {result}")
                     results.append({
@@ -216,3 +300,21 @@ async def process_audio(
             status_code=500,
             detail="Internal Server Error. Please check the server logs."
         )
+
+
+@router.get("/test-user")
+async def test_user(google_account_id: str, device_uuid: str):
+    logger.debug(f"Testing user lookup for google_account_id: {google_account_id} and device_uuid: {device_uuid}")
+
+    query = device_registration_table.select().where(
+        (device_registration_table.c.google_account_id == google_account_id) &
+        (device_registration_table.c.device_uuid == device_uuid)
+    )
+    user_entry = await database.fetch_one(query)
+
+    if user_entry:
+        logger.debug(f"User found: {user_entry}")
+        return {"user_found": True, "user_id": user_entry['id']}
+    else:
+        logger.debug("User not found.")
+        return {"user_found": False}

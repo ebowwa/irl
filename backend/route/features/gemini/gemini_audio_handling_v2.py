@@ -1,7 +1,5 @@
-# Stateless API Design
-# audio handling
-# client - manage the file urls to send included in the requests..  to manage chats/longer context
-# GEMINI RULES: Each project can store up to 20GB of files, with each individual file not exceeding 2GB in size, Prompt Constraints: While there's no explicit limit on the number of audio files in a single prompt, the combined length of all audio files in a prompt must not exceed 9.5 hours.
+# backend/route/router.py
+# with supabase but no table or so created yet not sold its needed might continue with sqlite to postgres capable like current for other routes
 import os
 import asyncio
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query
@@ -13,6 +11,9 @@ import logging
 import traceback
 from tenacity import retry, stop_after_attempt, wait_exponential
 from .gemini_process_webhook_v2 import process_with_gemini_webhook  # Ensure this module exists and is correctly implemented
+
+# Supabase Imports
+from supabase import create_client, Client
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)
@@ -30,6 +31,16 @@ if not google_api_key:
     raise EnvironmentError("GOOGLE_API_KEY not found in environment variables.")
 
 genai.configure(api_key=google_api_key)
+
+# Initialize Supabase client
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_API_KEY")
+
+if not supabase_url or not supabase_key:
+    logger.critical("Supabase URL or API key not found in environment variables.")
+    raise EnvironmentError("Supabase URL or API key not found in environment variables.")
+
+supabase: Client = create_client(supabase_url, supabase_key)
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def upload_to_gemini(file_content: bytes, mime_type: Optional[str] = None) -> object:
@@ -63,7 +74,10 @@ async def process_single_file(file: UploadFile) -> object:
         logger.debug(f"Read {len(content)} bytes from {file.filename}")
 
         # Directly call upload_to_gemini without run_in_executor
-        uploaded_file = upload_to_gemini(content, file.content_type)
+        uploaded_file = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: upload_to_gemini(content, file.content_type)
+        )
 
         logger.debug(f"Uploaded file to Gemini: {uploaded_file.uri}")
         return uploaded_file
@@ -80,7 +94,7 @@ async def process_single_file(file: UploadFile) -> object:
 def process_individual_file(filename: str, uploaded_file: object, prompt_type: str) -> Union[Tuple[str, object], Exception]:
     """
     Synchronously process an individual file with Gemini webhook.
-    Returns a tuple of (filename, result) or an Exception.
+    Returns a tuple of (filename, gemini_result) or an Exception.
     """
     try:
         logger.debug(f"Processing with Gemini webhook for file: {filename}")
@@ -104,6 +118,7 @@ async def process_audio(
 ):
     """
     Process multiple audio files concurrently with improved error handling.
+    Saves the audio file URL and Gemini response to Supabase.
     """
     supported_mime_types = {
         "audio/wav", "audio/mp3", "audio/aiff",
@@ -160,6 +175,26 @@ async def process_audio(
                         batch=True
                     )
                 )
+
+                # Save to Supabase
+                for filename, uploaded_file in valid_uploaded_files:
+                    audio_file_url = uploaded_file.uri  # Assuming 'uri' is the URL
+                    data_to_save = {
+                        "audio_file_url": audio_file_url,
+                        "gemini_response": gemini_result,
+                        # Add other fields as needed
+                    }
+                    insert_response = supabase.table('transcriptions').insert(data_to_save).execute()
+                    if insert_response.error:
+                        logger.error(f"Supabase insertion error for file {filename}: {insert_response.error.message}")
+                        results.append({
+                            "file": filename,
+                            "status": "failed",
+                            "error": f"Supabase insertion error: {insert_response.error.message}"
+                        })
+                    else:
+                        logger.info(f"Data saved to Supabase for file {filename}.")
+
                 results.append({
                     "files": [filename for filename, _ in valid_uploaded_files],
                     "status": "processed",
@@ -184,7 +219,7 @@ async def process_audio(
             individual_results = await asyncio.gather(*processing_tasks, return_exceptions=True)
 
             for original_file, result in zip(valid_uploaded_files, individual_results):
-                filename, _ = original_file
+                filename, uploaded_file = original_file
                 if isinstance(result, Exception):
                     logger.error(f"Error in Gemini processing for file {filename}: {result}")
                     results.append({
@@ -194,6 +229,25 @@ async def process_audio(
                     })
                 elif isinstance(result, tuple):
                     fname, gemini_result = result
+
+                    # Save to Supabase
+                    audio_file_url = uploaded_file.uri  # Assuming 'uri' is the URL
+                    data_to_save = {
+                        "audio_file_url": audio_file_url,
+                        "gemini_response": gemini_result,
+                        # Add other fields as needed
+                    }
+                    insert_response = supabase.table('transcriptions').insert(data_to_save).execute()
+                    if insert_response.error:
+                        logger.error(f"Supabase insertion error for file {fname}: {insert_response.error.message}")
+                        results.append({
+                            "file": fname,
+                            "status": "failed",
+                            "error": f"Supabase insertion error: {insert_response.error.message}"
+                        })
+                    else:
+                        logger.info(f"Data saved to Supabase for file {fname}.")
+
                     results.append({
                         "file": fname,
                         "status": "processed",

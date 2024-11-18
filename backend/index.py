@@ -10,10 +10,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from route.dev import socket_ping
+from database.device_registration_db import database
 # from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
 from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 from route.features.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
 from route.features.gemini.gemini_audio_handling import router as gemini_audio_handling_router
+from route.features.gemini.gemini_audio_handling_v2 import router as gemini_audio_handling_v2_router
+from route.features.gemini.gemini_audio_handling_v3 import router as gemini_audio_handling_v3_router
 from route.features.gemini.google_media_upload import router as google_media_upload_router
 from route.features.humeclient import router as hume_router
 from route.features.gemini.google_media_upload_v2 import router as google_media_upload_v2_router
@@ -26,12 +29,17 @@ from route.features.text.llm_inference.OpenAIRoute import router as openai_route
 from route.features.whisper_socket import whisper_tts
 from route.website_services.waitlist_router import router as web_waitlist_crud_router
 from route.features.device_registration import router as device_registration_router
+from route.features.device_registration_v2 import router as device_registration_v2_router
+
 from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs # sees If port is open if so closes the port so the server can init
 from utils.server.middleware import setup_cors
 from utils.server.ngrok_command import router as ngrok_commands_router
 from utils.server.ngrok_utils import start_ngrok
 # ------------------ Load Environment Variables --------------------
 load_dotenv()
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 # Flag to toggle Ngrok usage
 USE_NGROK = True  # Enable Ngrok by default, can be toggled
 
@@ -74,12 +82,15 @@ app.include_router(web_waitlist_crud_router) # CRUD backend/data/waitlist_data.d
 ##      ONBOARDING (NO-AUTH)
 app.include_router(user_name_upload_v5_router, prefix="/onboarding/v5")   # + /process-audio; TODO: on client side implement double-try correct user name
 app.include_router(gemini_audio_handling_router, prefix="/onboarding/v6")
+app.include_router(gemini_audio_handling_v2_router, prefix="/onboarding/v7")
+app.include_router(gemini_audio_handling_v3_router, prefix="/onboarding/v8")
 app.include_router(analyze_truth_lie_v1_router)
+
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
 ## Auth 
-app.include_router(device_registration_router, prefix="/device") # CRUD backend/data/device_registration.db `http://server/register/..`
-
+app.include_router(device_registration_router, prefix="/v1/device") # CRUD backend/data/device_registration.db `http://server/v1/device/register/..`
+app.include_router(device_registration_v2_router, prefix="/v2/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
 ### ------------------------------------------------------------------------
 ##      GEMINI
 # app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # + add `/ws/transcribe`
@@ -87,6 +98,32 @@ app.include_router(google_media_upload_router) # `https://server/upload-to-gemin
 app.include_router(google_media_upload_v2_router, prefix="/v2") # `https://server/v2/upload-to-gemini`
 app.include_router(google_media_upload_v3_router, prefix="/v3")
 
+
+# Event handlers for database connection
+@app.on_event("startup")
+async def startup():
+    """
+    Event handler for application startup. Connects to the database.
+    """
+    logger.info("Connecting to the database.")
+    try:
+        await database.connect()
+        logger.info("Database connected successfully.")
+    except Exception as e:
+        logger.error(f"Error connecting to the database: {e}")
+        raise
+
+@app.on_event("shutdown")
+async def shutdown():
+    """
+    Event handler for application shutdown. Disconnects from the database.
+    """
+    logger.info("Disconnecting from the database.")
+    try:
+        await database.disconnect()
+        logger.info("Database disconnected successfully.")
+    except Exception as e:
+        logger.error(f"Error disconnecting from the database: {e}")
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately
 @app.get("/openapi.json", include_in_schema=False)
