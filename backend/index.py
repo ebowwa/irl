@@ -28,9 +28,8 @@ from route.features.text.llm_inference.claude import router as claude_router
 from route.features.text.llm_inference.OpenAIRoute import router as openai_router
 from route.features.whisper_socket import whisper_tts
 from route.website_services.waitlist_router import router as web_waitlist_crud_router
-from route.features.device_registration import router as device_registration_router
-from route.features.device_registration_v2 import router as device_registration_v2_router
-
+from route.features.device.device_registration import router as device_registration_router
+from route.features.device.device_registration_v2 import router as device_registration_v2_router
 from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs # sees If port is open if so closes the port so the server can init
 from utils.server.middleware import setup_cors
 from utils.server.ngrok_command import router as ngrok_commands_router
