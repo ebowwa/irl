@@ -314,7 +314,7 @@ struct ContentView: View {
                                     userName: $onboardingViewModel.userName)
                     .transition(.slide)
             case .home:
-                AGIView(serverURL: "ws://2157-2601-646-a201-db60-00-2386.ngrok-free.app/gemini/ws/transcribe")
+                AGIView()
             }
         }
         .animation(.easeInOut, value: router.currentDestination)

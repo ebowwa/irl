@@ -237,11 +237,3 @@ class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
     }
 }
 
-// 6. Extension to append Data easily
-extension Data {
-    mutating func append(_ string: String) {
-        if let data = string.data(using: .utf8) {
-            append(data)
-        }
-    }
-}

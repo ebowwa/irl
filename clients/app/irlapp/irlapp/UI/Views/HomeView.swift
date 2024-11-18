@@ -4,27 +4,14 @@
 //
 //  Created by Elijah Arbee on 11/10/24.
 //
-//  Main AppView
-//  [LOGIC] Redirect user here upon sign-in. This view handles local transcriptions and segments audio by sentences and speakers.
-//  - Local transcriptions: Used for real-time processing; connects to backend WebSocket expecting audio segments in configurable durations.
-//  - Audio format: Record in WAV, optimized for clear, natural sound quality.
-//  - [INSTRUCTION] Implement sequentially numbered processing steps for clarity and structure.
+//  Updated to communicate with the new HTTP-based backend for real-time transcription.
 //
-//  Audio files should auto-delete after uploading to `genai_media_upload_route` to manage storage efficiently.
-//  - Route URL: `/v2/upload-to-gemini`
-//  - Base server: `https://2157-2601-646-a201-db60-00-2386.ngrok-free.app`
-//  Note: Consider Google’s media storage capabilities for revisiting audio with additional queries or tasks.
+//  Enhancements:
+//  1. Aggregates per-word server segments into sentences for cleaner UI display.
+//  2. Ensures multiple uploads are handled correctly, appending to existing segments.
+//  3. Adds comprehensive logging for debugging purposes.
 //
-//  File Naming:
-//  - Avoid generic names like `recording.wav`, as multiple uploads will occur.
-//  - Implement a unique naming convention before forwarding to GoogleGenAI to ensure distinguishable file identities.
-//
-// issue: multiple requests can be made, but for some reason only one will go through and return a response..
-// TODO:
-// - delete after good response back not before
-// - the local transcription isnt occuring
-// - websocket might be very unnecessary - should just be uploads to gemini upload then webhooks stream in output, i.e. post initiates webhook
-// i like how it currently counts how many segments, maybe we can use this and save the segments alongside the audio in the server
+
 import SwiftUI
 import AVFoundation
 import Speech
@@ -32,27 +19,20 @@ import NaturalLanguage
 
 // MARK: - Models
 
-/// 1. **AGITimestamp Struct**
 /// Represents the start and end times of a speech segment.
 struct AGITimestamp: Codable {
     let start: Double
     let end: Double
 }
 
-/// 2. **AGISegment Struct**
 /// Represents a segment of transcribed audio with metadata.
 struct AGISegment: Codable, Identifiable {
     let id = UUID()
     let timestamp: AGITimestamp
     let speaker: String
     let transcription: String
-    
-    private enum CodingKeys: String, CodingKey {
-        case timestamp, speaker, transcription
-    }
 }
 
-/// 3. **TranscriptEntry Model**
 /// Represents a single entry in the transcript with relevant metadata.
 struct TranscriptEntry: Identifiable, Codable {
     let id = UUID()
@@ -74,9 +54,27 @@ struct TranscriptEntry: Identifiable, Codable {
     }
 }
 
+// MARK: - FlexibleDouble Struct
+
+/// A flexible decoder to handle values that might be either String or Double.
+struct FlexibleDouble: Codable {
+    let value: Double
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let doubleVal = try? container.decode(Double.self) {
+            value = doubleVal
+        } else if let stringVal = try? container.decode(String.self),
+                  let doubleVal = Double(stringVal) {
+            value = doubleVal
+        } else {
+            throw DecodingError.typeMismatch(Double.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Expected Double or String convertible to Double"))
+        }
+    }
+}
+
 // MARK: - AudioRecorder Class
 
-/// 4. **AudioRecorder Class**
 /// Manages audio recording, ensuring correct format and handling interruptions.
 class AudioRecorder: NSObject, ObservableObject {
     private var audioEngine: AVAudioEngine!
@@ -98,7 +96,7 @@ class AudioRecorder: NSObject, ObservableObject {
         setupInterruptionHandling()
     }
     
-    /// 4.1 **Configure Audio Session**
+    /// Configures the audio session.
     private func configureAudioSession() {
         let audioSession = AVAudioSession.sharedInstance()
         do {
@@ -106,12 +104,13 @@ class AudioRecorder: NSObject, ObservableObject {
             try audioSession.setPreferredSampleRate(desiredSampleRate)
             try audioSession.setPreferredInputNumberOfChannels(Int(desiredChannels))
             try audioSession.setActive(true)
+            print("Audio session configured successfully.")
         } catch {
             print("Error configuring AVAudioSession: \(error.localizedDescription)")
         }
     }
     
-    /// 4.2 **Setup Audio Engine**
+    /// Sets up the audio engine for recording.
     private func setupAudioEngine() {
         audioEngine = AVAudioEngine()
         inputNode = audioEngine.inputNode
@@ -149,9 +148,11 @@ class AudioRecorder: NSObject, ObservableObject {
                 self.writeBuffer(buffer: buffer, audioFile: audioFile)
             }
         }
+        
+        print("Audio engine set up successfully.")
     }
     
-    /// 4.3 **Setup Audio Level Monitoring**
+    /// Sets up audio level monitoring for visualization.
     private func setupAudioLevelMonitoring() {
         audioLevelNode = AVAudioMixerNode()
         guard let mixerNode = audioLevelNode else { return }
@@ -163,9 +164,11 @@ class AudioRecorder: NSObject, ObservableObject {
         mixerNode.installTap(onBus: 0, bufferSize: 1024, format: inputFormat) { [weak self] buffer, _ in
             self?.processAudioLevel(buffer: buffer)
         }
+        
+        print("Audio level monitoring set up successfully.")
     }
     
-    /// 4.4 **Process Audio Level**
+    /// Processes the audio buffer to determine audio level.
     private func processAudioLevel(buffer: AVAudioPCMBuffer) {
         guard let channelData = buffer.floatChannelData else { return }
         let channelCount = Int(buffer.format.channelCount)
@@ -187,12 +190,12 @@ class AudioRecorder: NSObject, ObservableObject {
         }
     }
     
-    /// 4.5 **Update Audio Level**
+    /// Updates the audio level during recording if needed.
     private func updateAudioLevel(buffer: AVAudioPCMBuffer) {
-        // This function can be used to update audio level during recording if needed
+        // Placeholder for any additional audio level updates
     }
     
-    /// 4.6 **Convert and Write Buffer**
+    /// Converts and writes the audio buffer to the file.
     private func convertAndWrite(buffer: AVAudioPCMBuffer, converter: AVAudioConverter, audioFile: AVAudioFile, desiredFormat: AVAudioFormat) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard let convertedBuffer = AVAudioPCMBuffer(
@@ -231,7 +234,7 @@ class AudioRecorder: NSObject, ObservableObject {
         }
     }
     
-    /// 4.7 **Write Buffer**
+    /// Writes the audio buffer directly to the file.
     private func writeBuffer(buffer: AVAudioPCMBuffer, audioFile: AVAudioFile) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
@@ -242,7 +245,7 @@ class AudioRecorder: NSObject, ObservableObject {
         }
     }
     
-    /// 4.8 **Start Recording**
+    /// Starts recording audio.
     func startRecording() throws {
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let uniqueFileName = "recording_\(UUID().uuidString).wav"
@@ -268,7 +271,7 @@ class AudioRecorder: NSObject, ObservableObject {
         }
     }
     
-    /// 4.9 **Stop Recording**
+    /// Stops recording audio and returns the file URL.
     func stopRecording() -> URL? {
         guard let audioFile = audioFile else { return nil }
         
@@ -280,7 +283,7 @@ class AudioRecorder: NSObject, ObservableObject {
         return audioFile.url
     }
     
-    /// 4.10 **Setup Interruption Handling**
+    /// Sets up handling for audio session interruptions.
     private func setupInterruptionHandling() {
         NotificationCenter.default.addObserver(
             self,
@@ -288,9 +291,11 @@ class AudioRecorder: NSObject, ObservableObject {
             name: AVAudioSession.interruptionNotification,
             object: AVAudioSession.sharedInstance()
         )
+        
+        print("Interruption handling set up successfully.")
     }
     
-    /// 4.11 **Handle Interruption**
+    /// Handles audio session interruptions.
     @objc private func handleInterruption(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
@@ -301,26 +306,27 @@ class AudioRecorder: NSObject, ObservableObject {
         if type == .began {
             if isRecording {
                 _ = stopRecording()
+                print("Recording stopped due to interruption.")
             }
         } else if type == .ended {
             do {
                 try AVAudioSession.sharedInstance().setActive(true)
+                print("Audio session reactivated after interruption.")
             } catch {
                 print("Error reactivating AVAudioSession: \(error.localizedDescription)")
             }
         }
     }
     
-    /// 4.12 **Deinitializer**
     deinit {
         NotificationCenter.default.removeObserver(self)
         audioLevelNode?.removeTap(onBus: 0)
+        print("AudioRecorder deinitialized.")
     }
 }
 
 // MARK: - TranscriptionManager Class
 
-/// 5. **TranscriptionManager Class**
 /// Manages speech recognition and processes transcribed text.
 class TranscriptionManager: NSObject, ObservableObject {
     @Published var transcribedText: String = ""
@@ -346,7 +352,7 @@ class TranscriptionManager: NSObject, ObservableObject {
         requestPermissions()
     }
     
-    /// 5.1 **Request Permissions**
+    /// Requests necessary permissions for speech recognition and microphone access.
     private func requestPermissions() {
         SFSpeechRecognizer.requestAuthorization { [weak self] status in
             DispatchQueue.main.async {
@@ -355,8 +361,10 @@ class TranscriptionManager: NSObject, ObservableObject {
                     print("Speech recognition authorized.")
                 case .denied, .restricted, .notDetermined:
                     self?.errorMessage = "Speech recognition authorization denied."
+                    print("Speech recognition authorization denied.")
                 @unknown default:
                     self?.errorMessage = "Unknown authorization status."
+                    print("Unknown speech recognition authorization status.")
                 }
             }
         }
@@ -365,15 +373,17 @@ class TranscriptionManager: NSObject, ObservableObject {
             DispatchQueue.main.async {
                 if !granted {
                     self?.errorMessage = "Microphone access denied."
+                    print("Microphone access denied.")
                 }
             }
         }
     }
     
-    /// 5.2 **Start Transcription**
+    /// Starts the transcription process.
     func startTranscription() {
         guard let recognizer = speechRecognizer, recognizer.isAvailable else {
             errorMessage = "Speech recognizer not available."
+            print("Speech recognizer not available.")
             return
         }
         
@@ -395,6 +405,7 @@ class TranscriptionManager: NSObject, ObservableObject {
                 self.inputNode.removeTap(onBus: 0)
                 self.recognitionRequest = nil
                 self.recognitionTask = nil
+                print("Transcription task ended.")
             }
         }
         
@@ -408,10 +419,11 @@ class TranscriptionManager: NSObject, ObservableObject {
             print("Transcription started.")
         } catch {
             errorMessage = "Audio engine couldn't start."
+            print("Audio engine couldn't start: \(error.localizedDescription)")
         }
     }
     
-    /// 5.3 **Process Transcription**
+    /// Processes the transcription result.
     private func processTranscription(_ result: SFSpeechRecognitionResult) {
         let transcription = result.bestTranscription
         let segments = transcription.segments
@@ -453,7 +465,7 @@ class TranscriptionManager: NSObject, ObservableObject {
         lastProcessedSegmentIndex = segments.count
     }
     
-    /// 5.4 **Create Transcript Entry**
+    /// Creates a transcript entry from the recognized sentence.
     private func createTranscriptEntry(for sentence: String, startTime: TimeInterval, endTime: TimeInterval) {
         sequenceCounter += 1
         
@@ -471,7 +483,7 @@ class TranscriptionManager: NSObject, ObservableObject {
         }
     }
     
-    /// 5.5 **Stop Transcription**
+    /// Stops the transcription process.
     func stopTranscription() {
         if audioEngine != nil {
             audioEngine.stop()
@@ -482,51 +494,36 @@ class TranscriptionManager: NSObject, ObservableObject {
     }
 }
 
-// MARK: - TranscriptionResponse Struct
-
-/// 6. **TranscriptionResponse Struct**
-/// Represents the server's response containing transcription segments.
-struct TranscriptionResponse: Codable {
-    let status: String
-    let transcriptions: [AGISegment]
-}
-
 // MARK: - AGIViewModel Class
 
-/// 7. **AGIViewModel Class**
-/// Handles WebSocket communication and integrates audio recording and transcription.
+/// Handles HTTP communication, integrates audio recording and transcription.
 @MainActor
 class AGIViewModel: ObservableObject {
     @Published var transcription = ""
     @Published var transcriptEntries: [TranscriptEntry] = []
-    @Published var isConnected = false
     @Published var isProcessing = false
     @Published var error: String?
     @Published var segments: [AGISegment] = []
     @Published var audioLevel: Double = 0.0 // For audio level visualization
     
-    private var webSocketTask: URLSessionWebSocketTask?
-    private let serverURL: String
-    private let audioRecorder = AudioRecorder()
-    private let transcriptionManager = TranscriptionManager()
+    let audioRecorder = AudioRecorder()
+    let transcriptionManager = TranscriptionManager()
     
-    var isRecording: Bool { audioRecorder.isRecording }
+    private var uploadTasks: [URL: URLSessionDataTask] = [:]
     
-    init(serverURL: String) {
-        self.serverURL = serverURL
-        setupWebSocket()
+    init() {
         bindAudioLevel()
         bindTranscriptionManager()
     }
     
-    /// 7.1 **Bind Audio Level**
+    /// Binds the audio level from the AudioRecorder to the ViewModel.
     private func bindAudioLevel() {
         audioRecorder.$audioLevel
             .receive(on: DispatchQueue.main)
             .assign(to: &$audioLevel)
     }
     
-    /// 7.2 **Bind Transcription Manager**
+    /// Binds the transcription results from the TranscriptionManager to the ViewModel.
     private func bindTranscriptionManager() {
         transcriptionManager.$transcribedText
             .receive(on: DispatchQueue.main)
@@ -537,71 +534,12 @@ class AGIViewModel: ObservableObject {
             .assign(to: &$transcriptEntries)
     }
     
-    /// 7.3 **Setup WebSocket**
-    private func setupWebSocket() {
-        guard let url = URL(string: serverURL) else {
-            error = "Invalid WebSocket URL."
-            return
-        }
-        
-        let session = URLSession(configuration: .default)
-        webSocketTask = session.webSocketTask(with: url)
-        webSocketTask?.resume()
-        isConnected = true
-        print("WebSocket connected.")
-        receiveMessages()
-    }
-    
-    /// 7.4 **Receive Messages**
-    private func receiveMessages() {
-        guard let webSocketTask = webSocketTask else { return }
-        
-        webSocketTask.receive { [weak self] result in
-            Task { @MainActor in
-                guard let self = self else { return }
-                
-                switch result {
-                case .success(let message):
-                    switch message {
-                    case .string(let text):
-                        print("Received WebSocket message: \(text)")
-                        if let data = text.data(using: .utf8) {
-                            do {
-                                let response = try JSONDecoder().decode(TranscriptionResponse.self, from: data)
-                                self.segments = response.transcriptions
-                                self.isProcessing = false
-                                print("Successfully decoded \(response.transcriptions.count) segments")
-                            } catch {
-                                print("Decoding error: \(error.localizedDescription)")
-                                print("Failed to decode response from: \(text)")
-                            }
-                        } else {
-                            print("Failed to convert text to data")
-                        }
-                    case .data(let data):
-                        print("Received data message")
-                        // Handle binary data if needed
-                    @unknown default:
-                        print("Unknown message type received.")
-                    }
-                    self.receiveMessages() // Continue receiving messages
-                    
-                case .failure(let error):
-                    print("WebSocket Error: \(error.localizedDescription)")
-                    self.error = "WebSocket Error: \(error.localizedDescription)"
-                    self.isConnected = false
-                    self.isProcessing = false
-                }
-            }
-        }
-    }
-    
-    /// 7.5 **Toggle Recording**
+    /// Toggles the recording state and handles the upload process.
     func toggleRecording() {
         if audioRecorder.isRecording {
             if let audioURL = audioRecorder.stopRecording() {
                 transcriptionManager.stopTranscription()
-                sendRecording(url: audioURL)
+                uploadRecording(url: audioURL)
             }
         } else {
             do {
@@ -613,90 +551,250 @@ class AGIViewModel: ObservableObject {
         }
     }
     
-    /// 7.6 **Send Recording**
-    private func sendRecording(url: URL) {
+    /// Uploads the recorded audio file to the server via HTTP POST.
+    private func uploadRecording(url: URL) {
         isProcessing = true
         
-        Task {
-            do {
-                let uniqueFileName = url.lastPathComponent
-                let metadata: [String: String] = [
-                    "file_name": uniqueFileName,
-                    "mime_type": "audio/wav"
-                ]
-                let metadataData = try JSONEncoder().encode(metadata)
-                let metadataString = String(data: metadataData, encoding: .utf8)!
-                try await webSocketTask?.send(.string(metadataString))
-                print("Sent metadata to server: \(metadataString)")
+        // Prepare the URL without the batch parameter for real-time processing
+        guard let uploadURL = URL(string: "https://8bdb-2a09-bac5-661b-1232-00-1d0-c6.ngrok-free.app/onboarding/v6/process-audio?prompt_type=transcription") else {
+            self.error = "Invalid server URL."
+            self.isProcessing = false
+            return
+        }
+        
+        var request = URLRequest(url: uploadURL)
+        request.httpMethod = "POST"
+        
+        // Generate a unique boundary string using a UUID
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        // Construct the multipart form data
+        let mimeType = "audio/ogg" // Adjust based on your audio format
+        let fileName = url.lastPathComponent
+        let fieldName = "files" // Ensure this matches the server's expected field name
+        
+        var body = Data()
+        
+        // Add the audio file to the form data
+        body.append("--\(boundary)\r\n")
+        body.append("Content-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(fileName)\"\r\n")
+        body.append("Content-Type: \(mimeType)\r\n\r\n")
+        if let fileData = try? Data(contentsOf: url) {
+            body.append(fileData)
+        } else {
+            self.error = "Failed to read audio file."
+            self.isProcessing = false
+            return
+        }
+        body.append("\r\n")
+        
+        // Close the multipart form data
+        body.append("--\(boundary)--\r\n")
+        
+        // Set the request body
+        request.httpBody = body
+        
+        // Create the upload task
+        let session = URLSession.shared
+        let uploadTask = session.dataTask(with: request) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
                 
-                let audioData = try Data(contentsOf: url)
-                let chunkSize = 1024
-                var offset = 0
-                
-                while offset < audioData.count {
-                    let chunk = audioData[offset..<min(offset + chunkSize, audioData.count)]
-                    try await webSocketTask?.send(.data(Data(chunk)))
-                    offset += chunkSize
+                if let error = error {
+                    self.error = "Upload failed: \(error.localizedDescription)"
+                    print("Upload error: \(error.localizedDescription)")
+                    self.isProcessing = false
+                    return
                 }
                 
-                try await webSocketTask?.send(.data(Data())) // Indicate end of data
-                print("Sent audio data to server.")
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    self.error = "Invalid server response."
+                    print("Invalid server response.")
+                    self.isProcessing = false
+                    return
+                }
                 
-                // Delete the audio file after uploading
-                try FileManager.default.removeItem(at: url)
-                print("Audio file deleted after upload.")
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    // Attempt to parse server-provided error message
+                    if let data = data,
+                       let serverError = String(data: data, encoding: .utf8) {
+                        self.error = "Server error (\(httpResponse.statusCode)): \(serverError)"
+                        print("Server error (\(httpResponse.statusCode)): \(serverError)")
+                    } else {
+                        self.error = "Server error: \(httpResponse.statusCode)"
+                        print("Server error: \(httpResponse.statusCode)")
+                    }
+                    self.isProcessing = false
+                    return
+                }
                 
-            } catch {
-                await MainActor.run {
-                    self.error = "WebSocket Send Error: \(error.localizedDescription)"
+                guard let data = data else {
+                    self.error = "No data received from server."
+                    print("No data received from server.")
+                    self.isProcessing = false
+                    return
+                }
+                
+                // Log the raw server response
+                if let responseString = String(data: data, encoding: .utf8) {
+                    print("Server Response: \(responseString)")
+                }
+                
+                do {
+                    let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
+                    
+                    // Handle both single and multiple results
+                    if let firstResult = serverResponse.results.first,
+                       let serverSegments = firstResult.data?.segments {
+                        print("Received \(serverSegments.count) segments from server.")
+                        
+                        // Group segments into sentences
+                        let groupedSegments = self.groupSegments(serverSegments)
+                        
+                        // Map grouped segments to AGISegment
+                        let mappedSegments = groupedSegments.map { group -> AGISegment in
+                            guard let first = group.first, let last = group.last else {
+                                // This should never happen, but handle gracefully
+                                let defaultTimestamp = AGITimestamp(start: 0.0, end: 0.0)
+                                return AGISegment(timestamp: defaultTimestamp, speaker: "Speaker", transcription: "Invalid segment")
+                            }
+                            
+                            let startTime = first.start_time.value
+                            let endTime = last.end_time.value
+                            
+                            // Combine transcription texts
+                            let combinedTranscription = group.map { $0.transcription_text }.joined(separator: " ")
+                            
+                            let timestamp = AGITimestamp(start: startTime, end: endTime)
+                            
+                            // Assuming all segments in a group have the same speaker
+                            let speaker = group.first?.speaker_id ?? "Speaker"
+                            
+                            return AGISegment(timestamp: timestamp,
+                                              speaker: speaker,
+                                              transcription: combinedTranscription)
+                        }
+                        self.segments.append(contentsOf: mappedSegments)
+                        print("Mapped \(mappedSegments.count) grouped segments.")
+                    } else {
+                        print("No segments found in server response.")
+                        self.error = "No segments received from server."
+                    }
+                    
+                    self.isProcessing = false
+                    // Delete the audio file after successful upload
+                    try? FileManager.default.removeItem(at: url)
+                    print("Audio file deleted after successful upload.")
+                } catch {
+                    self.error = "Failed to decode server response: \(error.localizedDescription)"
+                    print("Decoding error: \(error.localizedDescription)")
                     self.isProcessing = false
                 }
-                print("Error sending recording: \(error.localizedDescription)")
             }
         }
+        
+        // Start the upload task
+        uploadTask.resume()
+        
+        // Keep track of the upload task if needed for cancellation
+        uploadTasks[url] = uploadTask
     }
     
-    /// 7.7 **Disconnect WebSocket**
-    func disconnect() {
-        webSocketTask?.cancel(with: .goingAway, reason: nil)
-        webSocketTask = nil
-        isConnected = false
-        print("WebSocket disconnected.")
+    /// Groups consecutive segments into sentences based on speaker continuity and minimal time gaps.
+    private func groupSegments(_ segments: [ServerResponse.Result.DataClass.Segment]) -> [[ServerResponse.Result.DataClass.Segment]] {
+        guard !segments.isEmpty else { return [] }
+        
+        var groupedSegments: [[ServerResponse.Result.DataClass.Segment]] = []
+        var currentGroup: [ServerResponse.Result.DataClass.Segment] = [segments[0]]
+        
+        for i in 1..<segments.count {
+            let previous = segments[i - 1]
+            let current = segments[i]
+            
+            let timeGap = current.start_time.value - previous.end_time.value
+            let sameSpeaker = current.speaker_id == previous.speaker_id
+            
+            print("Time gap between segment \(i-1) and \(i): \(timeGap), Same speaker: \(sameSpeaker)")
+            
+            if timeGap < 1.0 && sameSpeaker { // Adjust the time gap threshold as needed
+                currentGroup.append(current)
+            } else {
+                groupedSegments.append(currentGroup)
+                currentGroup = [current]
+            }
+        }
+        
+        // Append the last group
+        groupedSegments.append(currentGroup)
+        
+        print("Grouped into \(groupedSegments.count) segments.")
+        return groupedSegments
+    }
+    
+    /// Cancels all ongoing upload tasks when the ViewModel is deinitialized.
+    deinit {
+        for (_, task) in uploadTasks {
+            task.cancel()
+        }
+        print("AGIViewModel deinitialized and all upload tasks canceled.")
+    }
+    
+    /// Represents the server's JSON response structure.
+    struct ServerResponse: Codable {
+        struct Result: Codable {
+            struct DataClass: Codable {
+                struct Segment: Codable, Identifiable {
+                    let id = UUID()
+                    let start_time: FlexibleDouble
+                    let end_time: FlexibleDouble
+                    let sequence_id: Int
+                    let speaker_id: String
+                    let transcription_text: String
+                    
+                    private enum CodingKeys: String, CodingKey {
+                        case start_time, end_time, sequence_id, speaker_id, transcription_text
+                    }
+                }
+                let segments: [Segment]?
+            }
+            let files: [String]?
+            let status: String
+            let data: DataClass?
+        }
+        let results: [Result]
     }
 }
 
 // MARK: - AGIView
 
-/// 8. **AGIView**
 /// Main SwiftUI view that provides the user interface.
 struct AGIView: View {
     @StateObject var viewModel: AGIViewModel
     
-    init(serverURL: String) {
-        _viewModel = StateObject(wrappedValue: AGIViewModel(serverURL: serverURL))
+    init() {
+        _viewModel = StateObject(wrappedValue: AGIViewModel())
     }
     
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
-                // 8.1 **Connection Status**
+                // Processing Status
                 HStack {
-                    Circle()
-                        .fill(viewModel.isConnected ? Color.green : Color.red)
-                        .frame(width: 8, height: 8)
-                    Text(viewModel.isConnected ? "Server Connected" : "Connection Lost - Please Wait")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    if viewModel.isProcessing {
+                        ProgressView("Processing...")
+                            .progressViewStyle(CircularProgressViewStyle())
+                    }
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.horizontal)
                 
-                // 8.2 **Audio Level Visualization**
+                // Audio Level Visualization
                 AudioLevelView(level: viewModel.audioLevel)
                     .frame(height: 8)
                     .padding(.horizontal)
                 
-                // 8.3 **Live Transcription**
+                // Live Transcription
                 if !viewModel.transcriptEntries.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Live Transcription")
@@ -714,7 +812,7 @@ struct AGIView: View {
                     .padding()
                 }
                 
-                // 8.4 **Server Transcriptions**
+                // Server Transcriptions
                 if !viewModel.segments.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Server Transcriptions")
@@ -731,12 +829,12 @@ struct AGIView: View {
                 
                 Spacer()
                 
-                // 8.5 **Controls**
+                // Controls
                 HStack(spacing: 30) {
                     Button(action: viewModel.toggleRecording) {
                         ZStack {
                             Circle()
-                                .fill(viewModel.isRecording ? Color.red : Color.blue)
+                                .fill(viewModel.isProcessing ? Color.gray : (viewModel.audioRecorder.isRecording ? Color.red : Color.blue))
                                 .frame(width: 64, height: 64)
                             
                             if viewModel.isProcessing {
@@ -744,7 +842,7 @@ struct AGIView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .scaleEffect(1.5)
                             } else {
-                                Image(systemName: viewModel.isRecording ? "stop.fill" : "mic.fill")
+                                Image(systemName: viewModel.audioRecorder.isRecording ? "stop.fill" : "mic.fill")
                                     .font(.title2)
                                     .foregroundColor(.white)
                             }
@@ -752,7 +850,7 @@ struct AGIView: View {
                     }
                     .disabled(viewModel.isProcessing)
                     
-                    if viewModel.isRecording {
+                    if viewModel.audioRecorder.isRecording {
                         HStack(spacing: 8) {
                             Circle()
                                 .fill(.red)
@@ -783,7 +881,6 @@ struct AGIView: View {
 
 // MARK: - SegmentView
 
-/// 9. **SegmentView**
 /// Displays individual segments of transcribed audio.
 struct SegmentView: View {
     let segment: AGISegment
@@ -808,10 +905,12 @@ struct SegmentView: View {
         .cornerRadius(12)
     }
     
+    /// Formats the speaker label.
     private func formatSpeakerLabel(_ speaker: String) -> String {
         return speaker.isEmpty ? "Speaker" : speaker
     }
     
+    /// Formats the timestamp display.
     private func formatTimestamp(start: Double, end: Double) -> String {
         return String(format: "%.1f - %.1f s", start, end)
     }
@@ -819,7 +918,6 @@ struct SegmentView: View {
 
 // MARK: - AudioLevelView
 
-/// 10. **AudioLevelView**
 /// Visualizes the current audio level.
 struct AudioLevelView: View {
     let level: Double
@@ -843,5 +941,23 @@ struct AudioLevelView: View {
                     .animation(.linear(duration: 0.1), value: level)
             }
         }
+    }
+}
+
+// MARK: - Data Extension for Multipart Form Data
+
+extension Data {
+    mutating func append(_ string: String) {
+        if let data = string.data(using: .utf8) {
+            append(data)
+        }
+    }
+}
+
+// MARK: - Preview
+
+struct AGIView_Previews: PreviewProvider {
+    static var previews: some View {
+        AGIView()
     }
 }
