@@ -4,7 +4,7 @@ import os
 import asyncio
 import base64
 import google.generativeai as genai
-from utils.gemini_config import MODEL_VARIANTS, SUPPORTED_RESPONSE_MIME_TYPES, SUPPORTED_LANGUAGES
+from backend.utils._extensions.gemini_config import MODEL_VARIANTS, SUPPORTED_RESPONSE_MIME_TYPES, SUPPORTED_LANGUAGES
 from fastapi import HTTPException
 import logging
 from dotenv import load_dotenv
