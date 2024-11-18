@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
-from database.device_registration_db import database
+from database.device_registration import database
 from route.whisper_socket import whisper_tts
 from utils.server.middleware import setup_cors
 from utils.server.ngrok_command import router as ngrok_commands_router
@@ -71,9 +71,11 @@ app.include_router(web_waitlist_crud_router) # CRUD backend/data/waitlist_data.d
 
 ### -----------------------------------------------------------------------
 ##      ONBOARDING (NO-AUTH)
+from route.gemini.user_name_upload_v3 import router as user_name_upload_v3_router
+app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")   # + /process-audio; TODO: on client side implement double-try correct user name
 from route.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
 app.include_router(user_name_upload_v5_router, prefix="/onboarding/v5")   # + /process-audio; TODO: on client side implement double-try correct user name
-from route.gemini.gemini_audio_handling import router as gemini_audio_handling_router
+from route.gemini.gemini_audio_handling_preview import router as gemini_audio_handling_router
 app.include_router(gemini_audio_handling_router, prefix="/onboarding/v6")
 from route.gemini.gemini_audio_handling_v3 import router as gemini_audio_handling_v3_router
 app.include_router(gemini_audio_handling_v3_router, prefix="/onboarding/v8")

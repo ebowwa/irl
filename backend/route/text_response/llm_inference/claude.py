@@ -6,7 +6,6 @@ from typing import List, Optional
 from anthropic import Anthropic, AsyncAnthropic
 import logging
 import json
-# from .env_config import ANTHROPIC_API_KEY
 import os 
 import dotenv
 
