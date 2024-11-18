@@ -1,5 +1,5 @@
 {
-  "prompt_text": "# Audio Transcription Analysis\nProvide a detailed transcription of the audio with accurate timing information for each segment. Focus on capturing every spoken word and maintaining proper sequence.\n\n# Analysis Requirements:\n1. Transcribe all spoken content with high accuracy\n2. Include precise start and end timestamps\n3. Maintain proper sequence order\n\nPlease transcribe the audio with complete timing details.",
+  "prompt_text": "# Audio Transcription Analysis\nProvide a detailed transcription of the audio with accurate timing information for each segment. Focus on capturing every spoken word and maintaining proper sequence.\n\n# Analysis Requirements:\n1. Transcribe all spoken content with high accuracy\n2. Include precise start and end timestamps\n3. Maintain proper sequence order\n\nPlease transcribe the audio with complete timing details.\n NEVER HALLUcinaTE OR MAKE ANYTHING UP, if nothing is spoken then no Output",
   "response_schema": {
     "type": "OBJECT",
     "required": ["segments"],

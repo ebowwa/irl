@@ -10,7 +10,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from route.dev import socket_ping
-from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
+# from route.features.gemini.gemini_transcription_v1 import router as gemini_transcription_v1_router
 from route.features.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 from route.features.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
 from route.features.gemini.gemini_audio_handling import router as gemini_audio_handling_router
@@ -30,7 +30,6 @@ from utils.server.FindTerminateServerPIDs import FindTerminateServerPIDs # sees 
 from utils.server.middleware import setup_cors
 from utils.server.ngrok_command import router as ngrok_commands_router
 from utils.server.ngrok_utils import start_ngrok
-
 # ------------------ Load Environment Variables --------------------
 load_dotenv()
 # Flag to toggle Ngrok usage
@@ -83,14 +82,12 @@ app.include_router(device_registration_router, prefix="/device") # CRUD backend/
 
 ### ------------------------------------------------------------------------
 ##      GEMINI
-app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # + add `/ws/transcribe`
+# app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # + add `/ws/transcribe`
 app.include_router(google_media_upload_router) # `https://server/upload-to-gemini`
 app.include_router(google_media_upload_v2_router, prefix="/v2") # `https://server/v2/upload-to-gemini`
 app.include_router(google_media_upload_v3_router, prefix="/v3")
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
-
-
 # Serve the OpenAPI schema separately
 @app.get("/openapi.json", include_in_schema=False)
 async def get_openapi():
