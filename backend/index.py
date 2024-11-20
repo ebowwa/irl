@@ -100,9 +100,9 @@ app.include_router(analyze_truth_lie_v1_router)
 # -------------------------------------------------------------------------
 
 ## Auth 
-from database.device.device_registration_v2 import router as device_registration_v2_router
+from route.user.device_registration_v2 import router as device_registration_v2_router
 app.include_router(device_registration_v2_router, prefix="/v2/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
-from database.device.device_registration_v3 import router as device_registration_v3_router
+from route.user.device_registration_v3 import router as device_registration_v3_router
 app.include_router(device_registration_v3_router, prefix="/v3/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
 ### ------------------------------------------------------------------------
 
