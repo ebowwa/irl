@@ -1,5 +1,5 @@
 # backend/route/features/device_registration.py
-# https://chatgpt.com/share/6736848d-b160-800f-a532-f6dabf4d1d23
+
 """
 Device Registration Module
 ==========================
@@ -24,14 +24,19 @@ from typing import List, Optional
 
 import logging
 
-from fastapi import APIRouter, HTTPException, Request, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, Request, status, Depends
+from pydantic import BaseModel, Field, validator
 import sqlalchemy
 
-from database.device_registration import (
+from database.db_modules_v2 import (
     database,
     device_registration_table
 )
+
+from fastapi.security import OAuth2PasswordBearer
+import jwt
+import google.oauth2.id_token
+import google.auth.transport.requests
 
 # Configure logging
 logging.basicConfig(
@@ -54,7 +59,6 @@ class DeviceRegistrationEntry(BaseModel):
     device_uuid: str
     id_token: str
     access_token: str
-    # referral_source: Optional[str]
     created_at: datetime
     updated_at: datetime
 
@@ -67,14 +71,18 @@ class DeviceRegistrationCreate(BaseModel):
     device_uuid: str = Field(..., example="550e8400-e29b-41d4-a716-446655440000")
     id_token: str = Field(..., example="eyJhbGciOiJIUzI1NiIsInR5cCI6...")
     access_token: str = Field(..., example="ya29.a0AfH6SMC...")
-    # referral_source: Optional[str] = Field(None, example="Campaign XYZ")
+
+    @validator('google_account_id', 'device_uuid')
+    def not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('must not be empty')
+        return v
 
 class DeviceRegistrationUpdate(BaseModel):
     google_account_id: Optional[str] = None
     device_uuid: Optional[str] = None
     id_token: Optional[str] = None
     access_token: Optional[str] = None
-    # referral_source: Optional[str] = None
 
 class DeviceRegistrationCheck(BaseModel):
     google_account_id: Optional[str] = None
@@ -96,9 +104,19 @@ class DeviceRegistrationCheckResponse(BaseModel):
         from_attributes = True  # For Pydantic v2
         # orm_mode = True  # Uncomment if using Pydantic v1
 
-# === Telegram Notifier Initialization ===
+# === OAuth2 and Token Verification ===
 
-# notifier: Optional[TelegramNotifier] = None
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def verify_google_token(id_token: str) -> dict:
+    try:
+        # Specify the CLIENT_ID of the app that accesses the backend:
+        CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"  # Replace with your actual Google Client ID
+        idinfo = google.oauth2.id_token.verify_oauth2_token(id_token, google.auth.transport.requests.Request(), CLIENT_ID)
+        return idinfo
+    except ValueError:
+        # Invalid token
+        raise HTTPException(status_code=401, detail="Invalid ID token")
 
 # === CRUD Endpoints ===
 
@@ -108,7 +126,7 @@ class DeviceRegistrationCheckResponse(BaseModel):
     status_code=status.HTTP_201_CREATED,
     summary="Register a new device or update existing registration",
 )
-async def register_device(entry: DeviceRegistrationCreate, request: Request):
+async def register_device(entry: DeviceRegistrationCreate, request: Request, idinfo: dict = Depends(verify_google_token)):
     """
     Registers a new device with the provided information.
     If the device is already registered, updates the existing registration.
@@ -118,12 +136,15 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
     - **id_token**: Authentication ID token.
     - **access_token**: Authentication access token.
     """
-    logger.info(f"Registering device with Google Account ID: {entry.google_account_id}")
+    google_account_id = idinfo.get('sub')
+    device_uuid = entry.device_uuid
+
+    logger.info(f"Registering device with Google Account ID: {google_account_id}")
 
     # Check if the device is already registered by google_account_id or device_uuid
     check_query = device_registration_table.select().where(
-        (device_registration_table.c.google_account_id == entry.google_account_id) |
-        (device_registration_table.c.device_uuid == entry.device_uuid)
+        (device_registration_table.c.google_account_id == google_account_id) |
+        (device_registration_table.c.device_uuid == device_uuid)
     )
     existing_entry = await database.fetch_one(check_query)
 
@@ -133,14 +154,13 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
         update_data = {
             "id_token": entry.id_token,
             "access_token": entry.access_token,
-            # "referral_source": entry.referral_source,
             "updated_at": datetime.utcnow()
         }
 
         # Update based on google_account_id or device_uuid
         update_query = device_registration_table.update().where(
-            (device_registration_table.c.google_account_id == entry.google_account_id) |
-            (device_registration_table.c.device_uuid == entry.device_uuid)
+            (device_registration_table.c.google_account_id == google_account_id) |
+            (device_registration_table.c.device_uuid == device_uuid)
         ).values(**update_data)
 
         try:
@@ -155,8 +175,8 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
 
         # Retrieve the updated device registration
         retrieve_query = device_registration_table.select().where(
-            (device_registration_table.c.google_account_id == entry.google_account_id) |
-            (device_registration_table.c.device_uuid == entry.device_uuid)
+            (device_registration_table.c.google_account_id == google_account_id) |
+            (device_registration_table.c.device_uuid == device_uuid)
         )
         updated_entry = await database.fetch_one(retrieve_query)
         logger.info(f"Updated device registration retrieved: {updated_entry}")
@@ -165,11 +185,10 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
     else:
         # Insert the new device registration
         query = device_registration_table.insert().values(
-            google_account_id=entry.google_account_id,
-            device_uuid=entry.device_uuid,
+            google_account_id=google_account_id,
+            device_uuid=device_uuid,
             id_token=entry.id_token,
             access_token=entry.access_token,
-            # referral_source=entry.referral_source,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         )
@@ -194,20 +213,6 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
         new_entry = await database.fetch_one(query)
         logger.info(f"New device registration retrieved: {new_entry}")
 
-        # Send Telegram notification (if implemented)
-        """
-        if notifier:
-            try:
-                await notifier.send_new_device_registration(
-                    google_account_id=new_entry['google_account_id'],
-                    device_uuid=new_entry['device_uuid'],
-                    # referral_source=new_entry['referral_source']
-                )
-                logger.info(f"Telegram notification sent for device registration ID: {last_record_id}")
-            except Exception as e:
-                logger.error(f"Failed to send Telegram notification: {e}")
-                # Optionally, decide whether to fail the request or continue
-        """
         return DeviceRegistrationEntry.model_validate(new_entry)
 
 @router.get(
@@ -215,7 +220,7 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
     response_model=DeviceRegistrationEntry,
     summary="Retrieve a device registration by ID",
 )
-async def get_device_registration(entry_id: int):
+async def get_device_registration(entry_id: int, current_user: str = Depends(oauth2_scheme)):
     """
     Retrieves a device registration entry by its unique ID.
 
@@ -228,14 +233,14 @@ async def get_device_registration(entry_id: int):
         logger.warning(f"Device registration with ID {entry_id} not found.")
         raise HTTPException(status_code=404, detail="Device registration not found")
     logger.info(f"Device registration found: {entry}")
-    return DeviceRegistrationEntry.model_validate(entry)  # Updated for Pydantic v2
+    return DeviceRegistrationEntry.model_validate(entry)
 
 @router.get(
     "/register",
     response_model=List[DeviceRegistrationEntry],
     summary="List all device registrations"
 )
-async def list_device_registrations():
+async def list_device_registrations(current_user: str = Depends(oauth2_scheme)):
     """
     Lists all device registrations, ordered by creation date descending.
     """
@@ -243,14 +248,14 @@ async def list_device_registrations():
     query = device_registration_table.select().order_by(device_registration_table.c.created_at.desc())
     entries = await database.fetch_all(query)
     logger.info(f"Number of device registrations retrieved: {len(entries)}")
-    return [DeviceRegistrationEntry.model_validate(entry) for entry in entries]  # Updated for Pydantic v2
+    return [DeviceRegistrationEntry.model_validate(entry) for entry in entries]
 
 @router.put(
     "/register/{entry_id}",
     response_model=DeviceRegistrationEntry,
     summary="Update a device registration by ID"
 )
-async def update_device_registration(entry_id: int, entry: DeviceRegistrationUpdate):
+async def update_device_registration(entry_id: int, entry: DeviceRegistrationUpdate, current_user: str = Depends(oauth2_scheme)):
     """
     Updates a device registration entry by its unique ID.
 
@@ -300,14 +305,14 @@ async def update_device_registration(entry_id: int, entry: DeviceRegistrationUpd
         logger.warning(f"Device registration with ID {entry_id} not found after update.")
         raise HTTPException(status_code=404, detail="Device registration not found")
     logger.info(f"Updated device registration retrieved: {updated_entry}")
-    return DeviceRegistrationEntry.model_validate(updated_entry)  # Updated for Pydantic v2
+    return DeviceRegistrationEntry.model_validate(updated_entry)
 
 @router.delete(
     "/register/{entry_id}",
     status_code=status.HTTP_200_OK,
     summary="Delete a device registration by ID",
 )
-async def delete_device_registration(entry_id: int):
+async def delete_device_registration(entry_id: int, current_user: str = Depends(oauth2_scheme)):
     """
     Deletes a device registration entry by its unique ID.
 
@@ -343,7 +348,7 @@ async def delete_device_registration(entry_id: int):
     response_model=DeviceRegistrationCheckResponse,
     status_code=status.HTTP_200_OK,
 )
-async def check_device_registration(check: DeviceRegistrationCheck):
+async def check_device_registration(check: DeviceRegistrationCheck, current_user: str = Depends(oauth2_scheme)):
     """
     Checks if a device is registered based on Google Account ID and/or Device UUID.
 
@@ -377,22 +382,8 @@ async def check_device_registration(check: DeviceRegistrationCheck):
     entry = await database.fetch_one(query)
     if entry:
         logger.info("Device is registered.")
-        device_entry = DeviceRegistrationEntry.model_validate(entry)  # Updated for Pydantic v2
+        device_entry = DeviceRegistrationEntry.model_validate(entry)
         return DeviceRegistrationCheckResponse(is_registered=True, device=device_entry)
     else:
         logger.info("Device is not registered.")
         return DeviceRegistrationCheckResponse(is_registered=False, device=None)
-
-# === Event Handlers ===
-
-    # Initialize TelegramNotifier
-    # global notifier
-    # try:
-        # notifier = TelegramNotifier()
-        # logger.info("TelegramNotifier initialized successfully.")
-    # except Exception as e:
-        # logger.error(f"Failed to initialize TelegramNotifier: {e}")
-
-    #if notifier:
-        # Cleanup notifier if necessary
-        # pass

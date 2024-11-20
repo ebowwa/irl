@@ -8,7 +8,6 @@ from aiogram import Bot, types
 import asyncio
 from dotenv import load_dotenv
 
-# Load environment variables from a .env file (if you choose to use one)
 load_dotenv()
 
 class TelegramNotifier:
@@ -49,6 +48,8 @@ class TelegramNotifier:
         except Exception as e:
             self.logger.error(f"Failed to send Telegram notification: {e}")
             raise
+
+# TODO: make waitlist an enum allow other enums
 
     async def send_new_waitlist_entry(
         self, 

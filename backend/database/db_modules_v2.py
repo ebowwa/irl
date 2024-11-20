@@ -1,4 +1,4 @@
-# backend/database/device_registration_db.py
+# backend/database/db_modules.py
 
 """
 Device Registration Database Module
@@ -53,8 +53,8 @@ device_registration_table = Table(
     "device_registration",
     metadata,
     Column("id", Integer, primary_key=True, index=True),
-    Column("google_account_id", String, index=True, nullable=False),
-    Column("device_uuid", String, index=True, nullable=False),
+    Column("google_account_id", String, index=True, nullable=False, unique=True),
+    Column("device_uuid", String, index=True, nullable=False, unique=True),
     Column("id_token", String, nullable=False),
     Column("access_token", String, nullable=False),
     Column("created_at", DateTime, default=func.now(), nullable=False),

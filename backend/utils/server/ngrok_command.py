@@ -18,7 +18,7 @@ class ServerState:
     """
     def __init__(self):
         self.request_count: int = 0            # Total number of incoming requests
-        self.port: int = 8000                  # Server port, default is 8000
+        self.port: int = 9090                  # Server port, default is 8000
         self.public_url: Optional[str] = None  # Public URL via ngrok
 
 # Instantiate the server state

@@ -1,4 +1,4 @@
-# Stateless API Design
+# Stateless API Design no persistence!
 # audio handling
 # client - manage the file urls to send included in the requests..  to manage chats/longer context
 # GEMINI RULES: Each project can store up to 20GB of files, with each individual file not exceeding 2GB in size, Prompt Constraints: While there's no explicit limit on the number of audio files in a single prompt, the combined length of all audio files in a prompt must not exceed 9.5 hours.

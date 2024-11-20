@@ -8,7 +8,7 @@ import google.generativeai as genai
 import logging
 import traceback
 from tenacity import retry, stop_after_attempt, wait_exponential
-from .gemini_process_webhook_v2 import process_with_gemini_webhook
+from ..gemini_process_webhook_v2 import process_with_gemini_webhook
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
