@@ -38,7 +38,7 @@ struct Constants {
     }
     
     // App-specific constants
-    static let appName = "CaringMind"
+    static let appName = "madhi"
     
     // Initialization function for setup (optional)
     static func initializeDefaults() {

@@ -233,7 +233,7 @@ struct NameInputView: View {
                             
                             VStack {
                                 Toggle(isOn: $isCorrectName) {
-                                    Text(isCorrectName ? "that's me" : "not quite right")
+                                    Text(isCorrectName ? "not quite right" : "that's me")
                                         .font(.system(size: 14, weight: .medium, design: .monospaced))
                                         .foregroundColor(Color(hex: "#00FF00"))
                                 }
@@ -268,7 +268,7 @@ struct NameInputView: View {
                                     step += 1
                                 }
                             }) {
-                                Text("connect >>")
+                                Text("continue >>")
                                     .font(.system(size: 18, weight: .bold, design: .monospaced))
                                     .foregroundColor(.black)
                                     .frame(width: 280, height: 56)
