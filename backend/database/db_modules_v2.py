@@ -1,4 +1,4 @@
-# backend/database/db_modules.py
+# backend/database/db_modules_v2.py
 
 """
 Device Registration Database Module
@@ -20,6 +20,7 @@ import logging
 import databases
 import sqlalchemy
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text, func
+from fastapi import APIRouter, UploadFile, File, HTTPException, Query 
 
 # Configure logging
 logging.basicConfig(
@@ -30,9 +31,11 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+router = APIRouter()
 
 # === Database Configuration ===
 
+# Define the base directory and database name
 BASE_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 DATABASE_NAME = "app_user_identification_v2.db"
 DATABASE_PATH = BASE_DIR / DATABASE_NAME
@@ -41,6 +44,7 @@ DATABASE_PATH = BASE_DIR / DATABASE_NAME
 BASE_DIR.mkdir(parents=True, exist_ok=True)
 logger.info(f"Database directory ensured at: {BASE_DIR.as_posix()}")
 
+# Define the database URL for SQLite with aiosqlite
 DATABASE_URL = f"sqlite+aiosqlite:///{DATABASE_PATH.as_posix()}"
 
 # Initialize the database
@@ -69,6 +73,7 @@ processed_audio_files_table = Table(
     Column("id", Integer, primary_key=True, index=True),
     Column("user_id", Integer, ForeignKey("device_registration.id"), nullable=False),
     Column("file_name", String, nullable=False),
+    Column("file_uri", String, nullable=True),  # New column to store the upload URL
     Column("gemini_result", Text, nullable=False),
     Column("uploaded_at", DateTime, default=func.now(), nullable=False),
     Column("created_at", DateTime, default=func.now(), nullable=False),
@@ -84,3 +89,30 @@ engine = sqlalchemy.create_engine(
 # Create the tables
 metadata.create_all(engine)
 logger.info("Device registration and processed audio files tables created or already exist.")
+
+# === Event Handlers for Database Connection ===
+
+@router.on_event("startup")
+async def startup():
+    """
+    Event handler for application startup. Connects to the database.
+    """
+    logger.info("Connecting to the device identification database.")
+    try:
+        await database.connect()
+        logger.info("Device identification database connected successfully.")
+    except Exception as e:
+        logger.error(f"Error connecting to the device identification database: {e}")
+        raise
+
+@router.on_event("shutdown")
+async def shutdown():
+    """
+    Event handler for application shutdown. Disconnects from the database.
+    """
+    logger.info("Disconnecting from the device identification database.")
+    try:
+        await database.disconnect()
+        logger.info("Device identification database disconnected successfully.")
+    except Exception as e:
+        logger.error(f"Error disconnecting from the device identification database: {e}")

@@ -1,11 +1,13 @@
-# backend/route/features/gemini/gemini_audio_handling.py
-# Stateless API Design
+# backend/route/gemini/gemini_audio_handling_v3.py
+# Stateless API Design - with user auth
 
-# audio handling
+# Audio handling
 
-# client - manage the file urls to send included in the requests.. to manage chats/longer context
+# Client - manage the file URLs to send included in the requests to manage chats/longer context
 
-# GEMINI RULES: Each project can store up to 20GB of files, with each individual file not exceeding 2GB in size, Prompt Constraints: While there's no explicit limit on the number of audio files in a single prompt, the combined length of all audio files in a prompt must not exceed 9.5 hours.
+# GEMINI RULES:
+# - Each project can store up to 20GB of files, with each individual file not exceeding 2GB in size
+# - Prompt Constraints: While there's no explicit limit on the number of audio files in a single prompt, the combined length of all audio files in a prompt must not exceed 9.5 hours.
 
 import os
 import asyncio
@@ -28,6 +30,13 @@ from .gemini_process_webhook_v2 import process_with_gemini_webhook  # Ensure thi
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 
 # Load environment variables
 load_dotenv()
@@ -116,7 +125,7 @@ def process_individual_file(filename: str, uploaded_file: object, prompt_type: s
         traceback.print_exc()
         return e
 
-async def store_processed_file(user_id: int, file_name: str, gemini_result: object):
+async def store_processed_file(user_id: int, file_name: str, file_uri: str, gemini_result: object):
     """
     Stores the processed file information in the database.
     """
@@ -124,25 +133,27 @@ async def store_processed_file(user_id: int, file_name: str, gemini_result: obje
         query = processed_audio_files_table.insert().values(
             user_id=user_id,
             file_name=file_name,
+            file_uri=file_uri,  # Store the upload URL here -> TODO: we also need to return this with the post request reepsonse
+            #^ where does the file uri come from and how do we share it in the results?
             gemini_result=json.dumps(gemini_result),
             uploaded_at=datetime.utcnow(),
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         )
         await database.execute(query)
-        logger.info(f"Stored processed file {file_name} for user ID {user_id}.")
+        logger.info(f"Stored processed file {file_name} with URI {file_uri} for user ID {user_id}.")
     except Exception as e:
         logger.error(f"Error storing processed file {file_name}: {e}")
         traceback.print_exc()
         # Optionally, handle the exception as needed
 
-async def store_processed_files(user_id: int, file_names: List[str], gemini_result: object):
+async def store_processed_files(user_id: int, file_names: List[str], file_uris: List[str], gemini_result: object):
     """
     Stores the processed files information in the database for batch processing.
     """
     try:
-        for file_name in file_names:
-            await store_processed_file(user_id, file_name, gemini_result)
+        for file_name, file_uri in zip(file_names, file_uris):
+            await store_processed_file(user_id, file_name, file_uri, gemini_result)
     except Exception as e:
         logger.error(f"Error storing processed files: {e}")
         traceback.print_exc()
@@ -211,6 +222,8 @@ async def process_audio(
         # Check for any exceptions in uploaded_files
         errors = []
         valid_uploaded_files = []
+        file_uris = []  # To store the file URIs for batch processing
+
         for file, uploaded_file in zip(files, uploaded_files):
             if isinstance(uploaded_file, Exception):
                 logger.error(f"Error processing file {file.filename}: {uploaded_file}")
@@ -221,6 +234,7 @@ async def process_audio(
                 })
             else:
                 valid_uploaded_files.append((file.filename, uploaded_file))
+                file_uris.append(uploaded_file.uri)  # Capture the URI
 
         if not valid_uploaded_files:
             logger.warning("All file uploads failed.")
@@ -243,11 +257,13 @@ async def process_audio(
                 results.append({
                     "files": [filename for filename, _ in valid_uploaded_files],
                     "status": "processed",
-                    "data": gemini_result
+                    "data": gemini_result,
+                    "file_uri": uploaded_file.uri  # Include the URI in the response
+
                 })
                 logger.debug("Batch processing with Gemini webhook successful.")
-                # Store the result in the database
-                await store_processed_files(user_id, [filename for filename, _ in valid_uploaded_files], gemini_result)
+                # Store the result in the database with file URIs
+                await store_processed_files(user_id, [filename for filename, _ in valid_uploaded_files], file_uris, gemini_result)
             except Exception as e:
                 logger.error(f"Error in Gemini processing (batch): {e}")
                 traceback.print_exc()
@@ -266,7 +282,7 @@ async def process_audio(
             individual_results = await asyncio.gather(*processing_tasks, return_exceptions=True)
 
             for original_file, result in zip(valid_uploaded_files, individual_results):
-                filename, _ = original_file
+                filename, uploaded_file = original_file
                 if isinstance(result, Exception):
                     logger.error(f"Error in Gemini processing for file {filename}: {result}")
                     results.append({
@@ -276,13 +292,16 @@ async def process_audio(
                     })
                 elif isinstance(result, tuple):
                     fname, gemini_result = result
+                    # Find the corresponding file URI
+                    file_uri = next((uri for fname2, uri in valid_uploaded_files if fname2 == fname), None)
                     results.append({
                         "file": fname,
                         "status": "processed",
-                        "data": gemini_result
+                        "data": gemini_result,
+                        "file_uris": file_uris  # Add URIs for all processed files
                     })
-                    # Store the result in the database
-                    await store_processed_file(user_id, fname, gemini_result)
+                    # Store the result in the database with file URI
+                    await store_processed_file(user_id, fname, uploaded_file.uri, gemini_result)
                 else:
                     logger.error(f"Unexpected result type for file {filename}: {result}")
                     results.append({
