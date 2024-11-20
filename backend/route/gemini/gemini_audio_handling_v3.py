@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Import the database module and tables
-from database.db_modules import (
+from database.db_modules_v2 import (
     database,
     device_registration_table,
     processed_audio_files_table

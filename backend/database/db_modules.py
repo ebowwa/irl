@@ -40,6 +40,7 @@ DATABASE_PATH = BASE_DIR / DATABASE_NAME
 # Ensure the directory exists
 BASE_DIR.mkdir(parents=True, exist_ok=True)
 logger.info(f"Database directory ensured at: {BASE_DIR.as_posix()}")
+logger.info(f"Resolved DATABASE_PATH: {DATABASE_PATH}")
 
 DATABASE_URL = f"sqlite+aiosqlite:///{DATABASE_PATH.as_posix()}"
 
