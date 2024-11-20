@@ -89,7 +89,7 @@ struct WelcomeView: View {
    @State private var textOpacity = 0.0
 
    var body: some View {
-       Text("INITIALIZING CONSCIOUSNESS COMPANION")
+       Text("I’m Mahdi, your personal consciousness companion. Together, we’ll navigate your journey towards a balanced and fulfilling life.") // prev. INITIALIZING CONSCIOUSNESS COMPANION but want to make more user friendly, this app is an advocate for the user, and acts in principle with the muslimic mahdi concept
            .modifier(CyberText())
            .font(.system(size: 24, weight: .bold, design: .monospaced))
            .opacity(textOpacity)
@@ -184,7 +184,7 @@ struct MomentsThoughtsEmotionsView: View {
                     .opacity(lineOpacity[index])
                 }
                 
-                // Central LIFE=DATA node
+                // Central LIFE=DATA node **DO NOT REMOVE**
                 ZStack {
                     Circle()
                         .fill(Color.black)
@@ -278,7 +278,7 @@ struct ManageDataView: View {
    @State private var textOpacity = 0.0
 
    var body: some View {
-       Text("what you make of data determines your life ")
+       Text("what you make of data determines your life ") // this stays
            .modifier(CyberText())
            .font(.system(size: 24, weight: .bold, design: .monospaced))
            .opacity(textOpacity)

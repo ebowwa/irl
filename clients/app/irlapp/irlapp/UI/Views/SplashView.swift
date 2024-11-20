@@ -74,7 +74,7 @@ struct SplashView: View {
                .padding(.bottom, 20)
                
                VStack(spacing: 12) {
-                   Text("CARINGMIND")
+                   Text("mahdi")
                        .font(.system(size: 32, weight: .bold, design: .monospaced))
                        .foregroundColor(Color(hex: "#00FF00"))
                        .opacity(showWelcome ? 1 : 0)

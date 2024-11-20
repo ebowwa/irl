@@ -472,7 +472,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = irlapp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = CaringMind;
+				INFOPLIST_KEY_CFBundleDisplayName = mahdi;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is required to capture visual input for additional features and personalized interactions.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "This app uses your location for personalized features and insights, even when the app is in the background.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "This app requires background location access for continuous updates even when not in use.";
@@ -522,7 +522,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = irlapp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = CaringMind;
+				INFOPLIST_KEY_CFBundleDisplayName = mahdi;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is required to capture visual input for additional features and personalized interactions.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "This app uses your location for personalized features and insights, even when the app is in the background.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "This app requires background location access for continuous updates even when not in use.";
