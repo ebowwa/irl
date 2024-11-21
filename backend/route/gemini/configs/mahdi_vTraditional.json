@@ -1,0 +1,36 @@
+{
+    "prompt_text": "Create an audio composition or analysis inspired by the concept of embodying the spirit of the Mahdi. Follow these steps:\n\n1. Interpret the theme of the Mahdi as a guiding force for justice, hope, and spiritual awakening.\n2. Use Islamic cultural and spiritual references, such as the adhan (call to prayer), traditional instruments like the oud, or rhythmic drumming to evoke a connection to faith and renewal.\n3. Optionally, incorporate modern elements like ambient or electronic sounds to bridge traditional and contemporary expressions.\n4. Describe the intended emotional impact and atmosphere of the audio, such as evoking feelings of unity, spiritual power, and urgency.\n5. Provide details about specific sound components, including instrument types, vocal elements, or ambient effects.\n\nAvoid stereotypes or superficial interpretations. Focus on crafting an experience that conveys profound spiritual and cultural significance.",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": ["theme_interpretation", "sound_components", "emotional_impact"],
+      "properties": {
+        "theme_interpretation": {
+          "type": "STRING",
+          "description": "The interpretation of the Mahdi's spirit as a theme, including its symbolic or cultural elements."
+        },
+        "sound_components": {
+          "type": "ARRAY",
+          "description": "Detailed descriptions of sound elements to be used in the audio.",
+          "items": {
+            "type": "OBJECT",
+            "required": ["component_type", "description"],
+            "properties": {
+              "component_type": {
+                "type": "STRING",
+                "description": "Type of sound component, e.g., 'instrument', 'vocal', 'ambient'."
+              },
+              "description": {
+                "type": "STRING",
+                "description": "Detailed description of the sound component, including its cultural or emotional relevance."
+              }
+            }
+          }
+        },
+        "emotional_impact": {
+          "type": "STRING",
+          "description": "The intended emotional effect of the audio, such as hope, unity, or empowerment."
+        }
+      }
+    }
+  }
+  

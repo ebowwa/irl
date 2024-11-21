@@ -74,12 +74,11 @@ from route.gemini.user_name_upload_v3 import router as user_name_upload_v3_route
 app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")   # + /process-audio; TODO: on client side implement double-try correct user name
 # from route.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
 # app.include_router(user_name_upload_v5_router, prefix="/onboarding/v5")   # + /process-audio; TODO: on client side implement double-try correct user name
-from route.gemini.gemini_audio_handling_preview import router as gemini_audio_handling_preview_router
-app.include_router(gemini_audio_handling_preview_router, prefix="/onboarding/v6")
+from route.gemini.gemini_audio_handling_noauth import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
+app.include_router(gemini_audio_handling_noauth_router, prefix="/onboarding/v6")
 
-from route.gemini.gemini_audio_handling_v3 import router as gemini_audio_handling_v3_router
-# TODO: rename as this will be the main audio processing for the audio-llm services, it is user-protected, allows preset-prompts&json responses, it needs better persistance of the responses and maybe also the url media input(if not already done)
-app.include_router(gemini_audio_handling_v3_router, prefix="/onboarding/v8")
+from route.gemini.gemini_audio_handling_auth import router as gemini_audio_handling_auth_router # user auth & persistance
+app.include_router(gemini_audio_handling_auth_router, prefix="/onboarding/v8")
 
 '''
 ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X POST "https://...ngrok-free.app/onboarding/v8/process-audio?google_account_id=[id#here]&device_uuid=35FFE513-1990-4293-9898-DDF01B3D546A&prompt_type=default&batch=false" \
