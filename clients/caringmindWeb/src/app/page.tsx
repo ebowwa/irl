@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
-const WAITLIST_ENDPOINT = 'https://2157-2601-646-a201-db60-00-2386.ngrok-free.app/waitlist/';
+const WAITLIST_ENDPOINT = 'https://8bdb-2a09-bac5-661b-1232-00-1d0-c6.ngrok-free.app/waitlist/';
 // TODO: 
 // the endpoint should just be the route
 // set a second definition for the url as base server

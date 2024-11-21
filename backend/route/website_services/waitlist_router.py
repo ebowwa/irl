@@ -1,86 +1,22 @@
-# backend/route/website_services/waitlist_router.py 
+# backend/route/website_services/waitlist_router.py
 
-# may want to include referral source on the waitlist 
-
-# will add telegram next to update me on waitlist status
-
-from datetime import datetime
 from typing import List, Optional
-import os
-from pathlib import Path
-import logging
 
-import databases
-import sqlalchemy
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import Column, DateTime, Integer, String, Table, func
-from sqlalchemy.exc import IntegrityError  # Import IntegrityError
-# 1. Import the TelegramNotifier class from the notification module
+from datetime import datetime
+import logging
+
+from sqlalchemy.exc import IntegrityError
+
+# Import the database components from the db module
+from database.waitlist_db import database, waitlist_table
+
+# Import the TelegramNotifier class from the notification module
 from utils._extensions.telegram_notification import TelegramNotifier  # Adjust the import path as necessary
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.StreamHandler()
-    ]
-)
 logger = logging.getLogger(__name__)
-
-# === Updated Section: Use Relative Paths ===
-
-# Determine the base directory relative to this file's location
-BASE_DIR = Path(__file__).resolve().parent.parent.parent / "data"
-# Explanation:
-# - __file__ refers to the current file (waitlist_router.py)
-# - resolve() gets the absolute path
-# - parent.parent.parent navigates up three directories:
-#   backend/route/website_services/waitlist_router.py -> backend/route/website_services -> backend/route -> backend -> project root
-# - / "data" appends the "data" directory to the project root
-
-DATABASE_NAME = "website_waitlist_data.db"
-DATABASE_PATH = BASE_DIR / DATABASE_NAME
-
-# Ensure the directory exists
-BASE_DIR.mkdir(parents=True, exist_ok=True)
-logger.info(f"Database directory ensured at: {BASE_DIR.as_posix()}")
-
-# Database URL for SQLite using the relative DATABASE_PATH
-DATABASE_URL = f"sqlite+aiosqlite:///{DATABASE_PATH.as_posix()}"
-
-# For PostgreSQL in production, use:
-# DATABASE_URL = "postgresql+asyncpg://user:password@localhost/dbname"
-
-logger.info(f"Using DATABASE_URL: {DATABASE_URL}")
-
-# Initialize the database
-database = databases.Database(DATABASE_URL)
-metadata = sqlalchemy.MetaData()
-
-# Define the waitlist table with an additional 'referral_source' column
-waitlist_table = Table(
-    "waitlist",
-    metadata,
-    Column("id", Integer, primary_key=True, index=True),
-    Column("name", String, nullable=False),
-    Column("email", String, unique=True, index=True, nullable=False),
-    Column("ip_address", String, nullable=True),
-    Column("comment", String, nullable=True),  # Existing column
-    Column("referral_source", String, nullable=True),  # New column for referral source
-    Column("created_at", DateTime, default=func.now(), nullable=False),
-)
-
-# Create the database engine
-engine = sqlalchemy.create_engine(
-    DATABASE_URL.replace("+aiosqlite", ""),
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
-)
-
-# Create the table(s)
-metadata.create_all(engine)
-logger.info("Database tables created or already exist.")
 
 # Initialize the router
 router = APIRouter(prefix="/waitlist", tags=["Waitlist CRUD"])
@@ -113,7 +49,7 @@ class WaitlistUpdate(BaseModel):
     referral_source: Optional[str] = None  # New field
 
 
-# 2. Initialize a global variable for the TelegramNotifier
+# Initialize a global variable for the TelegramNotifier
 notifier: Optional[TelegramNotifier] = None
 
 # CRUD Endpoints
@@ -168,7 +104,7 @@ async def create_entry(entry: WaitlistCreate, request: Request):
     new_entry = await database.fetch_one(query)
     logger.info(f"New entry retrieved: {new_entry}")
 
-    # 3. Send a Telegram notification for the new entry
+    # Send a Telegram notification for the new entry
     if notifier:
         try:
             await notifier.send_new_waitlist_entry(
@@ -202,6 +138,7 @@ async def get_entry(entry_id: int):
         raise HTTPException(status_code=404, detail="Entry not found")
     logger.info(f"Entry found: {entry}")
     return entry
+
 
 # TODO: DUE TO THE notifications with telegram we no longer need to make the list accessible via post requests i believe, its highly unsafe and bad user usage
 @router.get(
@@ -267,7 +204,7 @@ async def update_entry(entry_id: int, entry: WaitlistUpdate):
         raise HTTPException(status_code=404, detail="Entry not found")
     logger.info(f"Updated entry retrieved: {updated_entry}")
 
-    # 4. Optionally, send a Telegram notification about the update
+    # Optionally, send a Telegram notification about the update
     if notifier:
         try:
             await notifier.send_updated_waitlist_entry(
@@ -316,7 +253,7 @@ async def delete_entry(entry_id: int):
     return {"message": "Entry deleted successfully", "entry_id": entry_id}
 
 
-# 4. Event handlers to connect/disconnect the database and initialize/close the TelegramNotifier
+# Event handlers to connect/disconnect the database and initialize/close the TelegramNotifier
 
 @router.on_event("startup")
 async def startup():
@@ -328,7 +265,7 @@ async def startup():
         logger.error(f"Error connecting to the database: {e}")
         raise
 
-    # 5. Initialize the TelegramNotifier during startup
+    # Initialize the TelegramNotifier during startup
     global notifier  # Declare notifier as global to modify the global variable
     try:
         notifier = TelegramNotifier()
@@ -348,7 +285,7 @@ async def shutdown():
     except Exception as e:
         logger.error(f"Error disconnecting from the database: {e}")
 
-    # 6. Close the TelegramNotifier during shutdown
+    # Close the TelegramNotifier during shutdown
     if notifier:
         try:
             await notifier.close()
