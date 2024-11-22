@@ -7,11 +7,14 @@
 // - this functionality should not be managed by views, but can be modified, i.e., switch to websocket, send data to server, playbacks, viewing transcriptions, data, etc
 //
 // NOTE: this script was updated to include a google sign in which as of now does nothing, it works, the user can sign in with their google account but otherwise this feature has no other extension, moving forward location, usage metrics, drive storage can be applied through this gsignin
-import SwiftUI
+
+
 import GoogleSignIn
 import GoogleSignInSwift
 
- @main
+import SwiftUI
+
+@main
 struct mahdiApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
@@ -28,10 +31,10 @@ struct mahdiApp: App {
                 .environmentObject(router)
                 .environmentObject(onboardingViewModel)
                 .onAppear {
+                    Constants.initializeDefaults()
                     GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                         if let error = error {
                             print("Restore sign-in failed with error: \(error.localizedDescription)")
-                            // Optionally, navigate to sign-in screen
                             return
                         }
                         if let user = user {
@@ -39,7 +42,6 @@ struct mahdiApp: App {
                             checkAndRegisterUser(user: user)
                         } else {
                             print("No previous sign-in found.")
-                            // Optionally, prompt user to sign in
                         }
                     }
                 }
@@ -62,7 +64,8 @@ struct mahdiApp: App {
         // Perform an asynchronous check with the backend server
         Task {
             do {
-                let checkResponse = try await checkRegistrationHandler.isUserRegistered(googleAccountID: googleAccountID, deviceUUID: deviceUUID)
+                let checkResponse = try await checkRegistrationHandler.isUserRegistered(
+                    googleAccountID: googleAccountID, deviceUUID: deviceUUID ?? "")
                 if checkResponse.is_registered, checkResponse.device != nil {
                     print("User is already registered on server.")
                     // Update local registration status based on server response
@@ -92,16 +95,16 @@ struct mahdiApp: App {
         let accessToken = user.accessToken.tokenString
         let googleAccountID = user.userID ?? ""
         let deviceUUID = DeviceUUID.getUUID()
-        
+
         // Save googleAccountID to Keychain
         KeychainHelper.standard.saveGoogleAccountID(googleAccountID)
-        
+
         print("handleSignIn: Registering device with server.")
         Task {
             do {
                 try await registerDeviceHandler.registerDeviceWithServer(
                     googleAccountID: googleAccountID,
-                    deviceUUID: deviceUUID,
+                    deviceUUID: deviceUUID ?? "",
                     idToken: idToken,
                     accessToken: accessToken
                 )
@@ -116,12 +119,13 @@ struct mahdiApp: App {
     }
 }
 
-
-
 // MARK: - AppDelegate for Google Sign-In URL handling
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(
+        _ application: UIApplication, open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
         return GIDSignIn.sharedInstance.handle(url)
     }
 }
@@ -169,11 +173,13 @@ struct ContentView: View {
                 SplashView()
                     .transition(.opacity)
             case .onboarding:
-                OnboardingIntroView(step: $onboardingViewModel.currentStep,
-                                    userName: $onboardingViewModel.userName)
-                    .transition(.slide)
+                OnboardingIntroView(
+                    step: $onboardingViewModel.currentStep,
+                    userName: $onboardingViewModel.userName
+                )
+                .transition(.slide)
             case .home:
-                AGIView()
+                MainContentView()
             }
         }
         .animation(.easeInOut, value: router.currentDestination)

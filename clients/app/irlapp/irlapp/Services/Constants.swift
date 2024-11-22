@@ -4,12 +4,11 @@
 //
 //  Created by Elijah Arbee on 10/8/24.
 //
-
 import Foundation
 
 struct Constants {
     // Default base domain value for fallback
-    private static let defaultBaseDomain = "36e9-2601-646-a201-db60-00-f79e.ngrok-free.app"
+    private static let defaultBaseDomain = "8bdb-2a09-bac5-661b-1232-00-1d0-c6.ngrok-free.app"
     
     // Environment-specific settings
     static let baseDomain: String = {
@@ -33,6 +32,7 @@ struct Constants {
     static var baseURL: String {
         "https://\(baseDomain)"
     }
+    
     static var webSocketBaseURL: String {
         "wss://\(baseDomain)"
     }
@@ -40,7 +40,7 @@ struct Constants {
     // App-specific constants
     static let appName = "madhi"
     
-    // Initialization function for setup (optional)
+    // Initialization function for setup
     static func initializeDefaults() {
         UserDefaults.standard.register(defaults: [
             "baseDomain": defaultBaseDomain,
@@ -51,3 +51,10 @@ struct Constants {
     }
 }
 
+// Extension to add more constants
+extension Constants {
+    static let deviceUUIDService = "MahdiService"
+    static let googleAccountIDService = "CaringMindService"
+    static let deviceUUIDAccount = "DeviceUUID"
+    static let googleAccountIDAccount = "GoogleAccountID"
+}

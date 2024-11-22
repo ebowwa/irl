@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Your microphone is needed to record audio for transcription and memory creation.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

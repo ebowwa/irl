@@ -1,11 +1,4 @@
 //
-//  RegistrationStatus.swift
-//   CaringMind
-//
-//  Created by Elijah Arbee on 11/19/24.
-//
-
-
 //
 //  RegistrationStatus.swift
 //  CaringMind
