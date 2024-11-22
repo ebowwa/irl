@@ -1,5 +1,5 @@
 # backend/database/db_modules_v2.py
-
+# TODO: IDK how the server handles different device ids by google user id's but we need to allow multiple
 """
 Device Registration Database Module
 ===================================

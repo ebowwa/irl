@@ -94,15 +94,14 @@ ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X GET "https://...ngrok-free.app
 from route.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 app.include_router(analyze_truth_lie_v1_router)
 
-
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
 
 ## Auth 
 from route.user.device_registration_v2 import router as device_registration_v2_router # used in app 
 app.include_router(device_registration_v2_router, prefix="/v2/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
-from route.user.device_registration_v3 import router as device_registration_v3_router # not currently in use
-app.include_router(device_registration_v3_router, prefix="/v3/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
+# from route.user.device_registration_v3 import router as device_registration_v3_router # not currently in use
+# app.include_router(device_registration_v3_router, prefix="/v3/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
 ### ------------------------------------------------------------------------
 
 ## GEMINI 
