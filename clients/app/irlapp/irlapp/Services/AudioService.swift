@@ -8,35 +8,86 @@
 import Foundation
 import Combine
 import AVFoundation
+import MobileCoreServices
+import UniformTypeIdentifiers
+
+// MARK: - AnyCodable
+
+/// A type-erased `Codable` value.
+///
+/// The `AnyCodable` type forwards encoding and decoding responsibilities
+/// to an underlying value, hiding its specific underlying type.
+struct AnyCodable: Codable {
+    let value: Any
+
+    init(_ value: Any) {
+        self.value = value
+    }
+
+    // Decoding initializer
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        // Attempt to decode various types
+        if let intValue = try? container.decode(Int.self) {
+            self.value = intValue
+        } else if let doubleValue = try? container.decode(Double.self) {
+            self.value = doubleValue
+        } else if let boolValue = try? container.decode(Bool.self) {
+            self.value = boolValue
+        } else if let stringValue = try? container.decode(String.self) {
+            self.value = stringValue
+        } else if let arrayValue = try? container.decode([AnyCodable].self) {
+            self.value = arrayValue.map { $0.value }
+        } else if let dictValue = try? container.decode([String: AnyCodable].self) {
+            var dictionary: [String: Any] = [:]
+            for (key, anyCodable) in dictValue {
+                dictionary[key] = anyCodable.value
+            }
+            self.value = dictionary
+        } else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unable to decode AnyCodable")
+        }
+    }
+
+    // Encoding method
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        switch value {
+        case let intValue as Int:
+            try container.encode(intValue)
+        case let doubleValue as Double:
+            try container.encode(doubleValue)
+        case let boolValue as Bool:
+            try container.encode(boolValue)
+        case let stringValue as String:
+            try container.encode(stringValue)
+        case let arrayValue as [Any]:
+            let encodableArray = arrayValue.map { AnyCodable($0) }
+            try container.encode(encodableArray)
+        case let dictValue as [String: Any]:
+            let encodableDict = dictValue.mapValues { AnyCodable($0) }
+            try container.encode(encodableDict)
+        default:
+            let context = EncodingError.Context(codingPath: container.codingPath, debugDescription: "AnyCodable value cannot be encoded")
+            throw EncodingError.invalidValue(value, context)
+        }
+    }
+}
 
 // MARK: - Models
 
 struct ProcessAudioResponse: Codable {
     let results: [AudioResult]
 }
-// TODO: this defined type means i cannot just throw in any prompt we need to configure prompts to map to AudioData and redefine AudioData for other results
-// TODO: Full view development then removale of recording button
+
 struct AudioResult: Codable, Identifiable {
     let id = UUID() // Unique identifier for SwiftUI's ForEach
     let file: String
     let status: String
-    let data: AudioData
+    let data: [String: AnyCodable]
     let file_uris: [String]
-}
-
-struct AudioData: Codable {
-    let clarity: String
-    let emotional_undertones: String
-    let environment_context: String
-    let pronunciation_accuracy: String
-    let speech_patterns: SpeechPatterns
-    let transcription: String
-}
-
-struct SpeechPatterns: Codable {
-    let pace: String
-    let tone: String
-    let volume: String
 }
 
 // MARK: - AudioService
@@ -47,72 +98,72 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
     @Published var liveTranscriptions: [AudioResult] = []
     @Published var historicalTranscriptions: [AudioResult] = []
     @Published var isRecording: Bool = false
-    
+
     // MARK: - Private Properties
     private var cancellables = Set<AnyCancellable>()
     private let baseURL = Constants.baseURL // Ensure this is correctly set in Constants.swift
     private let pollingInterval: TimeInterval = 10.0 // Poll every 10 seconds
     private var pollingTimer: Timer?
-    
+
     // MARK: - Audio Recorder
     private var audioRecorder: AVAudioRecorder?
     private var recordedFileURL: URL?
-    
+
     // MARK: - Initialization
     override init() {
         super.init()
         requestAudioPermission()
     }
-    
+
     deinit {
         pollingTimer?.invalidate()
     }
-    
+
     // MARK: - Audio Recording Methods
-    
+
     func startRecording() {
         let recordingSession = AVAudioSession.sharedInstance()
         do {
             try recordingSession.setCategory(.playAndRecord, mode: .default)
             try recordingSession.setActive(true)
-            
+
             let settings: [String: Any] = [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 12000,
+                AVFormatIDKey: Int(kAudioFormatOpus), // OGG with Opus encoding
+                AVSampleRateKey: 48000, // Common sample rate for Opus
                 AVNumberOfChannelsKey: 1,
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
-            
+
             let timestamp = Date().timeIntervalSince1970
-            let filename = getDocumentsDirectory().appendingPathComponent("recording_\(Int(timestamp)).m4a")
+            let filename = getDocumentsDirectory().appendingPathComponent("recording_\(Int(timestamp)).ogg")
             audioRecorder = try AVAudioRecorder(url: filename, settings: settings)
             audioRecorder?.delegate = self
             audioRecorder?.record()
-            
+
             recordedFileURL = filename
             isRecording = true
             uploadStatus = "Recording..."
-            
+
             // Start polling when recording starts (if polling is necessary)
             // Commented out to prevent 405 errors
             // startPolling()
-            
+
             print("Recording started. File saved at: \(filename.path)")
         } catch {
             print("Failed to start recording: \(error.localizedDescription)")
             uploadStatus = "Recording failed"
         }
     }
-    
+
     func stopRecording() {
         audioRecorder?.stop()
         isRecording = false
         uploadStatus = "Stopped Recording"
-        
+
         // Stop polling when recording stops (if polling was started)
         // Commented out to prevent 405 errors
         // stopPolling()
-        
+
         // Upload the recorded file
         if let fileURL = recordedFileURL {
             uploadAudio(files: [fileURL])
@@ -121,13 +172,13 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
             uploadStatus = "No audio file to upload"
         }
     }
-    
+
     private func getDocumentsDirectory() -> URL {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
-    
+
     // MARK: - Audio Permission
-    
+
     private func requestAudioPermission() {
         AVAudioSession.sharedInstance().requestRecordPermission { granted in
             DispatchQueue.main.async {
@@ -140,9 +191,9 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
             }
         }
     }
-    
+
     // MARK: - Upload Audio
-    
+
     /// Uploads audio files to the server.
     /// - Parameter files: Array of local file URLs to upload.
     func uploadAudio(files: [URL]) {
@@ -151,11 +202,11 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
             print("Upload Error: Missing Google Account ID")
             return
         }
-        
+
         let deviceUUID = DeviceUUID.getUUID()
         let promptType = "detailed_analysis"
         let batch = "false" // Must be a string to match query parameters in the URL
-    
+
         // Construct the full endpoint with query parameters
         guard let baseURL = URL(string: baseURL),
               var components = URLComponents(url: baseURL.appendingPathComponent("/onboarding/v8/process-audio"), resolvingAgainstBaseURL: false) else {
@@ -169,32 +220,32 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
             URLQueryItem(name: "prompt_type", value: promptType),
             URLQueryItem(name: "batch", value: batch)
         ]
-        
+
         guard let finalURL = components.url else {
             uploadStatus = "Failed to construct URL"
             print("Upload Error: Failed to construct URL")
             return
         }
-    
+
         // Create a multipart form-data request
         var request = URLRequest(url: finalURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         // Generate a unique boundary for multipart data
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
+
         // Create the HTTP body
         let httpBody = createMultipartBody(with: files, boundary: boundary)
         request.httpBody = httpBody
-    
+
         // Debugging: Print request details
         print("Upload Request URL: \(request.url?.absoluteString ?? "No URL")")
         print("HTTP Method: \(request.httpMethod ?? "No HTTP Method")")
         print("Headers: \(request.allHTTPHeaderFields ?? [:])")
         print("Body size: \(httpBody.count) bytes")
-    
+
         // Perform the upload using Combine
         URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { output -> Data in
@@ -226,7 +277,7 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
             })
             .store(in: &cancellables)
     }
-    
+
     /// Creates a multipart/form-data body with the provided files.
     /// - Parameters:
     ///   - files: Array of file URLs to include in the form data.
@@ -234,15 +285,15 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
     /// - Returns: Data representing the multipart/form-data body.
     private func createMultipartBody(with files: [URL], boundary: String) -> Data {
         var body = Data()
-        
+
         for fileURL in files {
             let filename = fileURL.lastPathComponent
-            let mimeType = "audio/ogg" // Ensure MIME type matches your files
-            
+            let mimeType = mimeTypeForPath(path: fileURL.path)
+
             body.append("--\(boundary)\r\n")
             body.append("Content-Disposition: form-data; name=\"files\"; filename=\"\(filename)\"\r\n")
             body.append("Content-Type: \(mimeType)\r\n\r\n")
-            
+
             do {
                 let fileData = try Data(contentsOf: fileURL)
                 body.append(fileData)
@@ -252,13 +303,38 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
                 print("Failed to read file at \(fileURL.path): \(error.localizedDescription)")
             }
         }
-        
+
         body.append("--\(boundary)--\r\n")
         return body
     }
-    
+
+    /// Determines the MIME type based on the file extension.
+    /// - Parameter path: File path.
+    /// - Returns: Corresponding MIME type as a string.
+    private func mimeTypeForPath(path: String) -> String {
+        let url = URL(fileURLWithPath: path)
+        let pathExtension = url.pathExtension.lowercased()
+
+        switch pathExtension {
+        case "aac":
+            return "audio/aac"
+        case "flac":
+            return "audio/flac"
+        case "aiff":
+            return "audio/aiff"
+        case "wav":
+            return "audio/wav"
+        case "mp3":
+            return "audio/mp3"
+        case "ogg":
+            return "audio/ogg"
+        default:
+            return "application/octet-stream"
+        }
+    }
+
     // MARK: - AVAudioRecorderDelegate
-    
+
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
             stopRecording()
@@ -269,3 +345,4 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 }
+
