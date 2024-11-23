@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct MainContentView: View {
     @StateObject private var audioService = AudioService()
@@ -35,6 +36,14 @@ struct MainContentView: View {
             Spacer()
         }
         .background(Color(.systemGray6))
+        .onReceive(audioService.$liveTranscriptions) { transcriptions in
+            // Log the media file URLs whenever live transcriptions are updated
+            for transcription in transcriptions {
+                for uri in transcription.file_uris {
+                    print("Media File URL: \(uri)")
+                }
+            }
+        }
     }
     
     // Toggle Recording State
@@ -160,17 +169,61 @@ struct TranscriptionCardView: View {
                     .foregroundColor(statusColor(status: transcription.status))
             }
             
-            Text(transcription.data.transcription)
-                .font(.body)
-                .foregroundColor(.primary)
+            // Safely access 'transcription' field
+            if let transcriptionText = transcription.data["transcription"]?.value as? String {
+                Text(transcriptionText)
+                    .font(.body)
+                    .foregroundColor(.primary)
+            } else {
+                Text("No transcription available.")
+                    .font(.body)
+                    .foregroundColor(.gray)
+            }
             
             // Additional Details
             VStack(alignment: .leading, spacing: 4) {
-                Text("Clarity: \(transcription.data.clarity)")
-                Text("Emotional Undertones: \(transcription.data.emotional_undertones)")
-                Text("Environment Context: \(transcription.data.environment_context)")
-                Text("Pronunciation Accuracy: \(transcription.data.pronunciation_accuracy)")
-                Text("Speech Patterns: Pace - \(transcription.data.speech_patterns.pace), Tone - \(transcription.data.speech_patterns.tone), Volume - \(transcription.data.speech_patterns.volume)")
+                if let clarity = transcription.data["clarity"]?.value as? String {
+                    Text("Clarity: \(clarity)")
+                }
+                
+                if let emotionalUndertones = transcription.data["emotional_undertones"]?.value as? String {
+                    Text("Emotional Undertones: \(emotionalUndertones)")
+                }
+                
+                if let environmentContext = transcription.data["environment_context"]?.value as? String {
+                    Text("Environment Context: \(environmentContext)")
+                }
+                
+                if let pronunciationAccuracy = transcription.data["pronunciation_accuracy"]?.value as? String {
+                    Text("Pronunciation Accuracy: \(pronunciationAccuracy)")
+                }
+                
+                // Handling nested 'speech_patterns' dictionary
+                if let speechPatterns = transcription.data["speech_patterns"]?.value as? [String: Any] {
+                    let pace = speechPatterns["pace"] as? String ?? "N/A"
+                    let tone = speechPatterns["tone"] as? String ?? "N/A"
+                    let volume = speechPatterns["volume"] as? String ?? "N/A"
+                    Text("Speech Patterns: Pace - \(pace), Tone - \(tone), Volume - \(volume)")
+                }
+                
+                // Display Media File URLs
+                // NOTE: this is for debugging and not likely to make the final cut in this capacity.. maybe as a developer mode in another presentation look
+                // NOTE: These audio files url should be saved sequentially to local db
+                // - the audio can then be reused as we can pass it the 
+                if !transcription.file_uris.isEmpty {
+                    Text("Media Files:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    ForEach(transcription.file_uris, id: \.self) { uri in
+                        Text(uri)
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                            .underline()
+                            .onTapGesture {
+                                openURL(uri)
+                            }
+                    }
+                }
             }
             .font(.caption)
             .foregroundColor(.secondary)
@@ -181,6 +234,8 @@ struct TranscriptionCardView: View {
         .shadow(radius: 2)
     }
     
+    // MARK: - Helper Methods
+    
     private func statusColor(status: String) -> Color {
         switch status.lowercased() {
         case "processed":
@@ -190,5 +245,15 @@ struct TranscriptionCardView: View {
         default:
             return .gray
         }
+    }
+    
+    /// Opens the given URL string in the default web browser.
+    /// - Parameter urlString: The URL string to open.
+    private func openURL(_ urlString: String) {
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL: \(urlString)")
+            return
+        }
+        UIApplication.shared.open(url)
     }
 }

@@ -2,6 +2,7 @@
 // Handles data, audio, and server interactions
 
 // ideally the user audio from the first `name statement` should be saved until confirmed, the reason is that sometimes the ai mistakes the audio and transcription, we want to ask the user to repeat themselves after the user updates the text transcription personally. So server: base on-shot prompt; client app: Audio input #1 + User Name Correction + Audio input #2
+// BUG: need server active state bool and need to not discard audio till approved
 import Foundation
 import AVFoundation
 import Combine
