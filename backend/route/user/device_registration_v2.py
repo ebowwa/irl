@@ -13,10 +13,7 @@ This module provides CRUD operations for device registrations, including:
 - **Checking if a device is registered**
 
 TODO:
-- Integrate this database either as the same DB for the Google media upload (which is likely the cleanest)
-  or map a new DB to the entries of device registration.
-- Handle cases in the register endpoint to ensure checks before CRUD operations.
-- (Optional) Implement Telegram notifications for device registration events.
+- need to allow multiple devces as its getting errors if you installthe app after the first time, each new install is a new device uuid
 """
 
 from datetime import datetime

@@ -94,6 +94,10 @@ ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X GET "https://...ngrok-free.app
 from route.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 app.include_router(analyze_truth_lie_v1_router)
 
+# from route.gemini.list_files import router as list_files_router
+# app.include_router(list_files_router, prefix="/api/v1", tags=["Files"])
+
+
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
 
