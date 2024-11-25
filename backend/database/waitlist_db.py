@@ -1,12 +1,19 @@
 # backend/db/waitlist_db.py
 
-from datetime import datetime
 from pathlib import Path
 import logging
-
+import os  # For environment variables
+from dotenv import load_dotenv  # To load environment variables from a .env file
 import databases
 import sqlalchemy
-from sqlalchemy import Column, DateTime, Integer, String, Table, func
+from sqlalchemy import (
+    Column,
+    DateTime,
+    BigInteger,  # Changed from Integer to BigInteger for PostgreSQL compatibility
+    String,
+    Table,
+    func,
+)
 from sqlalchemy.exc import IntegrityError
 
 # Configure logging
@@ -19,20 +26,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Determine the base directory relative to this file's location
-BASE_DIR = Path(__file__).resolve().parent.parent / "data"
-DATABASE_NAME = "website_waitlist_data.db"
-DATABASE_PATH = BASE_DIR / DATABASE_NAME
+# === Load Environment Variables ===
+load_dotenv()  # Loads environment variables from .env file
 
-# Ensure the directory exists
-BASE_DIR.mkdir(parents=True, exist_ok=True)
-logger.info(f"Database directory ensured at: {BASE_DIR.as_posix()}")
+# === Database Configuration ===
 
-# Database URL for SQLite using the relative DATABASE_PATH
-DATABASE_URL = f"sqlite+aiosqlite:///{DATABASE_PATH.as_posix()}"
+# Use the SUPABASE_DATABASE_URL environment variable
+DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")  # Supabase connection URL
 
-# For PostgreSQL in production, use:
-# DATABASE_URL = "postgresql+asyncpg://user:password@localhost/dbname"
+if not DATABASE_URL:
+    raise ValueError("No SUPABASE_DATABASE_URL found. Please set the SUPABASE_DATABASE_URL environment variable.")
 
 logger.info(f"Using DATABASE_URL: {DATABASE_URL}")
 
@@ -44,21 +47,43 @@ metadata = sqlalchemy.MetaData()
 waitlist_table = Table(
     "waitlist",
     metadata,
-    Column("id", Integer, primary_key=True, index=True),
+    Column("id", BigInteger, primary_key=True, index=True),
     Column("name", String, nullable=False),
     Column("email", String, unique=True, index=True, nullable=False),
     Column("ip_address", String, nullable=True),
     Column("comment", String, nullable=True),  # Existing column
     Column("referral_source", String, nullable=True),  # New column for referral source
-    Column("created_at", DateTime, default=func.now(), nullable=False),
+    Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
 )
 
-# Create the database engine
+# Remove the SQLite-specific engine creation and table creation
+# Instead, we'll create an engine suitable for PostgreSQL
+
+# Create the database engine for synchronous operations (for table creation)
+SYNC_DATABASE_URL = DATABASE_URL.replace("+asyncpg", "")  # Remove '+asyncpg' for the synchronous engine
 engine = sqlalchemy.create_engine(
-    DATABASE_URL.replace("+aiosqlite", ""),
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
+    SYNC_DATABASE_URL,
+    pool_size=20,
+    max_overflow=0,
 )
 
-# Create the table(s)
-metadata.create_all(engine)
-logger.info("Database tables created or already exist.")
+# **Important**: Do not call metadata.create_all(engine) here to avoid conflicts with asynchronous operations.
+
+logger.info("Waitlist table schema defined for Supabase PostgreSQL.")
+
+async def connect_to_db():
+    logger.info("Connecting to the Supabase PostgreSQL database.")
+    try:
+        await database.connect()
+        logger.info("Supabase PostgreSQL database connected successfully.")
+    except Exception as e:
+        logger.error(f"Error connecting to the Supabase PostgreSQL database: {e}")
+        raise
+
+async def disconnect_from_db():
+    logger.info("Disconnecting from the Supabase PostgreSQL database.")
+    try:
+        await database.disconnect()
+        logger.info("Supabase PostgreSQL database disconnected successfully.")
+    except Exception as e:
+        logger.error(f"Error disconnecting from the Supabase PostgreSQL database: {e}")

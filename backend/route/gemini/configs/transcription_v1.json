@@ -1,0 +1,77 @@
+{
+    "prompt_text": "Analyze the provided audio conversation between multiple participants. For each speaker, extract the following:\n\n1. Their spoken text (verbatim transcription).\n2. An analysis of the speaker's tone, including the dominant tone and supporting indicators (e.g., voice pitch, rhythm), **but only if there is enough evidence in the audio.**\n3. A confidence percentage for the tone detection (0 to 100).\n4. Highlight any potential red flags, such as signs of deception or tension, with supporting evidence (e.g., micro-expressions, pitch elevation), **but only if such red flags are clearly present in the audio.**\n5. A concise summary of the speaker's contribution to the conversation, **if the conversation contains meaningful exchanges.**\n\nEnsure the transcription is accurate and based solely on the content of the audio. Do not fabricate or infer additional information that is not directly supported by the audio. If no conversational content is detected, return an empty array for 'conversation_analysis.'",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": ["conversation_analysis"],
+      "properties": {
+        "conversation_analysis": {
+          "type": "ARRAY",
+          "description": "List of analyzed turns in the conversation. Each entry corresponds to one speaker's turn.",
+          "items": {
+            "type": "OBJECT",
+            "required": ["speaker", "text", "tone_analysis", "confidence", "summary"],
+            "properties": {
+              "speaker": {
+                "type": "STRING",
+                "description": "Name or identifier of the speaker."
+              },
+              "text": {
+                "type": "STRING",
+                "description": "The verbatim transcription of the speaker's spoken text."
+              },
+              "tone_analysis": {
+                "type": "OBJECT",
+                "description": "Analysis of the speaker's tone, including the dominant tone and supporting indicators.",
+                "required": ["tone", "indicators"],
+                "properties": {
+                  "tone": {
+                    "type": "STRING",
+                    "description": "The dominant tone identified (e.g., 'confident', 'defensive')."
+                  },
+                  "indicators": {
+                    "type": "ARRAY",
+                    "description": "Supporting details for the identified tone, such as 'clear explanations' or 'hesitant tone.'",
+                    "items": {
+                      "type": "STRING",
+                      "description": "A specific indicator of the tone."
+                    }
+                  }
+                }
+              },
+              "confidence": {
+                "type": "NUMBER",
+                "description": "Confidence score for the tone detection (0 to 100)."
+              },
+              "red_flags": {
+                "type": "ARRAY",
+                "description": "List of potential red flags detected during the turn, if any.",
+                "items": {
+                  "type": "OBJECT",
+                  "required": ["description", "evidence"],
+                  "properties": {
+                    "description": {
+                      "type": "STRING",
+                      "description": "Description of the red flag (e.g., 'Potential deception detected')."
+                    },
+                    "evidence": {
+                      "type": "ARRAY",
+                      "description": "Supporting evidence for the red flag, such as 'inconsistent phrasing' or 'elevated pitch.'",
+                      "items": {
+                        "type": "STRING",
+                        "description": "A specific piece of evidence supporting the red flag."
+                      }
+                    }
+                  }
+                }
+              },
+              "summary": {
+                "type": "STRING",
+                "description": "Concise summary of the speaker's contribution to the conversation."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

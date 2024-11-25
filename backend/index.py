@@ -124,6 +124,23 @@ app.include_router(device_registration_v2_router, prefix="/v2/device") # CRUD ba
 from utils.server.docs import router as server_docs_router
 app.include_router(server_docs_router)
 
+from route.ngrok.ngrok_url import router as ngrok_url_router
+app.include_router(ngrok_url_router, prefix="/ngrok")
+
+from database.database_events import register_db_events
+register_db_events(app)
+
+from database.waitlist_db import connect_to_db as connect_waitlist_db, disconnect_from_db as disconnect_waitlist_db
+
+@app.on_event("startup")
+async def startup():
+    await connect_waitlist_db()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await disconnect_waitlist_db()
+
+
 # ------------------ Main Program Entry Point -----------------------
 if __name__ == "__main__":
     import uvicorn
