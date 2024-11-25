@@ -10,7 +10,7 @@ import logging
 from sqlalchemy.exc import IntegrityError
 
 # Import the database components from the db module
-from database.waitlist_db import database, waitlist_table
+from database.waitlist import database, waitlist_table
 
 # Import the TelegramNotifier class from the notification module
 from utils._extensions.telegram_notification import TelegramNotifier  # Adjust the import path as necessary

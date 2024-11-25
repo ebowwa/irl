@@ -26,7 +26,7 @@ device_registration_table = Table(
 )
 
 # === Define the Processed Audio Files Table ===
-
+# TODO: maybe one table of these by each user/for each user since the privacy concerns of these contents
 processed_audio_files_table = Table(
     "processed_audio_files",
     metadata,
