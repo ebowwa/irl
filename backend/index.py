@@ -75,21 +75,21 @@ from route.gemini.user_name_upload_v3 import router as user_name_upload_v3_route
 app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")   # + /process-audio; TODO: on client side implement double-try correct user name
 # from route.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
 # app.include_router(user_name_upload_v5_router, prefix="/onboarding/v5")   # + /process-audio; TODO: on client side implement double-try correct user name
-from route.gemini.gemini_audio_handling_noauth import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
-app.include_router(gemini_audio_handling_noauth_router, prefix="/onboarding/v6")
+from route.gemini.stable.gemini_audio_handling_noauth import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
+app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v1")
 
-from route.gemini.gemini_audio_handling_auth import router as gemini_audio_handling_auth_router # user auth & persistance
-app.include_router(gemini_audio_handling_auth_router, prefix="/onboarding/v8")
+from route.gemini.stable.gemini_audio_handling_auth import router as gemini_audio_handling_auth_router # user auth & persistance
+app.include_router(gemini_audio_handling_auth_router, prefix="/production/v1")
 
 '''
-ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X POST "https://...ngrok-free.app/onboarding/v8/process-audio?google_account_id=[id#here]&device_uuid=35FFE513-1990-4293-9898-DDF01B3D546A&prompt_type=default&batch=false" \
+ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X POST "https://...ngrok-free.app/production/v1/process-audio?google_account_id=[id#here]&device_uuid=35FFE513-1990-4293-9898-DDF01B3D546A&prompt_type=default&batch=false" \
 -H "Content-Type: multipart/form-data" \
 -F "files=@/Users/ebowwa/Downloads/Recorded_Audio_November_04_2024_9_28PM.ogg;type=audio/ogg"
 {"results":[{"file":"Recorded_Audio_November_04_2024_9_28PM.ogg","status":"processed","data":{"confidence_reasoning":"The name was clearly spoken, with no significant background noise.","confidence_score":95,"feeling":"Slightly hesitant, possibly due to the novelty of the interaction.","location_background":"Quiet indoor environment, possibly a home or office.","name":"Elijah Arby","prosody":"Name spoken with a slightly formal tone and measured pace.  There's a subtle emphasis on the first syllable of 'Elijah', suggesting a degree of personal importance attached to it.","psychoanalysis":"The slight hesitation suggests a degree of self-consciousness or a need to present a polished version of themselves. The emphasis on 'Elijah' could signify a strong sense of personal identity or pride in their name.  Further analysis would require additional interaction to identify potential underlying insecurities or motivations."}}]}%
 '''
 
 '''
-ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X GET "https://...ngrok-free.app/onboarding/v8/test-user?google_account_id=[id#here]&device_uuid=35FFE513-1990-4293-9898-DDF01B3D546A"
+ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X GET "https://...ngrok-free.app/production/v1/test-user?google_account_id=[id#here]&device_uuid=35FFE513-1990-4293-9898-DDF01B3D546A"
 {"user_found":true,"user_id":1}%                                                
 '''
 from route.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
