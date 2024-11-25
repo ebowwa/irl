@@ -96,7 +96,12 @@ PROMPTS_SCHEMAS = load_configurations()
 def process_with_gemini_webhook(
     uploaded_files: Union[List[object], object],
     prompt_type: str = "default",
-    batch: bool = False
+    batch: bool = False,
+    model_name: str = "gemini-1.5-flash",
+    temperature: float = 1.0,
+    top_p: float = 0.95,
+    top_k: int = 41,
+    max_output_tokens: int = 8192
 ) -> Dict:
     """
     Internal webhook to process audio file(s) using Gemini's generative capabilities.
@@ -105,6 +110,11 @@ def process_with_gemini_webhook(
         uploaded_files: The uploaded file object(s) from Gemini.
         prompt_type (str): The key to select the prompt and schema configuration.
         batch (bool): Flag indicating whether to process as a batch.
+        model_name (str): The name of the Gemini model to use.
+        temperature (float): The temperature parameter for generation.
+        top_p (float): The top-p parameter for generation.
+        top_k (int): The top-k parameter for generation.
+        max_output_tokens (int): The maximum number of output tokens.
 
     Returns:
         dict: Parsed JSON response from Gemini.
@@ -120,22 +130,21 @@ def process_with_gemini_webhook(
 
         # Prepare the prompt and model configuration
         generation_config = {
-            "temperature": 1,
-            "top_p": 0.95,
-            "top_k": 40,
-            "max_output_tokens": 8192,
+            "temperature": temperature,
+            "top_p": top_p,
+            "top_k": top_k,
+            "max_output_tokens": max_output_tokens,
             "response_schema": response_schema,
             "response_mime_type": "application/json",
         }
 
-        model = genai.GenerativeModel(model_name="gemini-1.5-flash", generation_config=generation_config)
+        model = genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
         logger.info(f"Initialized Gemini GenerativeModel with prompt_type '{prompt_type}' and batch={batch}")
 
         if batch:
             # Create chat history with all uploaded files and prompt for batch processing
             chat_history = [{"role": "user", "parts": uploaded_files + [prompt_text]}]
             logger.debug(f"Batch prompt constructed with files and prompt.")
-
         else:
             # Process a single file
             chat_history = [{"role": "user", "parts": [uploaded_files, prompt_text]}]
@@ -160,8 +169,6 @@ def process_with_gemini_webhook(
     except Exception as e:
         logger.error(f"Unexpected error in process_with_gemini_webhook: {e}")
         raise HTTPException(status_code=500, detail="Gemini processing failed")
-
-
 def extract_json_from_response(response_text: str) -> Dict:
     """
     Extracts JSON content from Gemini response text.

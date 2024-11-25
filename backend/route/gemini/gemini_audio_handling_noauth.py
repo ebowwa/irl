@@ -1,7 +1,10 @@
+# backend/route/gemini/gemini_audio_handling_noauth.py
+
 # Stateless API Design no persistence!
 # audio handling
-# client - manage the file urls to send included in the requests..  to manage chats/longer context
+# client - manage the file urls to send included in the requests.. to manage chats/longer context
 # GEMINI RULES: Each project can store up to 20GB of files, with each individual file not exceeding 2GB in size, Prompt Constraints: While there's no explicit limit on the number of audio files in a single prompt, the combined length of all audio files in a prompt must not exceed 9.5 hours.
+
 import os
 import asyncio
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query
@@ -12,10 +15,12 @@ import google.generativeai as genai
 import logging
 import traceback
 from tenacity import retry, stop_after_attempt, wait_exponential
+from functools import partial  # Import functools for partial
 from .gemini_process_webhook_v2 import process_with_gemini_webhook  # Ensure this module exists and is correctly implemented
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)  # Set logging level to DEBUG for detailed logs
 
 # Load environment variables
 load_dotenv()
@@ -53,7 +58,6 @@ def upload_to_gemini(file_content: bytes, mime_type: Optional[str] = None) -> ob
         traceback.print_exc()
         raise
 
-
 async def process_single_file(file: UploadFile) -> object:
     """
     Process a single file asynchronously.
@@ -78,7 +82,16 @@ async def process_single_file(file: UploadFile) -> object:
             detail=f"Failed to process file {file.filename}: {str(e)}"
         )
 
-def process_individual_file(filename: str, uploaded_file: object, prompt_type: str) -> Union[Tuple[str, object], Exception]:
+def process_individual_file(
+    filename: str,
+    uploaded_file: object,
+    prompt_type: str,
+    model_name: str,
+    temperature: float,
+    top_p: float,
+    top_k: int,
+    max_output_tokens: int
+) -> Union[Tuple[str, object], Exception]:
     """
     Synchronously process an individual file with Gemini webhook.
     Returns a tuple of (filename, result) or an Exception.
@@ -88,7 +101,12 @@ def process_individual_file(filename: str, uploaded_file: object, prompt_type: s
         gemini_result = process_with_gemini_webhook(
             uploaded_file,
             prompt_type=prompt_type,
-            batch=False
+            batch=False,
+            model_name=model_name,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            max_output_tokens=max_output_tokens
         )
         logger.debug(f"Gemini processing successful for file: {filename}")
         return (filename, gemini_result)
@@ -101,10 +119,16 @@ def process_individual_file(filename: str, uploaded_file: object, prompt_type: s
 async def process_audio(
     files: List[UploadFile] = File(...),
     prompt_type: str = Query("default", description="Type of prompt and schema to use"),
-    batch: bool = Query(False, description="Process files in batch if True")
+    batch: bool = Query(False, description="Process files in batch if True"),
+    model_name: str = Query("gemini-1.5-flash", description="Name of the Gemini model to use"),
+    temperature: float = Query(1.0, description="Temperature parameter for generation"),
+    top_p: float = Query(0.95, description="Top-p parameter for generation"),
+    top_k: int = Query(40, description="Top-k parameter for generation"),  # Updated default to 40
+    max_output_tokens: int = Query(8192, description="Maximum output tokens")
 ):
     """
     Process multiple audio files concurrently with improved error handling.
+    Allows specifying the Gemini model and generation parameters.
     """
     supported_mime_types = {
         "audio/wav", "audio/mp3", "audio/aiff",
@@ -155,10 +179,16 @@ async def process_audio(
                 logger.debug("Starting batch processing with Gemini webhook.")
                 gemini_result = await asyncio.get_event_loop().run_in_executor(
                     None,
-                    lambda: process_with_gemini_webhook(
+                    partial(
+                        process_with_gemini_webhook,
                         [uploaded_file for _, uploaded_file in valid_uploaded_files],
                         prompt_type=prompt_type,
-                        batch=True
+                        batch=True,
+                        model_name=model_name,
+                        temperature=temperature,
+                        top_p=top_p,
+                        top_k=top_k,
+                        max_output_tokens=max_output_tokens
                     )
                 )
                 results.append({
@@ -175,12 +205,21 @@ async def process_audio(
             # Process each file individually
             processing_tasks = []
             for filename, uploaded_file in valid_uploaded_files:
-                processing_tasks.append(
-                    asyncio.get_event_loop().run_in_executor(
-                        None,
-                        lambda fn=filename, uf=uploaded_file: process_individual_file(fn, uf, prompt_type)
+                task = asyncio.get_event_loop().run_in_executor(
+                    None,
+                    partial(
+                        process_individual_file,
+                        filename,
+                        uploaded_file,
+                        prompt_type,
+                        model_name,
+                        temperature,
+                        top_p,
+                        top_k,
+                        max_output_tokens
                     )
                 )
+                processing_tasks.append(task)
 
             individual_results = await asyncio.gather(*processing_tasks, return_exceptions=True)
 
