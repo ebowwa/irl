@@ -16,7 +16,7 @@ import logging
 import traceback
 from tenacity import retry, stop_after_attempt, wait_exponential
 from functools import partial  # Import functools for partial
-from .gemini_process_webhook_v2 import process_with_gemini_webhook  # Ensure this module exists and is correctly implemented
+from .gemini_process_webhook import process_with_gemini_webhook  # Ensure this module exists and is correctly implemented
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)

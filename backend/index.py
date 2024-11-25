@@ -71,7 +71,7 @@ app.include_router(web_waitlist_crud_router) # CRUD backend/data/waitlist_data.d
 
 ### -----------------------------------------------------------------------
 ##      ONBOARDING (NO-AUTH)
-from route.gemini.user_name_upload_v3 import router as user_name_upload_v3_router
+from route.gemini.Demos.user_name_upload_v3 import router as user_name_upload_v3_router
 app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")   # + /process-audio; TODO: on client side implement double-try correct user name
 # from route.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
 # app.include_router(user_name_upload_v5_router, prefix="/onboarding/v5")   # + /process-audio; TODO: on client side implement double-try correct user name
@@ -92,7 +92,7 @@ ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X POST "https://...ngrok-free.ap
 ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X GET "https://...ngrok-free.app/production/v1/test-user?google_account_id=[id#here]&device_uuid=35FFE513-1990-4293-9898-DDF01B3D546A"
 {"user_found":true,"user_id":1}%                                                
 '''
-from route.gemini.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
+from route.gemini.Demos.truth_n_lie_v1 import router as analyze_truth_lie_v1_router
 app.include_router(analyze_truth_lie_v1_router)
 
 # from route.gemini.list_files import router as list_files_router
@@ -108,16 +108,6 @@ app.include_router(device_registration_v2_router, prefix="/v2/device") # CRUD ba
 # from route.user.device_registration_v3 import router as device_registration_v3_router # not currently in use
 # app.include_router(device_registration_v3_router, prefix="/v3/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
 ### ------------------------------------------------------------------------
-
-## GEMINI 
-# app.include_router(gemini_transcription_v1_router, prefix="/gemini")  # + add `/ws/transcribe`
-# from route.gemini.google_media_upload import router as google_media_upload_router
-# app.include_router(google_media_upload_router) # `https://server/upload-to-gemini`
-# from route.gemini.google_media_upload_v2 import router as google_media_upload_v2_router
-# app.include_router(google_media_upload_v2_router, prefix="/v2") # `https://server/v2/upload-to-gemini`
-# from route.gemini.google_media_upload_v3 import router as google_media_upload_v3_router
-# app.include_router(google_media_upload_v3_router, prefix="/v3")
-
 
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
