@@ -4,7 +4,7 @@ import logging
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text, func
 
 # Import shared database configuration
-from database.db_state import database, metadata
+from utils.db_state import database, metadata
 
 # Configure logging
 logger = logging.getLogger(__name__)

@@ -8,7 +8,7 @@ from sqlalchemy import (
     Table,
     func,
 )
-from .db_state import database, metadata
+from utils.db_state import database, metadata
 
 # Define the waitlist table with an additional 'referral_source' column
 waitlist_table = Table(
