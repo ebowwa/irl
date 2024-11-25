@@ -37,7 +37,8 @@ app = FastAPI(
 # ------------------ Middleware Setup ------------------------------
 
 setup_cors(app)
-
+# from database.database_events import register_db_events
+# register_db_events(app)
 # ------------------ API Routes -------------------------------------
 
 ## EXTERNAL SERVICES (OLD TBD INTEGRATION)
@@ -126,19 +127,6 @@ app.include_router(server_docs_router)
 
 from route.ngrok.ngrok_url import router as ngrok_url_router
 app.include_router(ngrok_url_router, prefix="/ngrok")
-
-from database.database_events import register_db_events
-register_db_events(app)
-
-from database.waitlist_db import connect_to_db as connect_waitlist_db, disconnect_from_db as disconnect_waitlist_db
-
-@app.on_event("startup")
-async def startup():
-    await connect_waitlist_db()
-
-@app.on_event("shutdown")
-async def shutdown():
-    await disconnect_waitlist_db()
 
 
 # ------------------ Main Program Entry Point -----------------------

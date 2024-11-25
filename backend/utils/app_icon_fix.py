@@ -41,6 +41,6 @@ def ensure_icon_requirements(input_path, output_path):
         print(f"An error occurred: {e}")
 
 # Example usage
-input_image_path = "clients/app/irlapp/irlapp/Assets/AppIcon.png"  # Replace with the path to your image
-output_image_path = "appIcon.png"  # Replace with the desired output path
-ensure_icon_requirements(input_image_path, output_image_path)
+# input_image_path = "clients/app/irlapp/irlapp/Assets/AppIcon.png"  # Replace with the path to your image
+# output_image_path = "appIcon.png"  # Replace with the desired output path
+# ensure_icon_requirements(input_image_path, output_image_path)
