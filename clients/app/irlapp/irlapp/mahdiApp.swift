@@ -177,7 +177,10 @@ struct ContentView: View {
                     step: $onboardingViewModel.currentStep,
                     userName: $onboardingViewModel.userName
                 )
+                // can we hold the results in state of the audio upload genai uri's and audio and responses so that we can save to account when they create the account
                 .transition(.slide)
+                // transitions on google signed in right now
+                
             case .home:
                 MainContentView()
             }

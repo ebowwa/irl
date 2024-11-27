@@ -14,9 +14,7 @@ import UniformTypeIdentifiers
 // MARK: - AnyCodable
 
 /// A type-erased `Codable` value.
-///
-/// The `AnyCodable` type forwards encoding and decoding responsibilities
-/// to an underlying value, hiding its specific underlying type.
+/// (No changes here)
 struct AnyCodable: Codable {
     let value: Any
 
@@ -113,15 +111,18 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
     override init() {
         super.init()
         requestAudioPermission()
+        startRecording()
+        startPolling()
     }
 
     deinit {
         pollingTimer?.invalidate()
+        audioRecorder?.stop()
     }
 
     // MARK: - Audio Recording Methods
 
-    func startRecording() {
+    private func startRecording() {
         let recordingSession = AVAudioSession.sharedInstance()
         do {
             try recordingSession.setCategory(.playAndRecord, mode: .default)
@@ -144,10 +145,6 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
             isRecording = true
             uploadStatus = "Recording..."
 
-            // Start polling when recording starts (if polling is necessary)
-            // Commented out to prevent 405 errors
-            // startPolling()
-
             print("Recording started. File saved at: \(filename.path)")
         } catch {
             print("Failed to start recording: \(error.localizedDescription)")
@@ -155,22 +152,13 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 
-    func stopRecording() {
+    private func stopRecording() {
         audioRecorder?.stop()
         isRecording = false
         uploadStatus = "Stopped Recording"
 
-        // Stop polling when recording stops (if polling was started)
-        // Commented out to prevent 405 errors
-        // stopPolling()
-
-        // Upload the recorded file
-        if let fileURL = recordedFileURL {
-            uploadAudio(files: [fileURL])
-        } else {
-            print("No recorded file URL found.")
-            uploadStatus = "No audio file to upload"
-        }
+        // Prepare for next recording
+        audioRecorder = nil
     }
 
     private func getDocumentsDirectory() -> URL {
@@ -192,11 +180,44 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 
+    // MARK: - Polling Methods
+
+    private func startPolling() {
+        pollingTimer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { [weak self] _ in
+            self?.handlePolling()
+        } // NOTES: this will be redefined to use the apple speech ml and noise analytics; including speech detected bool
+        RunLoop.current.add(pollingTimer!, forMode: .common)
+        print("Polling started with interval: \(pollingInterval) seconds")
+    }
+
+    private func stopPolling() {
+        pollingTimer?.invalidate()
+        pollingTimer = nil
+        print("Polling stopped.")
+    }
+
+    private func handlePolling() {
+        print("Polling triggered.")
+        guard let fileURL = recordedFileURL else {
+            print("No audio file to upload.")
+            return
+        }
+
+        // Stop current recording
+        stopRecording()
+
+        // Upload the recorded file
+        uploadAudio(files: [fileURL])
+
+        // Start a new recording
+        startRecording()
+    }
+
     // MARK: - Upload Audio
 
     /// Uploads audio files to the server.
     /// - Parameter files: Array of local file URLs to upload.
-    func uploadAudio(files: [URL]) {
+    private func uploadAudio(files: [URL]) {
         guard let googleAccountId = KeychainHelper.standard.getGoogleAccountID() else {
             uploadStatus = "Missing Google Account ID"
             print("Upload Error: Missing Google Account ID")
@@ -205,11 +226,12 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
 
         let deviceUUID = DeviceUUID.getUUID()
         let promptType = "detailed_analysis"
+        // TODO: define the prompt type response structure alongside prompt type, but maybe this is inputted more at the view model level to match level of ui decisions
         let batch = "false" // Must be a string to match query parameters in the URL
 
         // Construct the full endpoint with query parameters
         guard let baseURL = URL(string: baseURL),
-              var components = URLComponents(url: baseURL.appendingPathComponent("/onboarding/v8/process-audio"), resolvingAgainstBaseURL: false) else {
+              var components = URLComponents(url: baseURL.appendingPathComponent("/production/v1/process-audio"), resolvingAgainstBaseURL: false) else {
             uploadStatus = "Invalid Server URL"
             print("Upload Error: Invalid Server URL")
             return
@@ -345,4 +367,3 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 }
-
