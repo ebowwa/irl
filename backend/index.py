@@ -97,8 +97,8 @@ app.include_router(analyze_truth_lie_v1_router)
 
 # from route.gemini.list_files import router as list_files_router
 # app.include_router(list_files_router, prefix="/api/v1", tags=["Files"])
-# from route.gemini.unstable.gemini_audio_handling_noauth import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
-# app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v2")
+from route.gemini.unstable.gemini_audio_handling_noauth import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
+app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v2")
 
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
