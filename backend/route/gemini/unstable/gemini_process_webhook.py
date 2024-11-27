@@ -1,6 +1,4 @@
-# backend/route/gemini/unstable/gemini_process_webhook.py  `production/v2`
-# Updated to support unified batch processing with a single consolidated result
-
+# backend/route/gemini/stable/gemini_process_webhook.py
 import logging
 import re
 import json
@@ -8,7 +6,7 @@ import os
 from fastapi import HTTPException
 import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Union
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -38,7 +36,7 @@ def load_configurations(configs_dir: str = CONFIGS_DIR) -> Dict[str, Dict]:
                     # Convert response_schema dict to content.Schema object
                     response_schema = dict_to_schema(config.get('response_schema', {}))
                     configurations[prompt_type] = {
-                        "prompt_text": config.get("prompt_text", ""),
+                        "system_instruction": config.get("prompt_text", ""),  # Changed from prompt_text to system_instruction
                         "response_schema": response_schema
                     }
                 logger.info(f"Loaded configuration '{prompt_type}' from '{filename}'.")
@@ -56,11 +54,11 @@ def dict_to_schema(schema_dict: Dict) -> content.Schema:
     Returns:
         content.Schema: The corresponding Schema object.
     """
+    # [Previous dict_to_schema implementation remains unchanged]
     schema_type = getattr(content.Type, schema_dict.get('type', 'OBJECT'))
     required = schema_dict.get('required', [])
     properties = schema_dict.get('properties', {})
 
-    # Recursively convert properties
     converted_properties = {}
     for prop_name, prop_details in properties.items():
         prop_type = prop_details.get('type', 'STRING')
@@ -101,8 +99,7 @@ def process_with_gemini_webhook(
     temperature: float = 1.0,
     top_p: float = 0.95,
     top_k: int = 40,
-    max_output_tokens: int = 8192,
-    text_input: Optional[str] = None  # New parameter
+    max_output_tokens: int = 8192
 ) -> Dict:
     """
     Internal webhook to process audio file(s) using Gemini's generative capabilities.
@@ -116,7 +113,6 @@ def process_with_gemini_webhook(
         top_p (float): The top-p parameter for generation.
         top_k (int): The top-k parameter for generation.
         max_output_tokens (int): The maximum number of output tokens.
-        text_input (Optional[str]): Additional text input from the client.
 
     Returns:
         dict: Parsed JSON response from Gemini.
@@ -127,14 +123,10 @@ def process_with_gemini_webhook(
             logger.error(f"Invalid prompt_type selected: {prompt_type}")
             raise HTTPException(status_code=400, detail=f"Invalid prompt_type: {prompt_type}")
 
-        prompt_text = config["prompt_text"]
+        system_instruction = config["system_instruction"]  # Using system_instruction instead of prompt_text
         response_schema = config["response_schema"]
 
-        # Prepare the system instruction and user prompt
-        system_instruction = prompt_text  # Using prompt_text as system_instruction
-        user_prompt = text_input if text_input else ""  # Use text_input if provided
-
-        # Prepare the prompt and model configuration
+        # Prepare the model configuration
         generation_config = {
             "temperature": temperature,
             "top_p": top_p,
@@ -144,29 +136,23 @@ def process_with_gemini_webhook(
             "response_mime_type": "application/json",
         }
 
+        # Initialize model with system instruction
         model = genai.GenerativeModel(
             model_name=model_name,
             generation_config=generation_config,
-            system_instruction=system_instruction  # Set system_instruction
+            system_instruction=system_instruction  # Set system instruction here
         )
-        logger.info(f"Initialized Gemini GenerativeModel with prompt_type '{prompt_type}', batch={batch}, and system_instruction.")
+        
+        logger.info(f"Initialized Gemini GenerativeModel with prompt_type '{prompt_type}' and batch={batch}")
 
         if batch:
-            # Create chat history with all uploaded files and user prompt for batch processing
-            # Assuming that uploaded_files is a list when batch=True
-            if not isinstance(uploaded_files, list):
-                uploaded_files = [uploaded_files]
-            # Combine all file URIs or relevant data as needed
-            # Adjust based on actual file object structure; assuming 'uri' attribute exists
-            files_data = [file.uri for file in uploaded_files]
-            chat_history = [{"role": "user", "parts": files_data + [user_prompt]}]
-            logger.debug("Batch prompt constructed with files and user prompt.")
+            # For batch processing, just send the files
+            chat_history = [{"role": "user", "parts": uploaded_files}]
+            logger.debug("Batch processing initiated with files.")
         else:
-            # Process a single file
-            # Assuming uploaded_files is a single file object when batch=False
-            files_data = uploaded_files.uri  # Adjust based on actual file object structure
-            chat_history = [{"role": "user", "parts": [files_data, user_prompt]}]
-            logger.debug(f"Individual prompt constructed for file '{uploaded_files.uri}': {user_prompt}")
+            # For single file processing
+            chat_history = [{"role": "user", "parts": [uploaded_files]}]
+            logger.debug(f"Individual processing initiated for file: {uploaded_files.display_name}")
 
         chat_session = model.start_chat(history=chat_history)
         logger.info("Chat session started with Gemini.")
@@ -213,4 +199,3 @@ def extract_json_from_response(response_text: str) -> Dict:
         except json.JSONDecodeError as e:
             logger.error(f"JSON decoding error: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to decode JSON: {e}")
- 
