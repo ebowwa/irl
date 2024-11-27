@@ -8,7 +8,6 @@
 # GEMINI RULES:
 # - Each project can store up to 20GB of files, with each individual file not exceeding 2GB in size
 # - Prompt Constraints: While there's no explicit limit on the number of audio files in a single prompt, the combined length of all audio files in a prompt must not exceed 9.5 hours.
-
 import os
 import asyncio
 import json

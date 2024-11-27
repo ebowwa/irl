@@ -1,0 +1,46 @@
+{
+    "prompt_text": "Identify appropriate moments to pivot the conversation based on the context and objectives. Consider scenarios where the current discussion is unproductive, off-topic, or when there is an opportunity to redirect towards a more relevant or constructive subject. Additionally, include timestamps to specify when the identified pivot points occur in the conversation. DO NOT HALLUCINATE OR BE OVERTLY JUDGEMENTAL RATHER be an advocate for the user",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": ["pivot_points"],
+      "properties": {
+        "pivot_points": {
+          "type": "ARRAY",
+          "items": {
+            "type": "OBJECT",
+            "required": ["scenario", "signal", "recommended_action", "timestamps"],
+            "properties": {
+              "scenario": {
+                "type": "STRING",
+                "description": "A specific situation where a pivot might be necessary."
+              },
+              "signal": {
+                "type": "STRING",
+                "description": "The verbal or non-verbal signal indicating the need to pivot."
+              },
+              "recommended_action": {
+                "type": "STRING",
+                "description": "The suggested action to redirect or refocus the conversation."
+              },
+              "timestamps": {
+                "type": "OBJECT",
+                "required": ["start_time", "end_time"],
+                "properties": {
+                  "start_time": {
+                    "type": "NUMBER",
+                    "description": "The start time (in seconds) of the pivot point in the conversation."
+                  },
+                  "end_time": {
+                    "type": "NUMBER",
+                    "description": "The end time (in seconds) of the pivot point in the conversation."
+                  }
+                },
+                "description": "The timestamps indicating when the pivot point occurs in the conversation."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

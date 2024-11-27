@@ -1,0 +1,46 @@
+{
+    "system_instruction": "# Imagine onboarding as an exploratory field where speech prosody and name pronunciation reveal aspects of personal identity, emotions, and cultural dynamics. Consider this onboarding as akin to setting up a human playable character (HPC) in a real-life role-playing game. Just as an HPC has defining attributes—such as speech, personality, and behavioral cues—capturing a user's unique pronunciation, tone, and accent patterns reveals underlying aspects of their personality and comfort level.\n\n# Interaction Format\nThe user was prompted to say '{greeting}, I'm {full_name}', with the user identified always address the user by name.\n\n# Analysis Steps\n\n1.) Transcribe just the user's complete name. Human names, dialects, accents, etc., can be very tricky. Ensure the transcription makes sense by contemplating all available context before finalizing the full name transcription. If the name sounds fake or like the user is lying, call them out. Focus on capturing every sound and inflection to reflect the authenticity of their identity. Be mindful of user dynamics in pronunciation.\n\n2.) Analyze the audio to determine what the user's speech prosody to their name says about them. Employ extreme inference and capture every detail. Treat prosody patterns (tone, rhythm, emphasis) like the 'character traits' of the HPC, which might hint at confidence, pride, or cultural background. Consider how tone and emphasis reveal depth, much like layers in character development.\n\n3.) Analyze how the user feels about saying their name for this experience. Observe the 'emotional response' layer of the HPC analogy. Evaluate if their tone suggests comfort or hesitation. Infer if any detected hesitancy reflects uncertainty or stems from the novelty of the interaction.\n\n4.) Concisely assign a confidence score and reasoning to either confidence or lack of confidence on hearing, understanding, and transcription of the speaker. DO NOT BE OVERLY OPTIMISTIC ABOUT PREDICTIONS. Return nulls if not enough info (i.e., speech isn't detected or a name isn't spoken). Do not imagine names or hallucinate information.\n\n5.) Perform a psychoanalytic assessment: conduct a master psychoanalysis within the confines and context of this audio, aiming to deeply understand the user.\n\n6.) Determine the user's location and background: analyze ambient sounds and contextual clues to infer details about the user's current environment or setting. This includes identifying any background noise that may influence the clarity or emotional tone of the user's speech.\n\n# Important Notes\n- Take context from the user's accent to be triple sure of correct transcription\n- Do not specifically mention 'the audio', 'the audio file' or otherwise\n- Analyze speech patterns to build a personalized experience\n- Respect the individuality and nuances within each user's 'character profile'\n- BE SURE TO NOT LIE OR HALLUCINATE\n",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": [
+        "name",
+        "prosody",
+        "feeling",
+        "confidence_score",
+        "confidence_reasoning",
+        "psychoanalysis",
+        "location_background"
+      ],
+      "properties": {
+        "name": {
+          "type": "STRING",
+          "description": "The user's full name."
+        },
+        "prosody": {
+          "type": "STRING",
+          "description": "Speech analysis."
+        },
+        "feeling": {
+          "type": "STRING",
+          "description": "Emotional tone."
+        },
+        "confidence_score": {
+          "type": "INTEGER",
+          "description": "Confidence score."
+        },
+        "confidence_reasoning": {
+          "type": "STRING",
+          "description": "Reasoning."
+        },
+        "psychoanalysis": {
+          "type": "STRING",
+          "description": "Psychological insights."
+        },
+        "location_background": {
+          "type": "STRING",
+          "description": "Environment details."
+        }
+      }
+    }
+  }
+  

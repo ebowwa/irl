@@ -144,5 +144,3 @@ print(response.text)
 ```
 
 Note: this example above, is just an example, to follow or use as reference.
-
-- what if i intend to do further structured async requests to an object like a user submitted audio file

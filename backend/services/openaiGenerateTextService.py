@@ -78,7 +78,7 @@ class OpenAIRequestConfig(BaseModel):
     @validator('temperature')
     def temperature_must_be_between_0_and_1(cls, v):
         """Ensure temperature is between 0 and 1"""
-        if not 0 <= v <= 1:
+        if not 0 <= v <= 1: 
             raise ValueError('Temperature must be between 0 and 1.')
         return v
 
@@ -118,16 +118,15 @@ def generate_text_service(config: OpenAIRequestConfig):
     try:
         # Determine if using Ollama based on API URL or model name
         is_ollama = "ollama" in str(config.api_url).lower() or "llama" in config.model.lower()
-
         # -------------------------------------
         # Handle Ollama Requests
         # -------------------------------------
+
         if is_ollama:
             api_key = config.api_key or os.getenv("OLLAMA_API_KEY")
             if not api_key:
                 raise HTTPException(status_code=401, detail="OLLAMA_API_KEY is missing and not found in environment variables")
             client = OpenAI(api_key=api_key, base_url=str(config.api_url))
-
             # Construct messages with optional system prompt and user prompt
             messages = config.messages or []
             if config.system_prompt:
@@ -259,6 +258,7 @@ def generate_text_service(config: OpenAIRequestConfig):
                     return {"result": response.choices[0].message.content.strip()}
                 else:
                     raise HTTPException(status_code=500, detail="No response from OpenAI model.")
+
 
     except OpenAIError as e:
         raise HTTPException(status_code=500, detail=f"OpenAI API Error: {str(e)}")
