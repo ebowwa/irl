@@ -1,15 +1,19 @@
-# backend/database/db_modules_v2.py
-
-import logging
+# /home/pi/caringmind/backend/database/core.py
+import json
+from sqlalchemy import Table, Column, Integer, String, Text
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text, func
-
-# Import shared database configuration
 from utils.db_state import database, metadata
 
-# Configure logging
-logger = logging.getLogger(__name__)
-
-logger.info("Configuring database tables for Supabase.")
+prompt_schema_table = Table(
+    "prompt_schema",
+    metadata,
+    Column("id", Integer, primary_key=True, index=True),
+    Column("prompt_type", String, nullable=False, unique=True),
+    Column("prompt_text", Text, nullable=False),
+    Column("response_schema", Text, nullable=False),
+    Column("created_at", Integer, nullable=False),
+    Column("updated_at", Integer, nullable=False)
+)
 
 # === Define the Device Registration Table ===
 
@@ -26,7 +30,7 @@ device_registration_table = Table(
 )
 
 # === Define the Processed Audio Files Table ===
-# TODO: maybe one table of these by each user/for each user since the privacy concerns of these contents
+
 processed_audio_files_table = Table(
     "processed_audio_files",
     metadata,
@@ -39,6 +43,3 @@ processed_audio_files_table = Table(
     Column("created_at", DateTime, default=func.now(), nullable=False),
     Column("updated_at", DateTime, default=func.now(), onupdate=func.now(), nullable=False),
 )
-
-# Log table configuration success
-logger.info("Device Registration and Processed Audio Files tables configured.")

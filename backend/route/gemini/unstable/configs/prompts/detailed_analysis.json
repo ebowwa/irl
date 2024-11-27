@@ -1,0 +1,55 @@
+{
+    "prompt_text": "# Detailed Audio Analysis\nAnalyze the uploaded audio file in-depth to extract comprehensive insights about the speaker.\n\n# Instructions\n1. Transcribe the audio accurately.\n2. Identify and analyze speech patterns, including tone, pace, and volume.\n3. Assess emotional undertones and possible psychological states.\n4. Provide environmental context based on background sounds.\n5. Evaluate the clarity and pronunciation accuracy.\n\n# Output Format\nReturn the analysis in the following JSON structure:\n```json\n{\n  \"transcription\": \"\",\n  \"speech_patterns\": {\n    \"tone\": \"\",\n    \"pace\": \"\",\n    \"volume\": \"\"\n  },\n  \"emotional_undertones\": \"\",\n  \"environment_context\": \"\",\n  \"clarity\": \"\",\n  \"pronunciation_accuracy\": \"\"\n}\n```",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": [
+        "transcription",
+        "speech_patterns",
+        "emotional_undertones",
+        "environment_context",
+        "clarity",
+        "pronunciation_accuracy"
+      ],
+      "properties": {
+        "transcription": {
+          "type": "STRING",
+          "description": "Full transcription of the audio."
+        },
+        "speech_patterns": {
+          "type": "OBJECT",
+          "required": ["tone", "pace", "volume"],
+          "properties": {
+            "tone": {
+              "type": "STRING",
+              "description": "Tone of speech."
+            },
+            "pace": {
+              "type": "STRING",
+              "description": "Pace of speech."
+            },
+            "volume": {
+              "type": "STRING",
+              "description": "Volume level."
+            }
+          }
+        },
+        "emotional_undertones": {
+          "type": "STRING",
+          "description": "Detected emotional undertones."
+        },
+        "environment_context": {
+          "type": "STRING",
+          "description": "Environmental context based on background sounds."
+        },
+        "clarity": {
+          "type": "STRING",
+          "description": "Clarity of the audio."
+        },
+        "pronunciation_accuracy": {
+          "type": "STRING",
+          "description": "Accuracy of pronunciation."
+        }
+      }
+    }
+  }
+  

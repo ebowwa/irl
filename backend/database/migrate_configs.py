@@ -1,3 +1,5 @@
+# /home/pi/caringmind/backend/migrate_configs.py
+
 import os
 import json
 import asyncio
@@ -5,24 +7,13 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Dict
-from sqlalchemy import Table, Column, Integer, String, Text, MetaData, select
+from sqlalchemy import Column, Integer, String, Text, select
 from utils.db_state import database, metadata
+from database.core import prompt_schema_table  # Importing the table from core.py
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Define the prompt_schema table
-prompt_schema_table = Table(
-    "prompt_schema",
-    metadata,
-    Column("id", Integer, primary_key=True, index=True),
-    Column("prompt_type", String, nullable=False, unique=True),
-    Column("prompt_text", Text, nullable=False),
-    Column("response_schema", Text, nullable=False),
-    Column("created_at", Integer, nullable=False),
-    Column("updated_at", Integer, nullable=False)
-)
 
 class PromptSchemaManager:
     """Manager class for CRUD operations on prompt schemas."""

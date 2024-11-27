@@ -25,7 +25,7 @@ from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 import sqlalchemy
 
-from database.user import (
+from database.core import (
     database,
     device_registration_table
 )

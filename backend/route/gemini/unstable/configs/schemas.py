@@ -1,41 +1,22 @@
-# configs/schemas.py
-import os
-from typing import Dict
-import json
-import logging
-from pathlib import Path
+# /home/pi/caringmind/backend/configs/schemas.py
 
-logger = logging.getLogger(__name__)
+import json
+from typing import Optional, Dict, Any
+from database.core import prompt_schema_table
+from utils.db_state import database
 
 class SchemaManager:
-    def __init__(self):
-        # Get the absolute path to the prompts directory
-        self.config_dir = Path(__file__).parent / "prompts"
-        self.configs = self._load_configurations()
+    """Manager class for handling prompt schemas."""
 
-    def _load_configurations(self) -> Dict[str, Dict]:
-        configurations = {}
-        
-        if not self.config_dir.exists():
-            logger.error(f"Config directory not found: {self.config_dir}")
-            raise FileNotFoundError(f"Config directory not found: {self.config_dir}")
-
-        for file_path in self.config_dir.glob("*.json"):
+    async def get_config(self, prompt_type: str) -> Optional[Dict[str, Any]]:
+        """Retrieve the schema configuration for the given prompt_type."""
+        query = prompt_schema_table.select().where(prompt_schema_table.c.prompt_type == prompt_type)
+        result = await database.fetch_one(query)  # Ensure await is used here
+        if result:
+            config = dict(result)
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    config = json.load(f)
-                    prompt_type = file_path.stem  # Get filename without extension
-                    configurations[prompt_type] = config
-                logger.info(f"Loaded configuration '{prompt_type}' from {file_path.name}")
-            except Exception as e:
-                logger.error(f"Failed to load configuration '{file_path.name}': {e}")
-                
-        if not configurations:
-            logger.warning("No configuration files found in the prompts directory")
-            
-        return configurations
-
-    def get_config(self, prompt_type: str) -> Dict:
-        if prompt_type not in self.configs:
-            logger.warning(f"Configuration not found for prompt_type: {prompt_type}")
-        return self.configs.get(prompt_type)
+                config["response_schema"] = json.loads(config["response_schema"])
+            except json.JSONDecodeError:
+                config["response_schema"] = {}
+            return config
+        return None

@@ -1,5 +1,6 @@
-# api/routes.py
-from fastapi import APIRouter, File, UploadFile, Query, HTTPException, Depends
+# routes/prompts.py
+
+from fastapi import APIRouter, File, UploadFile, Query, HTTPException
 from fastapi.responses import JSONResponse
 from typing import List, Optional, Dict, Any
 import asyncio
@@ -9,8 +10,11 @@ from ..services.audio_service import AudioService
 from ..services.gemini_service import GeminiService
 from ..services.storage_service import StorageService
 from ..configs.schemas import SchemaManager
+from jsonschema import validate, ValidationError
+import json
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # Initialize services
 try:
@@ -45,9 +49,15 @@ async def process_audio(
     If authenticated, also stores results in the database.
     """
     try:
-        # Fetch type information from SchemaManager
-        schema_config = schema_manager.get_config(prompt_type)
-        type_info = schema_config.get("type", "unknown") if schema_config else "unknown"
+        # Fetch schema configuration for the given prompt_type
+        schema_config = await schema_manager.get_config(prompt_type)  # Ensure await is used
+        if schema_config:
+            response_schema = schema_config.get("response_schema", {})
+            type_info = response_schema.get("type", "unknown")
+        else:
+            logger.warning(f"No schema configuration found for prompt_type '{prompt_type}'")
+            type_info = "unknown"
+            response_schema = {}
 
         # Verify user if credentials provided
         user_id = await auth_service.verify_user(google_account_id, device_uuid)
@@ -95,6 +105,14 @@ async def process_audio(
                 )
             )
 
+            # Validate gemini_results against response_schema if available
+            if response_schema:
+                try:
+                    validate(instance=gemini_results, schema=response_schema)
+                except ValidationError as ve:
+                    logger.error(f"gemini_results do not conform to response_schema: {ve}")
+                    raise HTTPException(status_code=500, detail="Response schema validation failed")
+
             # Store results if user is authenticated
             if user_id:
                 store_tasks = []
@@ -132,6 +150,9 @@ async def process_audio(
                         "stored": bool(user_id)
                     })
 
+        except HTTPException as he:
+            # Propagate HTTP exceptions
+            raise he
         except Exception as e:
             logger.error(f"Gemini processing failed: {e}")
             for filename, _ in valid_files:

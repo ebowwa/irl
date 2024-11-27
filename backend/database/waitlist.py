@@ -1,13 +1,5 @@
 # backend/database/waitlist_db.py
-
-from sqlalchemy import (
-    Column,
-    DateTime,
-    BigInteger,
-    String,
-    Table,
-    func,
-)
+from sqlalchemy import Column, DateTime, BigInteger, String, Table, func
 from utils.db_state import database, metadata
 
 # Define the waitlist table with an additional 'referral_source' column
@@ -23,5 +15,4 @@ waitlist_table = Table(
     Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
 )
 
-# Ensure database is accessible for other modules as needed
-__all__ = ["database", "waitlist_table"]
+
