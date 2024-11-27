@@ -238,3 +238,4 @@ class AppManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
     }
 }
 
+// TODO: WAV IS TOO BIG NEED OGG
