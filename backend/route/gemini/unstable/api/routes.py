@@ -46,7 +46,7 @@ async def process_audio(
     """
     try:
         # Fetch type information from SchemaManager
-        schema_config = schema_manager.get_config(prompt_type)
+        schema_config = await schema_manager.get_config(prompt_type)
         type_info = schema_config.get("type", "unknown") if schema_config else "unknown"
 
         # Verify user if credentials provided

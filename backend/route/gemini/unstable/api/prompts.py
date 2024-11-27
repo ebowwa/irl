@@ -10,7 +10,7 @@ from ..services.audio_service import AudioService
 from ..services.gemini_service import GeminiService
 from ..services.storage_service import StorageService
 from ..configs.schemas.schemas import SchemaManager
-
+# handle the db entries raw, including mismatched json all raw
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
