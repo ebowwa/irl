@@ -14,7 +14,7 @@ class AudioService:
     }
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-    async def process_file(self, file: UploadFile) -> object:
+    async def process_file(self, file: UploadFile) -> dict:
         try:
             if file.content_type not in self.SUPPORTED_MIME_TYPES:
                 raise HTTPException(
@@ -23,7 +23,12 @@ class AudioService:
                 )
 
             content = await file.read()
-            return self.upload_to_gemini(content, file.content_type)
+            uploaded_file = self.upload_to_gemini(content, file.content_type)
+            # Return both the file object and its URI
+            return {
+                "file_obj": uploaded_file,
+                "uri": uploaded_file.uri
+            }
         except Exception as e:
             logger.error(f"Error processing file {file.filename}: {e}")
             raise HTTPException(status_code=500, detail=str(e))

@@ -75,11 +75,11 @@ from route.gemini.Demos.user_name_upload_v3 import router as user_name_upload_v3
 app.include_router(user_name_upload_v3_router, prefix="/onboarding/v3")   # + /process-audio; TODO: on client side implement double-try correct user name
 # from route.gemini.user_name_upload_v5 import router as user_name_upload_v5_router
 # app.include_router(user_name_upload_v5_router, prefix="/onboarding/v5")   # + /process-audio; TODO: on client side implement double-try correct user name
-from route.gemini.stable.gemini_audio_handling_noauth import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
-app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v1")
+# from route.gemini.stable.gemini_audio_handling_noauth import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
+# app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v1")
 
-from route.gemini.stable.gemini_audio_handling_auth import router as gemini_audio_handling_auth_router # user auth & persistance
-app.include_router(gemini_audio_handling_auth_router, prefix="/production/v1")
+# from route.gemini.stable.gemini_audio_handling_auth import router as gemini_audio_handling_auth_router # user auth & persistance
+# app.include_router(gemini_audio_handling_auth_router, prefix="/production/v1")
 
 '''
 ebowwa@Elijahs-MacBook-Air-2 caringmind % curl -X POST "https://...ngrok-free.app/production/v1/process-audio?google_account_id=[id#here]&device_uuid=35FFE513-1990-4293-9898-DDF01B3D546A&prompt_type=default&batch=false" \
@@ -98,7 +98,7 @@ app.include_router(analyze_truth_lie_v1_router)
 # from route.gemini.list_files import router as list_files_router
 # app.include_router(list_files_router, prefix="/api/v1", tags=["Files"])
 from route.gemini.unstable.api.routes import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
-app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v2")
+app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v1")
 
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
