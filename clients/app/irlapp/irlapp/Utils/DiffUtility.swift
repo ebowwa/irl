@@ -5,14 +5,6 @@
 //  Created by Elijah Arbee on 11/7/24.
 //
 
-
-//
-//  DiffUtility.swift
-//  irlapp
-//
-//  Created by Elijah Arbee on 10/29/24.
-//
-
 import Foundation
 
 /// A utility for computing and applying diffs between two strings.

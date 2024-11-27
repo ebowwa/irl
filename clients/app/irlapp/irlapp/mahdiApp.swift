@@ -8,11 +8,227 @@
 //
 // NOTE: this script was updated to include a google sign in which as of now does nothing, it works, the user can sign in with their google account but otherwise this feature has no other extension, moving forward location, usage metrics, drive storage can be applied through this gsignin
 
+//
+//  CaringMindApp.swift
+//  CaringMind
+//
+//  Created by Elijah Arbee on 11/12/24.
+//
 
 import GoogleSignIn
 import GoogleSignInSwift
-
 import SwiftUI
+import ReSwift
+
+// MARK: - ReSwift State, Actions, and Reducers
+
+// Define the AppState which holds the entire state of the application
+struct AppState: StateType {
+    var user: UserState
+    var registration: RegistrationState
+    var onboarding: OnboardingState
+    var router: RouterState
+    var audio: AudioState
+}
+
+// Define the UserState
+struct UserState {
+    var isSignedIn: Bool
+    var userID: String?
+    var error: String?
+}
+
+// Define the RegistrationState
+struct RegistrationState {
+    var isRegistered: Bool
+    var deviceUUID: String?
+    var error: String?
+}
+
+// Define the OnboardingState
+struct OnboardingState {
+    var currentStep: OnboardingStep
+    var userName: String
+}
+
+// Define the RouterState
+struct RouterState {
+    var currentDestination: RouterDestination
+}
+
+// Define the AudioState
+struct AudioState {
+    var isRecording: Bool
+    var audioData: [AudioData]
+    // Add other audio-related properties as needed
+}
+
+// Define AudioData structure
+struct AudioData {
+    // Define properties for audio data
+    var id: UUID
+    var data: Data
+    var timestamp: Date
+}
+
+// Define Actions
+
+// User Actions
+struct SignInAction: Action {
+    let userID: String
+}
+
+struct SignOutAction: Action {}
+
+struct SignInFailureAction: Action {
+    let error: String
+}
+
+// Registration Actions
+struct RegistrationSuccessAction: Action {
+    let deviceUUID: String
+}
+
+struct RegistrationFailureAction: Action {
+    let error: String
+}
+
+// Onboarding Actions
+struct UpdateOnboardingStepAction: Action {
+    let step: OnboardingStep
+}
+
+struct UpdateUserNameAction: Action {
+    let userName: String
+}
+
+// Router Actions
+struct NavigateAction: Action {
+    let destination: RouterDestination
+}
+
+// Audio Actions
+struct StartRecordingAction: Action {}
+struct StopRecordingAction: Action {}
+struct AddAudioDataAction: Action {
+    let audioData: AudioData
+}
+
+// Define Reducers
+
+func appReducer(action: Action, state: AppState?) -> AppState {
+    return AppState(
+        user: userReducer(action: action, state: state?.user),
+        registration: registrationReducer(action: action, state: state?.registration),
+        onboarding: onboardingReducer(action: action, state: state?.onboarding),
+        router: routerReducer(action: action, state: state?.router),
+        audio: audioReducer(action: action, state: state?.audio)
+    )
+}
+
+func userReducer(action: Action, state: UserState?) -> UserState {
+    var state = state ?? UserState(isSignedIn: false, userID: nil, error: nil)
+    
+    switch action {
+    case let action as SignInAction:
+        state.isSignedIn = true
+        state.userID = action.userID
+        state.error = nil
+    case _ as SignOutAction:
+        state.isSignedIn = false
+        state.userID = nil
+    case let action as SignInFailureAction:
+        state.error = action.error
+    default:
+        break
+    }
+    
+    return state
+}
+
+func registrationReducer(action: Action, state: RegistrationState?) -> RegistrationState {
+    var state = state ?? RegistrationState(isRegistered: false, deviceUUID: nil, error: nil)
+    
+    switch action {
+    case let action as RegistrationSuccessAction:
+        state.isRegistered = true
+        state.deviceUUID = action.deviceUUID
+        state.error = nil
+    case let action as RegistrationFailureAction:
+        state.isRegistered = false
+        state.error = action.error
+    default:
+        break
+    }
+    
+    return state
+}
+
+func onboardingReducer(action: Action, state: OnboardingState?) -> OnboardingState {
+    var state = state ?? OnboardingState(currentStep: .intro, userName: "")
+    
+    switch action {
+    case let action as UpdateOnboardingStepAction:
+        state.currentStep = action.step
+    case let action as UpdateUserNameAction:
+        state.userName = action.userName
+    default:
+        break
+    }
+    
+    return state
+}
+
+func routerReducer(action: Action, state: RouterState?) -> RouterState {
+    var state = state ?? RouterState(currentDestination: .splash)
+    
+    switch action {
+    case let action as NavigateAction:
+        state.currentDestination = action.destination
+    default:
+        break
+    }
+    
+    return state
+}
+
+func audioReducer(action: Action, state: AudioState?) -> AudioState {
+    var state = state ?? AudioState(isRecording: false, audioData: [])
+    
+    switch action {
+    case _ as StartRecordingAction:
+        state.isRecording = true
+    case _ as StopRecordingAction:
+        state.isRecording = false
+    case let action as AddAudioDataAction:
+        state.audioData.append(action.audioData)
+    default:
+        break
+    }
+    
+    return state
+}
+
+// Define Onboarding Steps
+enum OnboardingStep {
+    case intro
+    case permissions
+    case completion
+}
+
+// Initialize the ReSwift store
+let mainStore = Store<AppState>(
+    reducer: appReducer,
+    state: AppState(
+        user: UserState(isSignedIn: false, userID: nil, error: nil),
+        registration: RegistrationState(isRegistered: false, deviceUUID: nil, error: nil),
+        onboarding: OnboardingState(currentStep: .intro, userName: ""),
+        router: RouterState(currentDestination: .splash),
+        audio: AudioState(isRecording: false, audioData: [])
+    )
+)
+
+// MARK: - Main App Structure
 
 @main
 struct mahdiApp: App {
@@ -21,100 +237,38 @@ struct mahdiApp: App {
     @StateObject private var router = AppRouterViewModel()
     @StateObject private var onboardingViewModel = OnboardingViewModel()
 
-    // Instances of registration handlers
-    private let checkRegistrationHandler = CheckDeviceServerRegistration()
-    private let registerDeviceHandler = RegisterDeviceToServer()
+    // Instance of UserRegistrationManager
+    private let userRegistrationManager = UserRegistrationManager()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(router)
                 .environmentObject(onboardingViewModel)
+                // Provide the ReSwift store to the environment
+                .environment(\.store, mainStore)
                 .onAppear {
                     Constants.initializeDefaults()
                     GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                         if let error = error {
                             print("Restore sign-in failed with error: \(error.localizedDescription)")
+                            // Dispatch SignInFailureAction
+                            mainStore.dispatch(SignInFailureAction(error: error.localizedDescription))
                             return
                         }
                         if let user = user {
                             print("Successfully restored previous sign-in for user ID: \(user.userID ?? "nil")")
-                            checkAndRegisterUser(user: user)
+                            // Dispatch SignInAction
+                            if let userID = user.userID {
+                                mainStore.dispatch(SignInAction(userID: userID))
+                            }
+                            // Use UserRegistrationManager to handle registration
+                            userRegistrationManager.initiateRegistration(for: user)
                         } else {
                             print("No previous sign-in found.")
                         }
                     }
                 }
-        }
-    }
-
-    /// Checks if the user is registered and registers them if not.
-    /// - Parameter user: The authenticated Google user.
-    func checkAndRegisterUser(user: GIDGoogleUser) {
-        // Proceed to check with the server regardless of local status
-        guard let googleAccountID = user.userID else {
-            print("checkAndRegisterUser: user.userID is nil.")
-            return
-        }
-
-        print("checkAndRegisterUser: googleAccountID = \(googleAccountID)")
-
-        let deviceUUID = DeviceUUID.getUUID()
-
-        // Perform an asynchronous check with the backend server
-        Task {
-            do {
-                let checkResponse = try await checkRegistrationHandler.isUserRegistered(
-                    googleAccountID: googleAccountID, deviceUUID: deviceUUID ?? "")
-                if checkResponse.is_registered, checkResponse.device != nil {
-                    print("User is already registered on server.")
-                    // Update local registration status based on server response
-                    RegistrationStatus.setDeviceRegistered(true)
-                    // Optionally, navigate to the home screen or perform other actions
-                } else {
-                    print("User not registered on server. Proceeding to register.")
-                    handleSignIn(user: user)
-                }
-            } catch {
-                print("Error checking registration status: \(error.localizedDescription)")
-                // Handle the error appropriately, possibly by notifying the user
-                // Optionally, set local registration status to false
-                RegistrationStatus.setDeviceRegistered(false)
-            }
-        }
-    }
-
-    /// Handles the sign-in process by registering the device with the server.
-    /// Integrates updating the local registration status upon successful registration.
-    /// - Parameter user: The authenticated Google user.
-    func handleSignIn(user: GIDGoogleUser) {
-        guard let idToken = user.idToken?.tokenString else {
-            print("handleSignIn: idToken is nil.")
-            return
-        }
-        let accessToken = user.accessToken.tokenString
-        let googleAccountID = user.userID ?? ""
-        let deviceUUID = DeviceUUID.getUUID()
-
-        // Save googleAccountID to Keychain
-        KeychainHelper.standard.saveGoogleAccountID(googleAccountID)
-
-        print("handleSignIn: Registering device with server.")
-        Task {
-            do {
-                try await registerDeviceHandler.registerDeviceWithServer(
-                    googleAccountID: googleAccountID,
-                    deviceUUID: deviceUUID ?? "",
-                    idToken: idToken,
-                    accessToken: accessToken
-                )
-                print("Device registered successfully.")
-                // RegistrationStatus is updated within RegisterDeviceToServer upon success
-            } catch {
-                print("registerDeviceWithServer: Registration error - \(error.localizedDescription)")
-                // Handle the error appropriately
-                RegistrationStatus.setDeviceRegistered(false)
-            }
         }
     }
 }
@@ -132,23 +286,37 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 // MARK: - AppRouterViewModel for navigation management
 
-class AppRouterViewModel: ObservableObject {
+class AppRouterViewModel: ObservableObject, StoreSubscriber {
     @Published var currentDestination: RouterDestination = .splash
 
-    func navigate(to destination: RouterDestination) {
-        withAnimation {
-            currentDestination = destination
+    init() {
+        mainStore.subscribe(self) { subscription in
+            subscription.select { state in state.router }
         }
     }
 
+    func newState(state: RouterState) {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.currentDestination = state.currentDestination
+            }
+        }
+    }
+
+    func navigate(to destination: RouterDestination) {
+        mainStore.dispatch(NavigateAction(destination: destination))
+    }
+
     func navigateToOnboarding() {
-        currentDestination = .onboarding
+        mainStore.dispatch(NavigateAction(destination: .onboarding))
     }
 
     func navigateToHome() {
-        currentDestination = .home
+        mainStore.dispatch(NavigateAction(destination: .home))
     }
 }
+
+// MARK: - RouterDestination Enum
 
 enum RouterDestination: Identifiable {
     case splash
@@ -165,6 +333,7 @@ enum RouterDestination: Identifiable {
 struct ContentView: View {
     @EnvironmentObject var router: AppRouterViewModel
     @StateObject private var onboardingViewModel = OnboardingViewModel()
+    @Environment(\.store) var store: Store<AppState>
 
     var body: some View {
         ZStack {
@@ -177,14 +346,47 @@ struct ContentView: View {
                     step: $onboardingViewModel.currentStep,
                     userName: $onboardingViewModel.userName
                 )
-                // can we hold the results in state of the audio upload genai uri's and audio and responses so that we can save to account when they create the account
+                // Additional comments from original code
                 .transition(.slide)
-                // transitions on google signed in right now
-                
             case .home:
                 MainContentView()
             }
         }
         .animation(.easeInOut, value: router.currentDestination)
+        // Subscribe to the store for state changes if needed
+        .onAppear {
+            // Example: You can dispatch actions here if needed
+        }
     }
 }
+
+// MARK: - Environment Key for ReSwift Store
+
+struct ReSwiftStoreKey: EnvironmentKey {
+    static let defaultValue: Store<AppState> = mainStore
+}
+
+extension EnvironmentValues {
+    var store: Store<AppState> {
+        get { self[ReSwiftStoreKey.self] }
+        set { self[ReSwiftStoreKey.self] = newValue }
+    }
+}
+/**
+ import ComposableArchitecture
+ import SwiftUI
+
+ @main
+ struct SpeechRecognitionApp: App {
+   var body: some Scene {
+     WindowGroup {
+       SpeechRecognitionView(
+         store: Store(initialState: SpeechRecognition.State()) {
+           SpeechRecognition()._printChanges()
+         }
+       )
+     }
+   }
+ }
+
+ */

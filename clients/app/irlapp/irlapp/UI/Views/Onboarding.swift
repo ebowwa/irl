@@ -296,48 +296,6 @@ struct ManageDataView: View {
    }
 }
 
-
-
-struct AgeInputView: View {
-   @Binding var age: String
-   @Binding var step: Int
-   var userName: String
-   
-   var body: some View {
-       VStack(spacing: 20) {
-           Text("QUANTIFY TEMPORAL EXISTENCE")
-               .modifier(CyberText())
-               .font(.system(size: 24, weight: .bold, design: .monospaced))
-               .padding(.bottom, 10)
-
-           TextField("AGE", text: $age)
-               .keyboardType(.numberPad)
-               .font(.system(size: 18, design: .monospaced))
-               .foregroundColor(Color(hex: "#00FF00"))
-               .padding()
-               .background(Color.black)
-               .overlay(
-                   RoundedRectangle(cornerRadius: 8)
-                       .stroke(Color(hex: "#00FF00"), lineWidth: 2)
-               )
-               .padding(.horizontal, 40)
-
-           if !age.isEmpty {
-               Button(action: { step += 1 }) {
-                   Text("PROCESS >>")
-                       .font(.system(size: 18, weight: .bold, design: .monospaced))
-                       .foregroundColor(.black)
-                       .frame(width: 280, height: 56)
-                       .background(
-                           RoundedRectangle(cornerRadius: 8)
-                               .fill(Color(hex: "#00FF00"))
-                       )
-               }
-           }
-       }
-   }
-}
-
 struct FinalStepView: View {
    var userName: String
    //var age: String

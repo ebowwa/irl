@@ -22,29 +22,22 @@
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		764215772CCDA69F00424E73 /* Exceptions for "irlapp" folder in "mahdi" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			assetTagsByRelativePath = {
+				Loudness.plist = (New, );
+			};
 			membershipExceptions = (
 				Info.plist,
+				UI.md,
 			);
 			target = 764214BB2CCD8B0F00424E73 /* mahdi */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		767D586A2CDC2CF60038695B /* Exceptions for "irlapp" folder in "Copy Bundle Resources" phase from "mahdi" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 764214BA2CCD8B0F00424E73 /* Resources */;
-			membershipExceptions = (
-				irlapp.entitlements,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		764214BE2CCD8B0F00424E73 /* irlapp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				764215772CCDA69F00424E73 /* Exceptions for "irlapp" folder in "mahdi" target */,
-				767D586A2CDC2CF60038695B /* Exceptions for "irlapp" folder in "Copy Bundle Resources" phase from "mahdi" target */,
 			);
 			path = irlapp;
 			sourceTree = "<group>";
@@ -114,6 +107,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				KnownAssetTags = (
+					New,
+				);
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
