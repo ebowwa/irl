@@ -8,7 +8,7 @@ from ..services.auth_service import AuthService
 from ..services.audio_service import AudioService
 from ..services.gemini_service import GeminiService
 from ..services.storage_service import StorageService
-from ..configs.schemas import SchemaManager
+from ..configs.schemas.schemas import SchemaManager
 
 logger = logging.getLogger(__name__)
 

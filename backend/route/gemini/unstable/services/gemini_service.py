@@ -3,8 +3,8 @@ import google.generativeai as genai
 from typing import Dict, List, Union
 import logging
 from fastapi import HTTPException
-from ..configs.schemas import SchemaManager
-from ..utils.json_utils import extract_json_from_response
+from ..configs.schemas.schemas import SchemaManager
+from ..configs.json_utils import extract_json_from_response
 
 logger = logging.getLogger(__name__)
 

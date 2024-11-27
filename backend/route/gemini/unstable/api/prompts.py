@@ -1,4 +1,4 @@
-# routes/prompts.py
+# /backend/route/gemini/unstable/api/prompts.py
 
 from fastapi import APIRouter, File, UploadFile, Query, HTTPException
 from fastapi.responses import JSONResponse
@@ -9,9 +9,7 @@ from ..services.auth_service import AuthService
 from ..services.audio_service import AudioService
 from ..services.gemini_service import GeminiService
 from ..services.storage_service import StorageService
-from ..configs.schemas import SchemaManager
-from jsonschema import validate, ValidationError
-import json
+from ..configs.schemas.schemas import SchemaManager
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -42,23 +40,7 @@ async def process_audio(
     google_account_id: Optional[str] = Query(None, description="Google Account ID for authentication"),
     device_uuid: Optional[str] = Query(None, description="Device UUID for authentication")
 ):
-    """
-    Process audio files with optional authentication and storage.
-    
-    Returns results with file URIs, processing status, and type predictions.
-    If authenticated, also stores results in the database.
-    """
     try:
-        # Fetch schema configuration for the given prompt_type
-        schema_config = await schema_manager.get_config(prompt_type)  # Ensure await is used
-        if schema_config:
-            response_schema = schema_config.get("response_schema", {})
-            type_info = response_schema.get("type", "unknown")
-        else:
-            logger.warning(f"No schema configuration found for prompt_type '{prompt_type}'")
-            type_info = "unknown"
-            response_schema = {}
-
         # Verify user if credentials provided
         user_id = await auth_service.verify_user(google_account_id, device_uuid)
         
@@ -76,7 +58,6 @@ async def process_audio(
                 results.append({
                     "file": file.filename,
                     "status": "failed",
-                    "type": type_info,
                     "error": str(result)
                 })
             else:
@@ -86,32 +67,21 @@ async def process_audio(
             logger.warning("No valid files to process")
             return JSONResponse(content={"results": results})
 
-        # Process with Gemini
         try:
             # Extract file objects for Gemini processing
             gemini_file_objects = [f[1]["file_obj"] for f in valid_files]
             
-            gemini_results = await asyncio.get_event_loop().run_in_executor(
-                None,
-                lambda: gemini_service.process_audio(
-                    gemini_file_objects,
-                    prompt_type=prompt_type,
-                    batch=batch,
-                    model_name=model_name,
-                    temperature=temperature,
-                    top_p=top_p,
-                    top_k=top_k,
-                    max_output_tokens=max_output_tokens
-                )
+            # Process with Gemini
+            gemini_results = await gemini_service.process_audio(
+                gemini_file_objects,
+                prompt_type=prompt_type,
+                batch=batch,
+                model_name=model_name,
+                temperature=temperature,
+                top_p=top_p,
+                top_k=top_k,
+                max_output_tokens=max_output_tokens
             )
-
-            # Validate gemini_results against response_schema if available
-            if response_schema:
-                try:
-                    validate(instance=gemini_results, schema=response_schema)
-                except ValidationError as ve:
-                    logger.error(f"gemini_results do not conform to response_schema: {ve}")
-                    raise HTTPException(status_code=500, detail="Response schema validation failed")
 
             # Store results if user is authenticated
             if user_id:
@@ -128,46 +98,41 @@ async def process_audio(
                 await asyncio.gather(*store_tasks)
                 logger.info(f"Stored results for user {user_id}")
 
-            # Add successful results with URIs and type info
+            # Add successful results
             if batch:
                 results.append({
                     "files": [f[0] for f in valid_files],
                     "status": "processed",
-                    "type": type_info,
                     "data": gemini_results,
                     "file_uris": [f[1]["uri"] for f in valid_files],
                     "stored": bool(user_id)
                 })
             else:
-                # For individual file processing
                 for filename, file_data in valid_files:
                     results.append({
                         "file": filename,
                         "status": "processed",
-                        "type": type_info,
                         "data": gemini_results,
                         "file_uri": file_data["uri"],
                         "stored": bool(user_id)
                     })
 
-        except HTTPException as he:
-            # Propagate HTTP exceptions
-            raise he
+            return JSONResponse(content={"results": results})
+
         except Exception as e:
             logger.error(f"Gemini processing failed: {e}")
             for filename, _ in valid_files:
                 results.append({
                     "file": filename,
                     "status": "failed",
-                    "type": type_info,
                     "error": str(e)
                 })
-            raise HTTPException(status_code=500, detail="Gemini processing failed")
-
-        return JSONResponse(content={"results": results})
+            return JSONResponse(
+                status_code=500,
+                content={"results": results}
+            )
 
     except HTTPException as he:
-        # Re-raise HTTP exceptions with their original status codes
         raise he
     except Exception as e:
         logger.error(f"Unexpected error in process_audio endpoint: {e}")
@@ -175,8 +140,3 @@ async def process_audio(
             status_code=500,
             detail=f"Internal Server Error: {str(e)}"
         )
-
-@router.get("/health")
-async def health_check():
-    """Simple health check endpoint."""
-    return {"status": "healthy", "version": "2.0.0"}
