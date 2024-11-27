@@ -18,11 +18,6 @@ import {
   Pause,
 } from 'lucide-react';
 
-interface Deception {
-  indicators?: string[];
-  context?: string;
-  pattern?: string;
-}
 
 interface Thread {
   id: string;
