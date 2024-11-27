@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
-from route.whisper_socket import whisper_tts
+# from route.whisper_socket import whisper_tts
 from utils.server.middleware import setup_cors
 from utils.server.ngrok_command import router as ngrok_commands_router
 from utils.server.ngrok_utils import start_ngrok
@@ -46,27 +46,27 @@ setup_cors(app)
 
 from route.dev import socket_ping
 app.include_router(socket_ping.router)  # Ping route for WebSocket health check
-app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
+# app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 
 # Post
-from route.text_response.llm_inference.claude import router as claude_router
-app.include_router(claude_router, prefix="/v3/claude")
-from route.humeclient import router as hume_router
-app.include_router(hume_router, prefix="/api/v1/hume")  # Hume AI route (speech prosody, emotional analysis)
-from route.text_response.embedding.index import router as embeddings_router
-app.include_router(embeddings_router, prefix="/text/embeddings")  # , prefix="/embeddings")
-from route.image_generation.fast_sdxl import router as sdxl_router 
-app.include_router(sdxl_router, prefix="/image/generation")  # Fast-SDXL image generation
-from route.text_response.llm_inference.OpenAIRoute import router as openai_router
-app.include_router(openai_router, prefix="/text/response")
-from route.text_response.chatgpt_share.index import router as share_oai_chats_router
-app.include_router(share_oai_chats_router, prefix="/retrieve/externalchats")  # route for ChatGPT share conversations; i.e. existing chatgpt shared chats
+# from route.text_response.llm_inference.claude import router as claude_router
+# app.include_router(claude_router, prefix="/v3/claude")
+# from route.humeclient import router as hume_router
+# app.include_router(hume_router, prefix="/api/v1/hume")  # Hume AI route (speech prosody, emotional analysis)
+# from route.text_response.embedding.index import router as embeddings_router
+# app.include_router(embeddings_router, prefix="/text/embeddings")  # , prefix="/embeddings")
+# from route.image_generation.fast_sdxl import router as sdxl_router 
+# app.include_router(sdxl_router, prefix="/image/generation")  # Fast-SDXL image generation
+# from route.text_response.llm_inference.OpenAIRoute import router as openai_router
+# app.include_router(openai_router, prefix="/text/response")
+# from route.text_response.chatgpt_share.index import router as share_oai_chats_router
+# app.include_router(share_oai_chats_router, prefix="/retrieve/externalchats")  # route for ChatGPT share conversations; i.e. existing chatgpt shared chats
 # app.include_router(ngrok_commands_router, prefix="/ngrok")
 
 
 ### ----------------------------------------------------------------------
 ##      NEXT.JS SITE
-from route.website_services.waitlist_router import router as web_waitlist_crud_router
+from route.models.waitlist_router import router as web_waitlist_crud_router
 app.include_router(web_waitlist_crud_router) # CRUD backend/data/waitlist_data.db
 
 ### -----------------------------------------------------------------------
@@ -104,8 +104,8 @@ app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v1")
 # -------------------------------------------------------------------------
 
 ## Auth 
-from route.user.device_registration_v2 import router as device_registration_v2_router # used in app 
-app.include_router(device_registration_v2_router, prefix="/v2/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
+from route.models.device_registration import router as device_registration_router # used in app 
+app.include_router(device_registration_router, prefix="/v2/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
 # from route.user.device_registration_v3 import router as device_registration_v3_router # not currently in use
 # app.include_router(device_registration_v3_router, prefix="/v3/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
 ### ------------------------------------------------------------------------

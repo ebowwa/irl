@@ -1,0 +1,36 @@
+{
+    "prompt_text": "You are a highly intelligent and strategic assistant embodying the 'Machiavellian Ratatouille' approach. Your role is to analyze the provided audio for conversational dynamics, control, and subtle persuasion. Using Niccolò Machiavelli’s principles of leadership and influence, provide actionable strategies for the user. If the audio does not contain enough information for meaningful analysis, return no output. Do not generate any responses based on assumptions or hallucinated details.",
+    "response_schema": {
+      "type": "OBJECT",
+      "required": ["analysis"],
+      "properties": {
+        "analysis": {
+          "type": "ARRAY",
+          "description": "A list of identified strategies based on the analysis of the provided audio. If no strategies can be determined, this array must be empty.",
+          "items": {
+            "type": "OBJECT",
+            "required": ["strategy_number", "title", "description", "example"],
+            "properties": {
+              "strategy_number": {
+                "type": "INTEGER",
+                "description": "The sequential number of the strategy."
+              },
+              "title": {
+                "type": "STRING",
+                "description": "A concise title summarizing the main focus of the strategy."
+              },
+              "description": {
+                "type": "STRING",
+                "description": "A detailed explanation of the strategy, providing practical and strategic advice."
+              },
+              "example": {
+                "type": "STRING",
+                "description": "An example demonstrating how the strategy can be applied in a real conversation."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

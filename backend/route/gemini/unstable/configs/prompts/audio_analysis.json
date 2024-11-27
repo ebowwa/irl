@@ -1,0 +1,71 @@
+{
+  "prompt_text": "Assess the audio recording to determine if it contains significant speech on a 0.01-10 scale, where 10 indicates substantial and clear speech. This recording is part of a continuous 24/7 monitoring process, and even seemingly minor audio content may provide valuable insights into the user's behavior, such as self-talk, interactions with peers, or NPC catch-phrases. If the audio is deemed valuable, provide a concise, one-sentence description that fully encapsulates the content, and assign relevant tags to describe the context or content of the audio. Additionally, critically evaluate the audio for any indications that the user may be in a vulnerable or risky situation. If there is any evidence or suggestion that the user's safety, well-being, or financial security could be at risk, set the \"red_flags\" field accordingly. Remember to approach this task with the utmost rigor and caution, erring on the side of caution when assessing potential risks.",
+  "response_schema": {
+    "type": "OBJECT",
+    "required": [
+      "has_speech",
+      "speech_significance",
+      "tags",
+      "description",
+      "speech_segments",
+      "number_of_speakers",
+      "red_flags"
+    ],
+    "properties": {
+      "has_speech": {
+        "type": "BOOLEAN",
+        "description": "Indicates whether the audio contains any speech."
+      },
+      "speech_significance": {
+        "type": "NUMBER",
+        "description": "A score between 0.01 and 10 indicating the significance and clarity of speech in the audio."
+      },
+      "tags": {
+        "type": "ARRAY",
+        "description": "Relevant tags describing the context or content of the audio.",
+        "items": {
+          "type": "STRING",
+          "description": "A specific tag related to the audio content."
+        }
+      },
+      "description": {
+        "type": "STRING",
+        "description": "A concise, one-sentence description that fully encapsulates the content of the audio."
+      },
+      "speech_segments": {
+        "type": "ARRAY",
+        "description": "List of speech segments detected in the audio, each with timing and significance.",
+        "items": {
+          "type": "OBJECT",
+          "required": [
+            "start_time",
+            "end_time",
+            "significance_score"
+          ],
+          "properties": {
+            "start_time": {
+              "type": "NUMBER",
+              "description": "The start time of the speech segment in seconds."
+            },
+            "end_time": {
+              "type": "NUMBER",
+              "description": "The end time of the speech segment in seconds."
+            },
+            "significance_score": {
+              "type": "NUMBER",
+              "description": "A score indicating the significance of the speech segment."
+            }
+          }
+        }
+      },
+      "number_of_speakers": {
+        "type": "INTEGER",
+        "description": "The number of distinct speakers detected in the audio."
+      },
+      "red_flags": {
+        "type": "BOOLEAN",
+        "description": "Indicates whether any red flags (e.g., signs of distress, unusual behavior) were detected in the audio."
+      }
+    }
+  }
+}
