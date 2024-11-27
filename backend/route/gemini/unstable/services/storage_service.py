@@ -1,7 +1,7 @@
 # services/storage_service.py
 from typing import Any
 import json
-from database.user import database, processed_audio_files_table
+from database.core import database, processed_audio_files_table
 from datetime import datetime
 
 class StorageService:

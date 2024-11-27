@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from typing import Optional
 import logging
-from database.user import database, device_registration_table
+from database.core import database, device_registration_table
 
 logger = logging.getLogger(__name__)
 
