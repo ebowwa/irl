@@ -40,7 +40,7 @@ logging.basicConfig(
 load_dotenv()
 
 # Import the database module and tables
-from database.user import (
+from database.core import (
     database,
     device_registration_table,
     processed_audio_files_table
