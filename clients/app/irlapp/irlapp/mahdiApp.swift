@@ -8,13 +8,6 @@
 //
 // NOTE: this script was updated to include a google sign in which as of now does nothing, it works, the user can sign in with their google account but otherwise this feature has no other extension, moving forward location, usage metrics, drive storage can be applied through this gsignin
 
-//
-//  CaringMindApp.swift
-//  CaringMind
-//
-//  Created by Elijah Arbee on 11/12/24.
-//
-
 import GoogleSignIn
 import GoogleSignInSwift
 import SwiftUI
@@ -372,21 +365,3 @@ extension EnvironmentValues {
         set { self[ReSwiftStoreKey.self] = newValue }
     }
 }
-/**
- import ComposableArchitecture
- import SwiftUI
-
- @main
- struct SpeechRecognitionApp: App {
-   var body: some Scene {
-     WindowGroup {
-       SpeechRecognitionView(
-         store: Store(initialState: SpeechRecognition.State()) {
-           SpeechRecognition()._printChanges()
-         }
-       )
-     }
-   }
- }
-
- */

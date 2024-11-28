@@ -89,12 +89,12 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
     // MARK: - Private Properties
     private var cancellables = Set<AnyCancellable>()
     private let baseURL = Constants.baseURL
-    private let pollingInterval: TimeInterval = 30.0
-    private var pollingTimer: Timer?
-    private let maxLiveTranscriptions = 50
-    private let maxHistoricalTranscriptions = 100
+    private let pollingInterval: TimeInterval = 60.0 // **Centeralize this into the polling logic**
+    private var pollingTimer: Timer? // **Centeralize this into the polling logic**
+    private let maxLiveTranscriptions = 50 // What happens to the state/persistance of the transcriptions
+    private let maxHistoricalTranscriptions = 100 // What happens to the state/persistance of the transcriptions
     private var audioRecorder: AVAudioRecorder?
-    private var recordedFileURL: URL?
+    private var recordedFileURL: URL? // Maybe have this recorded into local sqlite with potential sync with supabase postgres db
 
     // MARK: - Initialization
     override init() {
@@ -167,7 +167,7 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 
-    // MARK: - Polling Methods
+    // MARK: - Polling Methods *Centeralize*
 
     private func startPolling() {
         pollingTimer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { [weak self] _ in
@@ -212,9 +212,9 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
         
         components.queryItems = [
             URLQueryItem(name: "google_account_id", value: googleAccountId),
-            URLQueryItem(name: "device_uuid", value: deviceUUID),
-            URLQueryItem(name: "prompt_type", value: promptType),
-            URLQueryItem(name: "batch", value: batch)
+            URLQueryItem(name: "device_uuid", value: deviceUUID), // maybe have this and the google account unified so that no need to distinguish between the two
+            URLQueryItem(name: "prompt_type", value: promptType), // this is like a system_instruction and will be updated to
+            URLQueryItem(name: "batch", value: batch) // TODO: IDK about batches but need this to work too send multiple audio files given the gemini api doesnnt have native persistance and is a Stateless API
         ]
 
         guard let finalURL = components.url else {
