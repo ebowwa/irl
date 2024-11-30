@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "/clients/caringmindWeb/package.json",
+      "src": "/clients/caringmind-web-next15/package.json",
       "use": "@vercel/next"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/clients/caringmindWeb/$1"
+      "dest": "/clients/caringmind-web-next15/$1"
     }
   ]
 }
