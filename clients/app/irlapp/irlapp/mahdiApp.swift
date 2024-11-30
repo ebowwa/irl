@@ -11,195 +11,87 @@
 import GoogleSignIn
 import GoogleSignInSwift
 import SwiftUI
-import ReSwift
 
-// MARK: - ReSwift State, Actions, and Reducers
+// MARK: - App State Management
 
 // Define the AppState which holds the entire state of the application
-struct AppState: StateType {
-    var user: UserState
-    var registration: RegistrationState
-    var onboarding: OnboardingState
-    var router: RouterState
-    var audio: AudioState
-}
-
-// Define the UserState
-struct UserState {
-    var isSignedIn: Bool
-    var userID: String?
-    var error: String?
-}
-
-// Define the RegistrationState
-struct RegistrationState {
-    var isRegistered: Bool
-    var deviceUUID: String?
-    var error: String?
-}
-
-// Define the OnboardingState
-struct OnboardingState {
-    var currentStep: OnboardingStep
-    var userName: String
-}
-
-// Define the RouterState
-struct RouterState {
-    var currentDestination: RouterDestination
-}
-
-// Define the AudioState
-struct AudioState {
-    var isRecording: Bool
-    var audioData: [AudioData]
-    // Add other audio-related properties as needed
-}
-
-// Define AudioData structure
-struct AudioData {
-    // Define properties for audio data
-    var id: UUID
-    var data: Data
-    var timestamp: Date
-}
-
-// Define Actions
-
-// User Actions
-struct SignInAction: Action {
-    let userID: String
-}
-
-struct SignOutAction: Action {}
-
-struct SignInFailureAction: Action {
-    let error: String
-}
-
-// Registration Actions
-struct RegistrationSuccessAction: Action {
-    let deviceUUID: String
-}
-
-struct RegistrationFailureAction: Action {
-    let error: String
-}
-
-// Onboarding Actions
-struct UpdateOnboardingStepAction: Action {
-    let step: OnboardingStep
-}
-
-struct UpdateUserNameAction: Action {
-    let userName: String
-}
-
-// Router Actions
-struct NavigateAction: Action {
-    let destination: RouterDestination
-}
-
-// Audio Actions
-struct StartRecordingAction: Action {}
-struct StopRecordingAction: Action {}
-struct AddAudioDataAction: Action {
-    let audioData: AudioData
-}
-
-// Define Reducers
-
-func appReducer(action: Action, state: AppState?) -> AppState {
-    return AppState(
-        user: userReducer(action: action, state: state?.user),
-        registration: registrationReducer(action: action, state: state?.registration),
-        onboarding: onboardingReducer(action: action, state: state?.onboarding),
-        router: routerReducer(action: action, state: state?.router),
-        audio: audioReducer(action: action, state: state?.audio)
-    )
-}
-
-func userReducer(action: Action, state: UserState?) -> UserState {
-    var state = state ?? UserState(isSignedIn: false, userID: nil, error: nil)
+class AppState: ObservableObject {
+    // User State
+    @Published var isSignedIn: Bool = false
+    @Published var userID: String? = nil
+    @Published var userError: String? = nil
     
-    switch action {
-    case let action as SignInAction:
-        state.isSignedIn = true
-        state.userID = action.userID
-        state.error = nil
-    case _ as SignOutAction:
-        state.isSignedIn = false
-        state.userID = nil
-    case let action as SignInFailureAction:
-        state.error = action.error
-    default:
-        break
+    // Registration State
+    @Published var isRegistered: Bool = false
+    @Published var deviceUUID: String? = nil
+    @Published var registrationError: String? = nil
+    
+    // Onboarding State
+    @Published var onboardingStep: OnboardingStep = .intro
+    @Published var userName: String = ""
+    
+    // Router State
+    @Published var currentDestination: RouterDestination = .splash
+    
+    // Audio State
+    @Published var isRecording: Bool = false
+    @Published var audioData: [AudioData] = []
+    
+    // Instance of UserRegistrationManager
+    // Use lazy to ensure 'self' is available when initializing
+    lazy private var userRegistrationManager = UserRegistrationManager(appState: self)
+    
+    // Handle Sign-In
+    func handleSignIn(user: GIDGoogleUser) {
+        self.isSignedIn = true
+        self.userID = user.userID
+        self.userError = nil
+        // Initiate registration
+        userRegistrationManager.initiateRegistration(for: user)
     }
     
-    return state
-}
-
-func registrationReducer(action: Action, state: RegistrationState?) -> RegistrationState {
-    var state = state ?? RegistrationState(isRegistered: false, deviceUUID: nil, error: nil)
-    
-    switch action {
-    case let action as RegistrationSuccessAction:
-        state.isRegistered = true
-        state.deviceUUID = action.deviceUUID
-        state.error = nil
-    case let action as RegistrationFailureAction:
-        state.isRegistered = false
-        state.error = action.error
-    default:
-        break
+    // Handle Sign-In Failure
+    func handleSignInFailure(error: String) {
+        self.userError = error
+        self.isSignedIn = false
     }
     
-    return state
-}
-
-func onboardingReducer(action: Action, state: OnboardingState?) -> OnboardingState {
-    var state = state ?? OnboardingState(currentStep: .intro, userName: "")
-    
-    switch action {
-    case let action as UpdateOnboardingStepAction:
-        state.currentStep = action.step
-    case let action as UpdateUserNameAction:
-        state.userName = action.userName
-    default:
-        break
+    // Registration Success
+    func handleRegistrationSuccess(deviceUUID: String) {
+        self.isRegistered = true
+        self.deviceUUID = deviceUUID
+        self.registrationError = nil
+        // Navigate to home upon successful registration
+        navigate(to: .home)
     }
     
-    return state
-}
-
-func routerReducer(action: Action, state: RouterState?) -> RouterState {
-    var state = state ?? RouterState(currentDestination: .splash)
-    
-    switch action {
-    case let action as NavigateAction:
-        state.currentDestination = action.destination
-    default:
-        break
+    // Registration Failure
+    func handleRegistrationFailure(error: String) {
+        self.isRegistered = false
+        self.registrationError = error
     }
     
-    return state
-}
-
-func audioReducer(action: Action, state: AudioState?) -> AudioState {
-    var state = state ?? AudioState(isRecording: false, audioData: [])
-    
-    switch action {
-    case _ as StartRecordingAction:
-        state.isRecording = true
-    case _ as StopRecordingAction:
-        state.isRecording = false
-    case let action as AddAudioDataAction:
-        state.audioData.append(action.audioData)
-    default:
-        break
+    // Navigation
+    func navigate(to destination: RouterDestination) {
+        withAnimation {
+            self.currentDestination = destination
+        }
     }
     
-    return state
+    // Audio Controls
+    func startRecording() {
+        self.isRecording = true
+        // Add additional logic to start recording
+    }
+    
+    func stopRecording() {
+        self.isRecording = false
+        // Add additional logic to stop recording
+    }
+    
+    func addAudioData(_ data: AudioData) {
+        self.audioData.append(data)
+    }
 }
 
 // Define Onboarding Steps
@@ -209,54 +101,42 @@ enum OnboardingStep {
     case completion
 }
 
-// Initialize the ReSwift store
-let mainStore = Store<AppState>(
-    reducer: appReducer,
-    state: AppState(
-        user: UserState(isSignedIn: false, userID: nil, error: nil),
-        registration: RegistrationState(isRegistered: false, deviceUUID: nil, error: nil),
-        onboarding: OnboardingState(currentStep: .intro, userName: ""),
-        router: RouterState(currentDestination: .splash),
-        audio: AudioState(isRecording: false, audioData: [])
-    )
-)
+// MARK: - AudioData Structure
+
+struct AudioData: Identifiable {
+    var id: UUID
+    var data: Data
+    var timestamp: Date
+}
 
 // MARK: - Main App Structure
 
 @main
 struct mahdiApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    @StateObject private var router = AppRouterViewModel()
+    @StateObject private var appState = AppState()
     @StateObject private var onboardingViewModel = OnboardingViewModel()
-
-    // Instance of UserRegistrationManager
-    private let userRegistrationManager = UserRegistrationManager()
-
+    @StateObject private var router = AppRouterViewModel()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(appState)
                 .environmentObject(router)
                 .environmentObject(onboardingViewModel)
-                // Provide the ReSwift store to the environment
-                .environment(\.store, mainStore)
                 .onAppear {
                     Constants.initializeDefaults()
                     GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                         if let error = error {
                             print("Restore sign-in failed with error: \(error.localizedDescription)")
-                            // Dispatch SignInFailureAction
-                            mainStore.dispatch(SignInFailureAction(error: error.localizedDescription))
+                            // Handle sign-in failure
+                            appState.handleSignInFailure(error: error.localizedDescription)
                             return
                         }
                         if let user = user {
                             print("Successfully restored previous sign-in for user ID: \(user.userID ?? "nil")")
-                            // Dispatch SignInAction
-                            if let userID = user.userID {
-                                mainStore.dispatch(SignInAction(userID: userID))
-                            }
-                            // Use UserRegistrationManager to handle registration
-                            userRegistrationManager.initiateRegistration(for: user)
+                            // Handle successful sign-in
+                            appState.handleSignIn(user: user)
                         } else {
                             print("No previous sign-in found.")
                         }
@@ -279,33 +159,21 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 // MARK: - AppRouterViewModel for navigation management
 
-class AppRouterViewModel: ObservableObject, StoreSubscriber {
+class AppRouterViewModel: ObservableObject {
     @Published var currentDestination: RouterDestination = .splash
-
-    init() {
-        mainStore.subscribe(self) { subscription in
-            subscription.select { state in state.router }
-        }
-    }
-
-    func newState(state: RouterState) {
-        DispatchQueue.main.async {
-            withAnimation {
-                self.currentDestination = state.currentDestination
-            }
-        }
-    }
-
+    
     func navigate(to destination: RouterDestination) {
-        mainStore.dispatch(NavigateAction(destination: destination))
+        withAnimation {
+            self.currentDestination = destination
+        }
     }
-
+    
     func navigateToOnboarding() {
-        mainStore.dispatch(NavigateAction(destination: .onboarding))
+        self.navigate(to: .onboarding)
     }
-
+    
     func navigateToHome() {
-        mainStore.dispatch(NavigateAction(destination: .home))
+        self.navigate(to: .home)
     }
 }
 
@@ -324,9 +192,9 @@ enum RouterDestination: Identifiable {
 // MARK: - ContentView
 
 struct ContentView: View {
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var router: AppRouterViewModel
-    @StateObject private var onboardingViewModel = OnboardingViewModel()
-    @Environment(\.store) var store: Store<AppState>
+    @EnvironmentObject var onboardingViewModel: OnboardingViewModel
 
     var body: some View {
         ZStack {
@@ -339,29 +207,19 @@ struct ContentView: View {
                     step: $onboardingViewModel.currentStep,
                     userName: $onboardingViewModel.userName
                 )
-                // Additional comments from original code
                 .transition(.slide)
             case .home:
                 MainContentView()
             }
         }
         .animation(.easeInOut, value: router.currentDestination)
-        // Subscribe to the store for state changes if needed
         .onAppear {
-            // Example: You can dispatch actions here if needed
+            // Example: You can perform additional setup here if needed
         }
     }
 }
 
-// MARK: - Environment Key for ReSwift Store
-
-struct ReSwiftStoreKey: EnvironmentKey {
-    static let defaultValue: Store<AppState> = mainStore
-}
-
-extension EnvironmentValues {
-    var store: Store<AppState> {
-        get { self[ReSwiftStoreKey.self] }
-        set { self[ReSwiftStoreKey.self] = newValue }
-    }
-}
+/** currently :
+        - Splash page (two options) : login -> MainContentView
+        - Onboarding Tutorial: Name Input, TruthLieGame -> SignIn/Up -> MainContentView
+*/

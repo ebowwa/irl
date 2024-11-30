@@ -2,37 +2,32 @@
 //  UserRegistrationManager.swift
 //  CaringMind
 //
+//  Updated to remove ReSwift and use SwiftUI's ObservableObject for state management.
 //
 
 import Foundation
 import GoogleSignIn
-import ReSwift
 
 // MARK: - UserRegistrationManager
-
 class UserRegistrationManager {
-    // Dependencies
     private let checkRegistrationHandler: CheckDeviceServerRegistration
     private let registerDeviceHandler: RegisterDeviceToServer
-    private let store: Store<AppState>
+    private let appState: AppState
     
-    // Initializer with dependency injection
     init(
         checkRegistrationHandler: CheckDeviceServerRegistration = CheckDeviceServerRegistration(),
         registerDeviceHandler: RegisterDeviceToServer = RegisterDeviceToServer(),
-        store: Store<AppState> = mainStore
+        appState: AppState
     ) {
         self.checkRegistrationHandler = checkRegistrationHandler
         self.registerDeviceHandler = registerDeviceHandler
-        self.store = store
+        self.appState = appState
     }
     
-    /// Initiates the user registration process.
-    /// - Parameter user: The authenticated Google user.
     func initiateRegistration(for user: GIDGoogleUser) {
         guard let googleAccountID = user.userID else {
             print("UserRegistrationManager: user.userID is nil.")
-            store.dispatch(RegistrationFailureAction(error: "Invalid Google Account ID."))
+            appState.handleRegistrationFailure(error: "Invalid Google Account ID.")
             return
         }
         
@@ -41,7 +36,6 @@ class UserRegistrationManager {
         // Save Google Account ID to Keychain
         KeychainHelper.standard.saveGoogleAccountID(googleAccountID)
         
-        // Perform an asynchronous check with the backend server
         Task {
             do {
                 let checkResponse = try await checkRegistrationHandler.isUserRegistered(
@@ -51,28 +45,28 @@ class UserRegistrationManager {
                 
                 if checkResponse.is_registered, checkResponse.device != nil {
                     print("UserRegistrationManager: User is already registered on server.")
-                    store.dispatch(RegistrationSuccessAction(deviceUUID: deviceUUID))
-                    store.dispatch(NavigateAction(destination: .home))
+                    await MainActor.run {
+                        appState.handleRegistrationSuccess(deviceUUID: deviceUUID)
+                    }
                 } else {
                     print("UserRegistrationManager: User not registered on server. Proceeding to register.")
                     try await registerDevice(user: user, googleAccountID: googleAccountID, deviceUUID: deviceUUID)
                 }
             } catch {
                 print("UserRegistrationManager: Error checking registration status - \(error.localizedDescription)")
-                store.dispatch(RegistrationFailureAction(error: error.localizedDescription))
-                RegistrationStatus.setDeviceRegistered(false)
+                await MainActor.run {
+                    appState.handleRegistrationFailure(error: error.localizedDescription)
+                }
             }
         }
     }
     
-    /// Registers the device with the server.
-    /// - Parameters:
-    ///   - user: The authenticated Google user.
-    ///   - googleAccountID: The Google account ID.
-    ///   - deviceUUID: The device UUID.
     private func registerDevice(user: GIDGoogleUser, googleAccountID: String, deviceUUID: String) async throws {
         guard let idToken = user.idToken?.tokenString else {
             print("UserRegistrationManager: idToken is nil.")
+            await MainActor.run {
+                appState.handleRegistrationFailure(error: "ID Token is missing.")
+            }
             throw RegistrationError.badRequest("ID Token is missing.")
         }
         
@@ -86,12 +80,14 @@ class UserRegistrationManager {
                 accessToken: accessToken
             )
             print("UserRegistrationManager: Device registered successfully.")
-            store.dispatch(RegistrationSuccessAction(deviceUUID: deviceUUID))
-            store.dispatch(NavigateAction(destination: .home))
+            await MainActor.run {
+                appState.handleRegistrationSuccess(deviceUUID: deviceUUID)
+            }
         } catch {
             print("UserRegistrationManager: Registration error - \(error.localizedDescription)")
-            store.dispatch(RegistrationFailureAction(error: error.localizedDescription))
-            RegistrationStatus.setDeviceRegistered(false)
+            await MainActor.run {
+                appState.handleRegistrationFailure(error: error.localizedDescription)
+            }
             throw error
         }
     }
