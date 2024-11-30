@@ -1,23 +1,15 @@
 {
   "version": 2,
-  "github": {
-    "enabled": true,
-    "silent": true
-  },
   "builds": [
     {
-      "src": "clients/caringmind-web-next15/package.json",
-      "use": "@vercel/next",
-      "config": {
-        "buildCommand": "npm run build",
-        "outputDirectory": ".next"
-      }
+      "src": "/clients/caringmind-web-next15/package.json",
+      "use": "@vercel/next"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/clients/caringmind-web-next15/$1"
+      "src": "/(.*)",
+      "dest": "/clients/caringmind-web-next15/$1"
     }
   ]
 }
