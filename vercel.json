@@ -1,15 +1,18 @@
 {
   "version": 2,
+  "buildCommand": "cd clients/caringmind-web-next15 && npm install && npm run build",
+  "outputDirectory": "clients/caringmind-web-next15/.next",
+  "installCommand": "cd clients/caringmind-web-next15 && npm install",
   "builds": [
     {
-      "src": "/clients/caringmind-web-next15/package.json",
+      "src": "clients/caringmind-web-next15/package.json",
       "use": "@vercel/next"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/clients/caringmind-web-next15/$1"
+      "dest": "clients/caringmind-web-next15/$1"
     }
   ]
 }
