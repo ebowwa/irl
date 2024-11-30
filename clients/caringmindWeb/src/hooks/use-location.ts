@@ -9,18 +9,38 @@ export function useLocation() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+
     async function fetchLocation() {
       try {
         const data = await locationService.getUserLocation();
-        setLocation(data);
+        if (mounted) {
+          setLocation(data);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch location');
+        if (mounted) {
+          console.error('Location fetch error:', err);
+          setError(err instanceof Error ? err.message : 'Failed to fetch location');
+          // Provide a fallback location
+          setLocation({
+            city: 'Global',
+            region: '',
+            country: '',
+            countryCode: 'GLOBAL'
+          });
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchLocation();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return { location, isLoading, error };
