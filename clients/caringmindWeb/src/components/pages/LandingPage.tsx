@@ -1,10 +1,10 @@
 "use client";
 
-import { HeroSection } from "@/components/sections/HeroSection";
-import { SocialFeatures } from "@/components/sections/SocialFeatures";
-import { TikTokProof } from "@/components/sections/TikTokProof";
-import { WearablesShop } from "@/components/sections/WearablesShop";
-import { Features } from "@/components/sections/Features";
+import { HeroSection } from "@/components/sections/landing/HeroSection";
+import { SocialFeatures } from "@/components/sections/landing/SocialFeatures";
+import { TikTokProof } from "@/components/sections/landing/TikTokProof";
+import { WearablesShop } from "@/components/sections/landing/WearablesShop";
+import { Features } from "@/components/sections/landing/Features";
 import { Footer } from "@/components/layout/Footer";
 
 export function LandingPage() {

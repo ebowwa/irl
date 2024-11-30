@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Shield, TrendingUp } from "lucide-react";
-import { WaitlistDialog } from "@/components/waitlist/WaitlistDialog";
+import { WaitlistDialog } from "@/components/sections/waitlist/WaitlistDialog";
 import { useState } from "react";
 import { useLocation } from "@/hooks/use-location";
 
@@ -55,10 +55,14 @@ export function HeroSection() {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto px-4">
-            CaringMind stands by your side, nurturing your digital wellbeing, supporting your growth, and helping you navigate life's complexities with compassion.
+            Caringmind stands by your side, nurturing your digital wellbeing, supporting your growth, and helping you navigate life's complexities with compassion.
           </p>
 
-          {/* Call-to-Action Buttons */}
+          {/* Call-to-Action Buttons 
+          TODO: The `See How it works` should lead to the dialog demo view in which we show some of the value
+          - i.e. the truth false game & negotiation
+          - maybe have a web app to the negotation to promote the service overall and hope for app conversions
+          */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             <button
               onClick={() => setShowWaitlist(true)}
