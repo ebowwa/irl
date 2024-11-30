@@ -1,15 +1,23 @@
 {
   "version": 2,
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "buildCommand": "cd clients/caringmind-web-next15 && npm install && npm run build",
+  "installCommand": "cd clients/caringmind-web-next15 && npm install",
+  "devCommand": "cd clients/caringmind-web-next15 && npm run dev",
   "builds": [
     {
-      "src": "/clients/caringmind-web-next15/package.json",
+      "src": "clients/caringmind-web-next15/package.json",
       "use": "@vercel/next"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/clients/caringmind-web-next15/$1"
+      "source": "/:path*",
+      "destination": "/clients/caringmind-web-next15/:path*"
     }
-  ]
+  ],
+  "env": {
+    "NEXT_PUBLIC_BASE_PATH": "/clients/caringmind-web-next15"
+  }
 }
