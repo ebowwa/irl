@@ -8,7 +8,7 @@ import Foundation
 
 struct Constants {
     // Default base domain value for fallback
-    private static let defaultBaseDomain = "8bdb-2a09-bac5-661b-1232-00-1d0-c6.ngrok-free.app"
+    private static let defaultBaseDomain = "9419-2a01-4ff-f0-b1f6-00-1.ngrok-free.app"
     
     // Environment-specific settings
     static let baseDomain: String = {

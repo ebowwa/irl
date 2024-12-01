@@ -89,7 +89,7 @@ class AudioService: NSObject, ObservableObject, AVAudioRecorderDelegate {
     // MARK: - Private Properties
     private var cancellables = Set<AnyCancellable>()
     private let baseURL = Constants.baseURL
-    private let pollingInterval: TimeInterval = 60.0 // **Centeralize this into the polling logic**
+    private let pollingInterval: TimeInterval = 10.0 // **Centeralize this into the polling logic**
     private var pollingTimer: Timer? // **Centeralize this into the polling logic**
     private let maxLiveTranscriptions = 50 // What happens to the state/persistance of the transcriptions
     private let maxHistoricalTranscriptions = 100 // What happens to the state/persistance of the transcriptions
