@@ -54,7 +54,7 @@ export function WaitlistDialog({ open, onOpenChange }: WaitlistDialogProps) {
   async function onSubmit(data: WaitlistFormData) {
     setIsSubmitting(true);
     try {
-      const response = await fetch("https://8bdb-2a09-bac5-661b-1232-00-1d0-c6.ngrok-free.app/waitlist/", {
+      const response = await fetch("https://9419-2a01-4ff-f0-b1f6-00-1.ngrok-free.app/waitlist/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
