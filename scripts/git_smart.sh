@@ -2,175 +2,180 @@
 
 # Function to display steps
 echo_step() {
-    echo "🔄 $1"
+    echo " $1"
 }
 
-# Function to get user choice
-get_user_choice() {
-    local prompt=$1
-    local max=$2
-    while true; do
-        read -p "$prompt" choice
-        if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$max" ]; then
-            echo "$choice"
-            return
-        fi
-        echo "Please enter a number between 1 and $max"
-    done
+# Function to detect branch type
+detect_branch_type() {
+    local branch=$(git rev-parse --abbrev-ref HEAD)
+    if [[ $branch == "feature/"* ]]; then
+        echo "feature"
+    elif [[ $branch == "bugfix/"* ]]; then
+        echo "bugfix"
+    elif [[ $branch == "hotfix/"* ]]; then
+        echo "hotfix"
+    elif [[ $branch == "release/"* ]]; then
+        echo "release"
+    else
+        echo "main"
+    fi
 }
 
-# Function to analyze changes and generate commit message
+# Function to auto-create branch based on changes
+auto_create_branch() {
+    local changes=$(git status --porcelain)
+    local branch_name=""
+    
+    # Check if we're already on a feature/bugfix branch
+    if [[ $(git rev-parse --abbrev-ref HEAD) != "main" ]]; then
+        return
+    fi
+    
+    # Analyze changes to determine branch type
+    if echo "$changes" | grep -q "test_"; then
+        branch_name="feature/add-tests-$(date +%Y%m%d)"
+    elif echo "$changes" | grep -q "fix\|bug\|error"; then
+        branch_name="bugfix/fix-$(date +%Y%m%d)"
+    elif echo "$changes" | grep -q "requirements.txt\|package.json"; then
+        branch_name="feature/update-deps-$(date +%Y%m%d)"
+    elif echo "$changes" | grep -q "\.md$"; then
+        branch_name="feature/update-docs-$(date +%Y%m%d)"
+    fi
+    
+    if [ ! -z "$branch_name" ]; then
+        echo_step "Creating branch $branch_name based on changes..."
+        git checkout -b "$branch_name"
+    fi
+}
+
+# Enhanced change analysis with AI-like categorization
 analyze_changes() {
     local changes=""
+    local impact_level="minor"
+    local is_breaking_change=false
+    local files_changed=$(git diff --cached --name-only)
     
-    # Check for package changes
+    # Detect breaking changes
+    if git diff --cached | grep -q "^- \|^+.*BREAKING"; then
+        is_breaking_change=true
+        impact_level="major"
+    fi
+    
+    # Smart categorization based on patterns
     if git diff --cached | grep -q "requirements.txt\|package.json"; then
-        changes+="📦 Updated dependencies. "
+        changes+=" Dependencies: "
+        local deps=$(git diff --cached requirements.txt | grep "^+" | cut -d= -f1 | tr '\n' ',' | sed 's/,$//')
+        [ ! -z "$deps" ] && changes+="Updated $deps. "
     fi
     
-    # Check for configuration changes
     if git diff --cached | grep -q "\.env\|\.config\|\.yml\|\.json"; then
-        changes+="⚙️ Modified configuration. "
+        changes+=" Config: "
+        local configs=$(git diff --cached --name-only | grep "\.env\|\.config\|\.yml\|\.json" | tr '\n' ',' | sed 's/,$//')
+        [ ! -z "$configs" ] && changes+="Modified $configs. "
     fi
     
-    # Check for documentation changes
-    if git diff --cached | grep -q "\.md\|docs/"; then
-        changes+="📚 Updated documentation. "
+    # Auto-detect test coverage changes
+    local test_files=$(echo "$files_changed" | grep "_test\|test_\|spec")
+    if [ ! -z "$test_files" ]; then
+        changes+=" Tests: "
+        local test_count=$(echo "$test_files" | wc -l)
+        changes+="Modified $test_count test files. "
     fi
     
-    # Check for test changes
-    if git diff --cached | grep -q "test_\|spec\|_test"; then
-        changes+="🧪 Modified tests. "
+    # Smart backend change detection
+    if echo "$files_changed" | grep -q "\.py$\|\.js$\|\.go$"; then
+        changes+=" Code: "
+        local backend_files=$(echo "$files_changed" | grep "\.py$\|\.js$\|\.go$" | tr '\n' ',' | sed 's/,$//')
+        [ ! -z "$backend_files" ] && changes+="Modified $backend_files. "
     fi
     
-    # Check for specific directory changes
-    if git diff --cached | grep -q "^diff.*backend/"; then
-        changes+="🔧 Backend changes: "
-        # Get summary of Python file changes
-        local backend_changes=$(git diff --cached --stat backend/ | grep "\.py" | awk '{print $1}' | xargs -n1 basename 2>/dev/null)
-        if [ ! -z "$backend_changes" ]; then
-            changes+="Modified $(echo $backend_changes | tr '\n' ',' | sed 's/,/, /g'). "
-        fi
+    # Auto-detect security improvements
+    if git diff --cached | grep -q "security\|auth\|encrypt\|password\|token"; then
+        changes+=" Security: Enhanced security measures. "
+        impact_level="major"
     fi
     
-    if git diff --cached | grep -q "^diff.*clients/caringmindWeb/"; then
-        changes+="🌐 Web app changes. "
-    fi
-    
-    if git diff --cached | grep -q "^diff.*clients/irlapp/"; then
-        changes+="📱 iOS app changes. "
-    fi
-    
-    # If no specific changes detected, analyze diff stats
-    if [ -z "$changes" ]; then
-        local files_changed=$(git diff --cached --stat | tail -n1)
-        changes+="🔄 General updates: $files_changed"
+    # Add impact level prefix
+    if [ "$is_breaking_change" = true ]; then
+        changes=" BREAKING CHANGE! $changes"
+    elif [ "$impact_level" = "major" ]; then
+        changes=" Major: $changes"
     fi
     
     echo "$changes"
 }
 
-# Function to ensure we're in a git repository
-check_git_repo() {
-    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-        echo "❌ Error: Not a git repository"
-        exit 1
-    fi
-}
-
-# Function to handle unstaged changes
-handle_unstaged_changes() {
-    if [ -n "$(git status --porcelain)" ]; then
-        echo_step "Unstaged changes detected. Would you like to:"
-        echo "  1) Stage and commit changes"
-        echo "  2) Stash changes"
-        echo "  3) View changes"
-        echo "  4) Cancel"
-        
-        choice=$(get_user_choice "Choose (1-4): " 4)
-        
-        case $choice in
-            1)
-                echo_step "Staging changes..."
-                git add .
-                commit_changes
-                ;;
-            2)
-                echo_step "Stashing changes..."
-                git stash
-                ;;
-            3)
-                git status
-                git diff
-                handle_unstaged_changes
-                ;;
-            4)
-                echo "Operation cancelled"
-                exit 0
-                ;;
-        esac
-    fi
-}
-
-# Function to commit changes
-commit_changes() {
-    # Generate commit message
-    echo_step "Analyzing changes..."
-    commit_msg=$(analyze_changes)
+# Function to auto-commit with smart messages
+auto_commit() {
+    local commit_msg=$(analyze_changes)
+    local branch_type=$(detect_branch_type)
     
-    echo "📝 Commit message: $commit_msg"
-    echo_step "Would you like to:"
-    echo "  1) Use this commit message"
-    echo "  2) Modify the message"
-    echo "  3) Cancel commit"
-    choice=$(get_user_choice "Choose (1-3): " 3)
-    
-    case $choice in
-        1)
-            git commit -m "$commit_msg"
+    # Add conventional commit prefix based on branch type
+    case $branch_type in
+        "feature")
+            commit_msg="feat: $commit_msg"
             ;;
-        2)
-            read -p "Enter your commit message: " custom_msg
-            git commit -m "$custom_msg"
+        "bugfix")
+            commit_msg="fix: $commit_msg"
             ;;
-        3)
-            echo "Commit cancelled"
-            exit 0
+        "hotfix")
+            commit_msg="hotfix: $commit_msg"
+            ;;
+        "release")
+            commit_msg="release: $commit_msg"
             ;;
     esac
     
-    echo_step "Pushing changes..."
-    if ! git push; then
-        echo "❌ Error: Failed to push changes. Please pull latest changes and try again."
+    echo_step "Auto-committing changes..."
+    git commit -m "$commit_msg"
+}
+
+# Function to ensure we're in a git repository
+check_git_repo() {
+    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+        echo " Error: Not a git repository"
         exit 1
     fi
-    
-    echo "✨ Changes successfully pushed!"
 }
 
 # Main execution
 check_git_repo
 
-# Handle any unstaged changes first
-handle_unstaged_changes
+# Auto-create feature branch if needed
+auto_create_branch
 
 # Fetch and pull changes
 echo_step "Fetching latest changes..."
 git fetch --all
 
 echo_step "Pulling latest changes..."
-if ! git pull; then
-    echo "❌ Error: Failed to pull changes. Please resolve conflicts manually."
-    exit 1
+if ! git pull origin $(git rev-parse --abbrev-ref HEAD); then
+    if [ -n "$(git status --porcelain)" ]; then
+        echo_step "Stashing changes to pull..."
+        git stash
+        git pull origin $(git rev-parse --abbrev-ref HEAD)
+        git stash pop
+    else
+        echo " Error: Failed to pull changes. Please resolve conflicts manually."
+        exit 1
+    fi
 fi
 
-# Stage changes if there are any
+# Stage and commit changes if any
 if [ -n "$(git status --porcelain)" ]; then
     echo_step "Staging changes..."
     git add .
     
-    # Commit changes
-    commit_changes
+    # Auto commit
+    auto_commit
+    
+    echo_step "Pushing changes..."
+    if ! git push origin $(git rev-parse --abbrev-ref HEAD); then
+        echo " Error: Failed to push changes. Please pull latest changes and try again."
+        exit 1
+    fi
+    
+    echo " Changes successfully pushed!"
 else
-    echo "✨ Nothing to commit. Working tree clean."
+    echo " Nothing to commit. Working tree clean."
 fi
