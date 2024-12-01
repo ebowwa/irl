@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Shield } from "lucide-react";
+import { getWaitlistEndpoint } from "@/lib/siteconfigs";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -54,7 +55,7 @@ export function WaitlistDialog({ open, onOpenChange }: WaitlistDialogProps) {
   async function onSubmit(data: WaitlistFormData) {
     setIsSubmitting(true);
     try {
-      const response = await fetch("https://9419-2a01-4ff-f0-b1f6-00-1.ngrok-free.app/waitlist/", {
+      const response = await fetch(getWaitlistEndpoint(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
