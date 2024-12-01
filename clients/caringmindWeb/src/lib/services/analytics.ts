@@ -196,7 +196,8 @@ class AnalyticsService {
     await this.trackPageView();
   }
 
-  private async trackPageView(location?: { city?: string; country?: string }) {
+  // Public method to track page views
+  public async trackPageView(locationData?: { city?: string; country?: string }) {
     if (typeof window === 'undefined') return;
 
     const currentPage = window.location.pathname;
@@ -212,7 +213,7 @@ class AnalyticsService {
       user_agent: navigator.userAgent,
       screen_resolution: `${window.screen.width}x${window.screen.height}`,
       device_type: this.getDeviceType(),
-      location,
+      location: locationData,
     };
 
     await this.sendAnalytics(visitorData);

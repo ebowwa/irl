@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Shield, TrendingUp } from "lucide-react";
-import { WaitlistDialog } from "@/components/sections/waitlist/WaitlistDialog";
-import { DemoModal } from "@/components/sections/DemoModal";
+import { WaitlistDialog } from "@/components/sections/landing/waitlist/WaitlistDialog";
+import { DemoModal } from "@/components/sections/landing/DemoModal";
 import { useState } from "react";
 import { useLocation } from "@/hooks/use-location";
 
