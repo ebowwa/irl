@@ -12,7 +12,7 @@ class GeminiService:
     def __init__(self, schema_manager: SchemaManager):
         self.schema_manager = schema_manager
 
-    def process_audio(
+    async def process_audio(
         self,
         uploaded_files: Union[List[object], object],
         prompt_type: str = "default",
@@ -24,7 +24,7 @@ class GeminiService:
         max_output_tokens: int = 8192
     ) -> Dict:
         try:
-            config = self.schema_manager.get_config(prompt_type)
+            config = await self.schema_manager.get_config(prompt_type)
             if not config:
                 raise HTTPException(status_code=400, detail=f"Invalid prompt_type: {prompt_type}")
 

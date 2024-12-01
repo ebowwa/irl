@@ -1,7 +1,7 @@
 # api/routes.py
-from fastapi import APIRouter, File, UploadFile, Query, HTTPException, Depends
+from fastapi import APIRouter, File, UploadFile, Query, HTTPException, Depends, Body, Path
 from fastapi.responses import JSONResponse
-from typing import List, Optional
+from typing import List, Optional, Dict
 import asyncio
 import logging
 from ..services.auth_service import AuthService
@@ -146,6 +146,54 @@ async def process_audio(
             status_code=500,
             detail=f"Internal Server Error: {str(e)}"
         )
+
+# Prompt Schema CRUD endpoints
+@router.post("/prompt-schemas/", response_model=Dict)
+async def create_prompt_schema(
+    prompt_type: str = Query(..., description="Unique identifier for the prompt type"),
+    prompt_text: str = Query(..., description="The prompt text to use"),
+    response_schema: Dict = Body(..., description="JSON schema for the expected response")
+):
+    """Create a new prompt schema configuration."""
+    try:
+        return await schema_manager.create_config(prompt_type, prompt_text, response_schema)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/prompt-schemas/{prompt_type}", response_model=Dict)
+async def get_prompt_schema(
+    prompt_type: str = Path(..., description="Prompt type to retrieve")
+):
+    """Get a prompt schema configuration by type."""
+    config = await schema_manager.get_config(prompt_type)
+    if not config:
+        raise HTTPException(status_code=404, detail=f"Prompt schema '{prompt_type}' not found")
+    return config
+
+@router.put("/prompt-schemas/{prompt_type}", response_model=Dict)
+async def update_prompt_schema(
+    prompt_type: str = Path(..., description="Prompt type to update"),
+    prompt_text: Optional[str] = Body(None, description="New prompt text"),
+    response_schema: Optional[Dict] = Body(None, description="New response schema")
+):
+    """Update an existing prompt schema configuration."""
+    try:
+        config = await schema_manager.update_config(prompt_type, prompt_text, response_schema)
+        if not config:
+            raise HTTPException(status_code=404, detail=f"Prompt schema '{prompt_type}' not found")
+        return config
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/prompt-schemas/{prompt_type}")
+async def delete_prompt_schema(
+    prompt_type: str = Path(..., description="Prompt type to delete")
+):
+    """Delete a prompt schema configuration."""
+    success = await schema_manager.delete_config(prompt_type)
+    if not success:
+        raise HTTPException(status_code=404, detail=f"Prompt schema '{prompt_type}' not found")
+    return {"message": f"Prompt schema '{prompt_type}' deleted successfully"}
 
 @router.get("/health")
 async def health_check():
