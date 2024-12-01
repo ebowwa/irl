@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form, status, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from dotenv import load_dotenv
 import httpx
 import databases
@@ -107,15 +107,9 @@ class MediaUploadEntry(BaseModel):
     mime_type: str
     created_at: datetime
 
-    class Config:
-        orm_mode = True
-
 class MediaUploadResponse(BaseModel):
     media_upload: MediaUploadEntry
     generated_content: str
-
-    class Config:
-        orm_mode = True
 
 # === Helper Functions ===
 

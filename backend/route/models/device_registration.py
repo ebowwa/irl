@@ -46,52 +46,65 @@ router = APIRouter()
 # === Pydantic Models ===
 
 class DeviceRegistrationEntry(BaseModel):
+    model_config = {
+        "from_attributes": True
+    }
+    
     id: int
     google_account_id: str
     device_uuid: str
-    id_token: str
-    access_token: str
-    # referral_source: Optional[str]
+    device_name: Optional[str]
+    os_version: Optional[str]
+    app_version: Optional[str]
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True  # For Pydantic v2
-        # orm_mode = True  # Uncomment if using Pydantic v1
-
 class DeviceRegistrationCreate(BaseModel):
+    model_config = {
+        "from_attributes": True,
+        "json_schema_extra": {
+            "example": {
+                "google_account_id": "1234567890",
+                "device_uuid": "550e8400-e29b-41d4-a716-446655440000",
+                "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+            }
+        }
+    }
+    
     google_account_id: str = Field(..., example="1234567890")
     device_uuid: str = Field(..., example="550e8400-e29b-41d4-a716-446655440000")
     id_token: str = Field(..., example="eyJhbGciOiJIUzI1NiIsInR5cCI6...")
-    access_token: str = Field(..., example="ya29.a0AfH6SMC...")
-    # referral_source: Optional[str] = Field(None, example="Campaign XYZ")
+    device_name: Optional[str] = None
+    os_version: Optional[str] = None
+    app_version: Optional[str] = None
 
 class DeviceRegistrationUpdate(BaseModel):
+    model_config = {
+        "from_attributes": True
+    }
+    
     google_account_id: Optional[str] = None
     device_uuid: Optional[str] = None
     id_token: Optional[str] = None
-    access_token: Optional[str] = None
-    # referral_source: Optional[str] = None
+    device_name: Optional[str] = None
+    os_version: Optional[str] = None
+    app_version: Optional[str] = None
 
 class DeviceRegistrationCheck(BaseModel):
+    model_config = {
+        "from_attributes": True
+    }
+    
     google_account_id: Optional[str] = None
     device_uuid: Optional[str] = None
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "google_account_id": "1234567890",
-                "device_uuid": "550e8400-e29b-41d4-a716-446655440000"
-            }
-        }
-
 class DeviceRegistrationCheckResponse(BaseModel):
+    model_config = {
+        "from_attributes": True
+    }
+    
     is_registered: bool
     device: Optional[DeviceRegistrationEntry]
-
-    class Config:
-        from_attributes = True  # For Pydantic v2
-        # orm_mode = True  # Uncomment if using Pydantic v1
 
 # === Telegram Notifier Initialization ===
 
@@ -129,8 +142,9 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
         # Prepare the update data
         update_data = {
             "id_token": entry.id_token,
-            "access_token": entry.access_token,
-            # "referral_source": entry.referral_source,
+            "device_name": entry.device_name,
+            "os_version": entry.os_version,
+            "app_version": entry.app_version,
             "updated_at": datetime.utcnow()
         }
 
@@ -158,15 +172,16 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
         updated_entry = await database.fetch_one(retrieve_query)
         logger.info(f"Updated device registration retrieved: {updated_entry}")
 
-        return DeviceRegistrationEntry.model_validate(updated_entry)
+        return DeviceRegistrationEntry(**updated_entry)
     else:
         # Insert the new device registration
         query = device_registration_table.insert().values(
             google_account_id=entry.google_account_id,
             device_uuid=entry.device_uuid,
             id_token=entry.id_token,
-            access_token=entry.access_token,
-            # referral_source=entry.referral_source,
+            device_name=entry.device_name,
+            os_version=entry.os_version,
+            app_version=entry.app_version,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         )
@@ -205,7 +220,7 @@ async def register_device(entry: DeviceRegistrationCreate, request: Request):
                 logger.error(f"Failed to send Telegram notification: {e}")
                 # Optionally, decide whether to fail the request or continue
         """
-        return DeviceRegistrationEntry.model_validate(new_entry)
+        return DeviceRegistrationEntry(**new_entry)
 
 @router.get(
     "/register/{entry_id}",
@@ -225,7 +240,7 @@ async def get_device_registration(entry_id: int):
         logger.warning(f"Device registration with ID {entry_id} not found.")
         raise HTTPException(status_code=404, detail="Device registration not found")
     logger.info(f"Device registration found: {entry}")
-    return DeviceRegistrationEntry.model_validate(entry)  # Updated for Pydantic v2
+    return DeviceRegistrationEntry(**entry)
 
 @router.get(
     "/register",
@@ -240,7 +255,7 @@ async def list_device_registrations():
     query = device_registration_table.select().order_by(device_registration_table.c.created_at.desc())
     entries = await database.fetch_all(query)
     logger.info(f"Number of device registrations retrieved: {len(entries)}")
-    return [DeviceRegistrationEntry.model_validate(entry) for entry in entries]  # Updated for Pydantic v2
+    return [DeviceRegistrationEntry(**entry) for entry in entries]
 
 @router.put(
     "/register/{entry_id}",
@@ -297,7 +312,7 @@ async def update_device_registration(entry_id: int, entry: DeviceRegistrationUpd
         logger.warning(f"Device registration with ID {entry_id} not found after update.")
         raise HTTPException(status_code=404, detail="Device registration not found")
     logger.info(f"Updated device registration retrieved: {updated_entry}")
-    return DeviceRegistrationEntry.model_validate(updated_entry)  # Updated for Pydantic v2
+    return DeviceRegistrationEntry(**updated_entry)
 
 @router.delete(
     "/register/{entry_id}",
@@ -374,7 +389,7 @@ async def check_device_registration(check: DeviceRegistrationCheck):
     entry = await database.fetch_one(query)
     if entry:
         logger.info("Device is registered.")
-        device_entry = DeviceRegistrationEntry.model_validate(entry)  # Updated for Pydantic v2
+        device_entry = DeviceRegistrationEntry(**entry)
         return DeviceRegistrationCheckResponse(is_registered=True, device=device_entry)
     else:
         logger.info("Device is not registered.")

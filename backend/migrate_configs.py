@@ -2,6 +2,7 @@ import os
 import json
 import asyncio
 import logging
+import sqlalchemy
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Dict
@@ -150,9 +151,10 @@ class PromptSchemaManager:
             raise
 
 async def migrate_configs():
-    """Migrate JSON config files to Supabase database using the CRUD manager."""
+    """Migrate JSON config files to database using the CRUD manager."""
     try:
-        directory = Path('/home/pi/caringmind/backend/route/temp/stable/configs')
+        # Use the stable configs directory
+        directory = Path(__file__).parent / 'route' / 'gemini' / 'stable' / 'configs'
         
         if not directory.exists():
             raise FileNotFoundError(f"Config directory not found: {directory}")
@@ -162,6 +164,20 @@ async def migrate_configs():
         if not database.is_connected:
             await database.connect()
             logger.info("Connected to database")
+
+        # Create tables using async connection
+        query = """
+        CREATE TABLE IF NOT EXISTS prompt_schema (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            prompt_type TEXT NOT NULL UNIQUE,
+            prompt_text TEXT NOT NULL,
+            response_schema TEXT NOT NULL,
+            created_at INTEGER NOT NULL,
+            updated_at INTEGER NOT NULL
+        )
+        """
+        await database.execute(query)
+        logger.info("Created database tables")
 
         errors = []
 
@@ -202,7 +218,7 @@ async def migrate_configs():
             for file_name, error in errors:
                 logger.error(f"File: {file_name} - Error: {error}")
         else:
-            logger.info("All JSON files successfully migrated to Supabase")
+            logger.info("All JSON files successfully migrated to database")
 
     except Exception as e:
         logger.error(f"Migration failed: {e}")

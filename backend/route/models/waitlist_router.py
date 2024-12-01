@@ -3,7 +3,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Request, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, root_validator
 from datetime import datetime
 import logging
 
@@ -23,16 +23,17 @@ router = APIRouter(prefix="/waitlist", tags=["Waitlist CRUD"])
 
 # Pydantic Models
 class WaitlistEntry(BaseModel):
-    id: int
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+    
+    id: Optional[int] = None
     name: str
     email: EmailStr
     ip_address: Optional[str]
     comment: Optional[str]
     referral_source: Optional[str]  # New field
-    created_at: datetime
-
-    class Config:
-        orm_mode = True
+    created_at: Optional[datetime] = None
 
 
 class WaitlistCreate(BaseModel):

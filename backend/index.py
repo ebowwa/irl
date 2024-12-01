@@ -37,8 +37,8 @@ app = FastAPI(
 # ------------------ Middleware Setup ------------------------------
 
 setup_cors(app)
-# from database.database_events import register_db_events
-# register_db_events(app)
+from database.database_events import register_db_events
+register_db_events(app)
 # ------------------ API Routes -------------------------------------
 
 ## EXTERNAL SERVICES (OLD TBD INTEGRATION)
@@ -47,6 +47,10 @@ setup_cors(app)
 from route.dev import socket_ping
 app.include_router(socket_ping.router)  # Ping route for WebSocket health check
 # app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
+
+# Import and include Gemini routes
+from route.gemini.unstable.api.routes import router as gemini_router
+app.include_router(gemini_router, prefix="/production/v1", tags=["gemini"])
 
 # Post
 # from route.text_response.llm_inference.claude import router as claude_router
@@ -97,9 +101,9 @@ app.include_router(analyze_truth_lie_v1_router)
 
 # from route.gemini.list_files import router as list_files_router
 # app.include_router(list_files_router, prefix="/api/v1", tags=["Files"])
-from route.gemini.unstable.api.routes import router as gemini_audio_handling_noauth_router # preview has no auth no persistance
-app.include_router(gemini_audio_handling_noauth_router, prefix="/production/v1")
-
+from route.gemini.unstable.api.routes import router as gemini_audio_router # preview has no auth no persistance
+app.include_router(gemini_audio_router, prefix="/production/v1")
+ 
 # TODO: one-liner & Day in the life Q's
 # -------------------------------------------------------------------------
 
@@ -110,6 +114,10 @@ app.include_router(device_registration_router, prefix="/v2/device") # CRUD backe
 # app.include_router(device_registration_v3_router, prefix="/v3/device") # CRUD backend/data/device_registration.db `http://server/v2/device/register/..`
 ### ------------------------------------------------------------------------
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy"}
 
 # ------------------ OpenAPI & Swagger UI ---------------------------
 # Serve the OpenAPI schema separately

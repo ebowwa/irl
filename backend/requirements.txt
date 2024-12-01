@@ -34,13 +34,18 @@ ngrok                 # Provides a tunnel to localhost for testing
 google-generativeai   # Specific to Google’s Generative AI; confirm API requirements
 
 # Database Utilities and Async ORM
-sqlalchemy            # Core SQL ORM, check redundancy with `databases` or `asyncpg` if only one ORM is needed
-databases             # Async SQL toolkit, redundant if `sqlalchemy` alone suffices
-asyncpg               # PostgreSQL driver, necessary if using PostgreSQL (but could be redundant with `databases`)
-aiosqlite             # Async SQLite support, likely redundant with `databases` if both SQLite and PostgreSQL are used
+sqlalchemy            # SQL ORM for database schema and operations
+databases             # Async SQL toolkit for FastAPI database operations
+asyncpg               # PostgreSQL driver for Supabase connection
+aiosqlite            # Async SQLite support for development database
+greenlet             # Required for async SQLAlchemy operations
 
 # Asynchronous File Handling
 aiofiles              # Async file I/O for handling files within FastAPI
+
+# Utility Libraries
+tenacity             # Retry library for robust API calls
+email-validator      # Email validation for pydantic
 
 # Additional Parsing and Magic Libraries
 python-magic          # File type identification
