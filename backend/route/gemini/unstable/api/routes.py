@@ -150,13 +150,33 @@ async def process_audio(
 # Prompt Schema CRUD endpoints
 @router.post("/prompt-schemas/", response_model=Dict)
 async def create_prompt_schema(
-    prompt_type: str = Query(..., description="Unique identifier for the prompt type"),
-    prompt_text: str = Query(..., description="The prompt text to use"),
-    response_schema: Dict = Body(..., description="JSON schema for the expected response")
+    request: Dict = Body(
+        ...,
+        example={
+            "prompt_type": "test_prompt",
+            "prompt_text": "Analyze this audio and provide detailed insights",
+            "response_schema": {
+                "type": "object",
+                "properties": {
+                    "transcription": {"type": "string"},
+                    "sentiment": {"type": "string"}
+                }
+            }
+        }
+    )
 ):
     """Create a new prompt schema configuration."""
     try:
-        return await schema_manager.create_config(prompt_type, prompt_text, response_schema)
+        return await schema_manager.create_config(
+            request["prompt_type"],
+            request["prompt_text"],
+            request["response_schema"]
+        )
+    except KeyError as e:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Missing required field: {str(e)}"
+        )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
