@@ -19,6 +19,9 @@ const ANALYTICS_ENDPOINT = '/analytics/track';
 class AnalyticsService {
   private static instance: AnalyticsService;
   private visitorId: string;
+  private lastTrackedPage: string | null = null;
+  private lastTrackedTime: number = 0;
+  private readonly TRACK_DEBOUNCE_MS = 2000; // Minimum time between tracking same page
 
   private constructor() {
     // Generate or retrieve visitor ID
@@ -30,7 +33,6 @@ class AnalyticsService {
   }
 
   private generateVisitorId(): string {
-    // Use crypto API to generate a random ID
     const array = new Uint32Array(4);
     crypto.getRandomValues(array);
     return Array.from(array, x => x.toString(16)).join('');
@@ -46,10 +48,25 @@ class AnalyticsService {
   public async trackPageView(location?: { city?: string; country?: string }) {
     if (typeof window === 'undefined') return;
 
+    const currentPage = window.location.pathname;
+    const currentTime = Date.now();
+
+    // Prevent duplicate tracking of same page within debounce period
+    if (
+      this.lastTrackedPage === currentPage &&
+      currentTime - this.lastTrackedTime < this.TRACK_DEBOUNCE_MS
+    ) {
+      return;
+    }
+
+    // Update tracking state
+    this.lastTrackedPage = currentPage;
+    this.lastTrackedTime = currentTime;
+
     const visitorData: VisitorData = {
       visitor_id: this.visitorId,
-      timestamp: Date.now(),
-      page: window.location.pathname,
+      timestamp: currentTime,
+      page: currentPage,
       referrer: document.referrer,
       user_agent: navigator.userAgent,
       screen_resolution: `${window.screen.width}x${window.screen.height}`,
@@ -58,7 +75,6 @@ class AnalyticsService {
     };
 
     try {
-      // Send directly to our backend server
       const response = await fetch(`${BACKEND_URL}${ANALYTICS_ENDPOINT}`, {
         method: 'POST',
         headers: {
@@ -113,7 +129,6 @@ class AnalyticsService {
   }
 }
 
-// Add window interface extension for analytics services
 declare global {
   interface Window {
     gtag?: (command: string, action: string, params: any) => void;
