@@ -12,6 +12,10 @@ export interface VisitorData {
   };
 }
 
+// Backend configuration
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const ANALYTICS_ENDPOINT = '/analytics/track';
+
 class AnalyticsService {
   private static instance: AnalyticsService;
   private visitorId: string;
@@ -54,13 +58,39 @@ class AnalyticsService {
     };
 
     try {
-      await fetch('/api/analytics/track', {
+      // Send directly to our backend server
+      await fetch(`${BACKEND_URL}${ANALYTICS_ENDPOINT}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(visitorData),
       });
+
+      // Send to Google Analytics if available
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'page_view', {
+          page_location: visitorData.page,
+          page_referrer: visitorData.referrer,
+          screen_resolution: visitorData.screenResolution,
+          device_type: visitorData.deviceType,
+          visitor_id: visitorData.visitorId,
+          ...(location && {
+            user_location_city: location.city,
+            user_location_country: location.country,
+          }),
+        });
+      }
+
+      // Send to Mixpanel if available
+      if (typeof window.mixpanel !== 'undefined') {
+        window.mixpanel.track('page_view', visitorData);
+      }
+
+      // Log for development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Analytics Event:', visitorData);
+      }
     } catch (error) {
       console.error('Failed to track analytics:', error);
     }
@@ -75,6 +105,16 @@ class AnalyticsService {
       return 'mobile';
     }
     return 'desktop';
+  }
+}
+
+// Add window interface extension for analytics services
+declare global {
+  interface Window {
+    gtag?: (command: string, action: string, params: any) => void;
+    mixpanel?: {
+      track: (event: string, properties: any) => void;
+    };
   }
 }
 
