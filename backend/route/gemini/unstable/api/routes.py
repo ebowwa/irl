@@ -76,19 +76,26 @@ async def process_audio(
             # Extract file objects for Gemini processing
             gemini_file_objects = [f[1]["file_obj"] for f in valid_files]
             
-            gemini_results = await asyncio.get_event_loop().run_in_executor(
-                None,
-                lambda: gemini_service.process_audio(
-                    gemini_file_objects,
-                    prompt_type=prompt_type,
-                    batch=batch,
-                    model_name=model_name,
-                    temperature=temperature,
-                    top_p=top_p,
-                    top_k=top_k,
-                    max_output_tokens=max_output_tokens
-                )
+            # Directly await the async process_audio method
+            gemini_results = await gemini_service.process_audio(
+                gemini_file_objects,
+                prompt_type=prompt_type,
+                batch=batch,
+                model_name=model_name,
+                temperature=temperature,
+                top_p=top_p,
+                top_k=top_k,
+                max_output_tokens=max_output_tokens
             )
+
+            # Add successful results
+            for (filename, file_data), result in zip(valid_files, [gemini_results]):
+                results.append({
+                    "file": filename,
+                    "status": "success",
+                    "uri": file_data["uri"],
+                    "analysis": result
+                })
 
             # Store results if user is authenticated
             if user_id:
@@ -99,47 +106,24 @@ async def process_audio(
                             user_id=user_id,
                             file_name=filename,
                             file_uri=file_data["uri"],
-                            gemini_result=gemini_results if batch else gemini_results
+                            processing_result=gemini_results
                         )
                     )
                 await asyncio.gather(*store_tasks)
-                logger.info(f"Stored results for user {user_id}")
 
-            # Add successful results with URIs
-            if batch:
-                results.append({
-                    "files": [f[0] for f in valid_files],
-                    "status": "processed",
-                    "data": gemini_results,
-                    "file_uris": [f[1]["uri"] for f in valid_files],
-                    "stored": bool(user_id)
-                })
-            else:
-                # For individual file processing
-                for filename, file_data in valid_files:
-                    results.append({
-                        "file": filename,
-                        "status": "processed",
-                        "data": gemini_results,
-                        "file_uri": file_data["uri"],
-                        "stored": bool(user_id)
-                    })
+            return JSONResponse(content={"results": results})
 
         except Exception as e:
-            logger.error(f"Gemini processing failed: {e}")
+            logger.error(f"Unexpected error in process_audio endpoint: {e}")
+            # Add failed results for all valid files
             for filename, _ in valid_files:
                 results.append({
                     "file": filename,
                     "status": "failed",
                     "error": str(e)
                 })
-            raise HTTPException(status_code=500, detail="Gemini processing failed")
+            return JSONResponse(content={"results": results})
 
-        return JSONResponse(content={"results": results})
-
-    except HTTPException as he:
-        # Re-raise HTTP exceptions with their original status codes
-        raise he
     except Exception as e:
         logger.error(f"Unexpected error in process_audio endpoint: {e}")
         raise HTTPException(
