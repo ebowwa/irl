@@ -120,7 +120,7 @@ from route.dev.ngrok.ngrok_url import router as ngrok_url_router
 app.include_router(ngrok_url_router, prefix="/ngrok")
 
 # site analytics
-from route.site.analytics import router as analytics_router
+from route.models.analytics import router as analytics_router
 app.include_router(analytics_router, prefix="/analytics")
 
 # ------------------ Main Program Entry Point -----------------------

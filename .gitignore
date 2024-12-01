@@ -1961,3 +1961,4 @@ data/app_user_identification.db
 backend/route/data/app_user_identification.db
 backend/route/gemini/temp_list_files.py
 backend/route/gemini/Demos/_test.py
+backend/database/analytics.db
