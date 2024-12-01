@@ -1,11 +1,11 @@
 export interface VisitorData {
-  visitorId: string;
+  visitor_id: string;
   timestamp: number;
   page: string;
   referrer: string | null;
-  userAgent: string;
-  screenResolution: string;
-  deviceType: string;
+  user_agent: string;
+  screen_resolution: string;
+  device_type: string;
   location?: {
     city?: string;
     country?: string;
@@ -47,19 +47,19 @@ class AnalyticsService {
     if (typeof window === 'undefined') return;
 
     const visitorData: VisitorData = {
-      visitorId: this.visitorId,
+      visitor_id: this.visitorId,
       timestamp: Date.now(),
       page: window.location.pathname,
       referrer: document.referrer,
-      userAgent: navigator.userAgent,
-      screenResolution: `${window.screen.width}x${window.screen.height}`,
-      deviceType: this.getDeviceType(),
+      user_agent: navigator.userAgent,
+      screen_resolution: `${window.screen.width}x${window.screen.height}`,
+      device_type: this.getDeviceType(),
       location,
     };
 
     try {
       // Send directly to our backend server
-      await fetch(`${BACKEND_URL}${ANALYTICS_ENDPOINT}`, {
+      const response = await fetch(`${BACKEND_URL}${ANALYTICS_ENDPOINT}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,14 +67,19 @@ class AnalyticsService {
         body: JSON.stringify(visitorData),
       });
 
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to track analytics');
+      }
+
       // Send to Google Analytics if available
       if (typeof window.gtag !== 'undefined') {
         window.gtag('event', 'page_view', {
           page_location: visitorData.page,
           page_referrer: visitorData.referrer,
-          screen_resolution: visitorData.screenResolution,
-          device_type: visitorData.deviceType,
-          visitor_id: visitorData.visitorId,
+          screen_resolution: visitorData.screen_resolution,
+          device_type: visitorData.device_type,
+          visitor_id: visitorData.visitor_id,
           ...(location && {
             user_location_city: location.city,
             user_location_country: location.country,
