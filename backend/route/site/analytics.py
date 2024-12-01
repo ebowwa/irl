@@ -4,32 +4,40 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 import os
+from pathlib import Path
 
 router = APIRouter()
 
-DB_PATH = "/Users/ebowwa/caringmind/backend/database/analytics.db"
+# Use relative path from the current file to the database
+CURRENT_DIR = Path(__file__).parent.parent.parent  # Go up to backend directory
+DB_DIR = CURRENT_DIR / "database"
+DB_PATH = str(DB_DIR / "analytics.db")
 
-# Initialize analytics table if it doesn't exist
-def init_analytics_table():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS visitor_analytics (
-            visitor_id TEXT,
-            timestamp TEXT,
-            page TEXT,
-            referrer TEXT,
-            user_agent TEXT,
-            screen_resolution TEXT,
-            device_type TEXT,
-            city TEXT,
-            country TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-init_analytics_table()
+def ensure_db_exists():
+    """Ensure database and table exist"""
+    try:
+        os.makedirs(DB_DIR, exist_ok=True)  # Ensure database directory exists
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS visitor_analytics (
+                visitor_id TEXT,
+                timestamp TEXT,
+                page TEXT,
+                referrer TEXT,
+                user_agent TEXT,
+                screen_resolution TEXT,
+                device_type TEXT,
+                city TEXT,
+                country TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error ensuring database exists: {e}")
+        return False
 
 class VisitorData(BaseModel):
     visitor_id: str
@@ -43,10 +51,14 @@ class VisitorData(BaseModel):
 
 @router.post("/track")
 async def track_visitor(data: VisitorData):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
+    # First ensure database exists
+    if not ensure_db_exists():
+        return {"success": False, "error": "Could not create or access database"}
     
     try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
         c.execute('''
             INSERT INTO visitor_analytics 
             (visitor_id, timestamp, page, referrer, user_agent, screen_resolution, device_type, city, country)
@@ -62,12 +74,9 @@ async def track_visitor(data: VisitorData):
             data.location.get('city') if data.location else None,
             data.location.get('country') if data.location else None
         ))
-        
         conn.commit()
-        return {"status": "success", "message": "Analytics data stored successfully"}
-    
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-    
-    finally:
         conn.close()
+        return {"success": True}
+    except Exception as e:
+        print(f"Error tracking visitor: {e}")  # Log the error
+        return {"success": False, "error": str(e)}
