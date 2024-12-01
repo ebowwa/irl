@@ -138,44 +138,41 @@ check_git_repo() {
     fi
 }
 
+# Function to handle untracked files
+handle_untracked_files() {
+    local untracked=$(git ls-files --others --exclude-standard)
+    if [ ! -z "$untracked" ]; then
+        echo_step "Found untracked files, adding them..."
+        echo "$untracked" | while read -r file; do
+            if [ -f "$file" ]; then
+                git add "$file"
+                echo "Added: $file"
+            fi
+        done
+        return 0
+    fi
+    return 1
+}
+
 # Main execution
 check_git_repo
 
-# Auto-create feature branch if needed
-auto_create_branch
-
-# Fetch and pull changes
 echo_step "Fetching latest changes..."
-git fetch --all
+git fetch
 
 echo_step "Pulling latest changes..."
-if ! git pull origin $(git rev-parse --abbrev-ref HEAD); then
-    if [ -n "$(git status --porcelain)" ]; then
-        echo_step "Stashing changes to pull..."
-        git stash
-        git pull origin $(git rev-parse --abbrev-ref HEAD)
-        git stash pop
-    else
-        echo " Error: Failed to pull changes. Please resolve conflicts manually."
-        exit 1
-    fi
-fi
+git pull
 
-# Stage and commit changes if any
-if [ -n "$(git status --porcelain)" ]; then
-    echo_step "Staging changes..."
-    git add .
-    
-    # Auto commit
-    auto_commit
-    
-    echo_step "Pushing changes..."
-    if ! git push origin $(git rev-parse --abbrev-ref HEAD); then
-        echo " Error: Failed to push changes. Please pull latest changes and try again."
-        exit 1
-    fi
-    
-    echo " Changes successfully pushed!"
-else
-    echo " Nothing to commit. Working tree clean."
-fi
+# Handle untracked files before staging
+handle_untracked_files
+
+echo_step "Staging changes..."
+git add -A
+
+echo_step "Auto-committing changes..."
+auto_commit
+
+echo_step "Pushing changes..."
+git push
+
+echo_step "Changes successfully pushed!"
