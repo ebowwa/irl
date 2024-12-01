@@ -1,0 +1,37 @@
+{
+  "name": "caringmind - Your Digital Wellness Companion",
+  "short_name": "caringmind",
+  "description": "caringmind protects your digital wellbeing, advocates for your growth, and helps you navigate life's complexities with AI-powered insights.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait",
+  "categories": [
+    "health",
+    "lifestyle",
+    "productivity"
+  ],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
