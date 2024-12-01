@@ -210,10 +210,30 @@ async def delete_prompt_schema(
     prompt_type: str = Path(..., description="Prompt type to delete")
 ):
     """Delete a prompt schema configuration."""
-    success = await schema_manager.delete_config(prompt_type)
-    if not success:
-        raise HTTPException(status_code=404, detail=f"Prompt schema '{prompt_type}' not found")
-    return {"message": f"Prompt schema '{prompt_type}' deleted successfully"}
+    try:
+        # First verify the schema exists
+        existing = await schema_manager.get_config(prompt_type)
+        if not existing:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Prompt schema '{prompt_type}' not found"
+            )
+        
+        success = await schema_manager.delete_config(prompt_type)
+        if success:
+            return {"message": f"Prompt schema '{prompt_type}' deleted successfully"}
+        else:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to delete prompt schema '{prompt_type}'"
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
 
 @router.get("/health")
 async def health_check():

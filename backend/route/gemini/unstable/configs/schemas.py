@@ -54,8 +54,17 @@ class SchemaManager:
         return await self.get_config(prompt_type)
 
     async def delete_config(self, prompt_type: str) -> bool:
+        # First check if the config exists
+        existing = await self.get_config(prompt_type)
+        if not existing:
+            return False
+            
         query = self.prompt_schema_table.delete().where(
             self.prompt_schema_table.c.prompt_type == prompt_type
         )
-        result = await self.database.execute(query)
-        return bool(result)
+        try:
+            await self.database.execute(query)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete prompt schema: {e}")
+            return False
