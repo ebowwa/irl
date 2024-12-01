@@ -1,5 +1,6 @@
 export interface VisitorData {
   visitor_id: string;
+  session_id: string;
   timestamp: number;
   page: string;
   referrer: string | null;
@@ -10,6 +11,8 @@ export interface VisitorData {
     city?: string;
     country?: string;
   };
+  event_type?: string;
+  event_data?: any;
 }
 
 // Backend configuration
@@ -19,23 +22,64 @@ const ANALYTICS_ENDPOINT = '/analytics/track';
 class AnalyticsService {
   private static instance: AnalyticsService;
   private visitorId: string;
-  private lastTrackedPage: string | null = null;
-  private lastTrackedTime: number = 0;
-  private readonly TRACK_DEBOUNCE_MS = 2000; // Minimum time between tracking same page
+  private sessionId: string;
+  private lastPageView: string | null = null;
+  private sessionStartTime: number;
+  private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
   private constructor() {
-    // Generate or retrieve visitor ID
-    const storedId = typeof window !== 'undefined' ? localStorage.getItem('visitorId') : null;
-    this.visitorId = storedId || this.generateVisitorId();
-    if (typeof window !== 'undefined' && !storedId) {
-      localStorage.setItem('visitorId', this.visitorId);
-    }
+    this.sessionStartTime = Date.now();
+    this.visitorId = this.getOrCreateVisitorId();
+    this.sessionId = this.generateSessionId();
+    this.initializeSession();
   }
 
-  private generateVisitorId(): string {
+  private getOrCreateVisitorId(): string {
+    if (typeof window === 'undefined') return '';
+    
+    const storedId = localStorage.getItem('visitorId');
+    if (storedId) return storedId;
+    
+    const newId = this.generateId();
+    localStorage.setItem('visitorId', newId);
+    return newId;
+  }
+
+  private generateSessionId(): string {
+    if (typeof window === 'undefined') return '';
+    
+    const currentSession = sessionStorage.getItem('sessionId');
+    if (currentSession) return currentSession;
+    
+    const newSession = this.generateId();
+    sessionStorage.setItem('sessionId', newSession);
+    return newSession;
+  }
+
+  private generateId(): string {
     const array = new Uint32Array(4);
     crypto.getRandomValues(array);
     return Array.from(array, x => x.toString(16)).join('');
+  }
+
+  private initializeSession() {
+    if (typeof window === 'undefined') return;
+
+    // Track initial page view
+    this.trackPageView();
+
+    // Set up session refresh on visibility change
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        const now = Date.now();
+        if (now - this.sessionStartTime > this.SESSION_TIMEOUT) {
+          // Start new session if previous one expired
+          this.sessionId = this.generateSessionId();
+          this.sessionStartTime = now;
+          this.trackPageView();
+        }
+      }
+    });
   }
 
   public static getInstance(): AnalyticsService {
@@ -49,23 +93,13 @@ class AnalyticsService {
     if (typeof window === 'undefined') return;
 
     const currentPage = window.location.pathname;
-    const currentTime = Date.now();
-
-    // Prevent duplicate tracking of same page within debounce period
-    if (
-      this.lastTrackedPage === currentPage &&
-      currentTime - this.lastTrackedTime < this.TRACK_DEBOUNCE_MS
-    ) {
-      return;
-    }
-
-    // Update tracking state
-    this.lastTrackedPage = currentPage;
-    this.lastTrackedTime = currentTime;
+    if (this.lastPageView === currentPage) return; // Don't track same page twice
+    this.lastPageView = currentPage;
 
     const visitorData: VisitorData = {
       visitor_id: this.visitorId,
-      timestamp: currentTime,
+      session_id: this.sessionId,
+      timestamp: Date.now(),
       page: currentPage,
       referrer: document.referrer,
       user_agent: navigator.userAgent,
@@ -74,6 +108,29 @@ class AnalyticsService {
       location,
     };
 
+    await this.sendAnalytics(visitorData);
+  }
+
+  public async trackEvent(eventType: string, eventData?: any) {
+    if (typeof window === 'undefined') return;
+
+    const visitorData: VisitorData = {
+      visitor_id: this.visitorId,
+      session_id: this.sessionId,
+      timestamp: Date.now(),
+      page: window.location.pathname,
+      referrer: document.referrer,
+      user_agent: navigator.userAgent,
+      screen_resolution: `${window.screen.width}x${window.screen.height}`,
+      device_type: this.getDeviceType(),
+      event_type: eventType,
+      event_data: eventData,
+    };
+
+    await this.sendAnalytics(visitorData);
+  }
+
+  private async sendAnalytics(visitorData: VisitorData) {
     try {
       const response = await fetch(`${BACKEND_URL}${ANALYTICS_ENDPOINT}`, {
         method: 'POST',
@@ -90,25 +147,26 @@ class AnalyticsService {
 
       // Send to Google Analytics if available
       if (typeof window.gtag !== 'undefined') {
-        window.gtag('event', 'page_view', {
+        window.gtag('event', visitorData.event_type || 'page_view', {
           page_location: visitorData.page,
           page_referrer: visitorData.referrer,
           screen_resolution: visitorData.screen_resolution,
           device_type: visitorData.device_type,
           visitor_id: visitorData.visitor_id,
-          ...(location && {
-            user_location_city: location.city,
-            user_location_country: location.country,
+          session_id: visitorData.session_id,
+          ...(visitorData.location && {
+            user_location_city: visitorData.location.city,
+            user_location_country: visitorData.location.country,
           }),
+          ...(visitorData.event_data && { event_data: visitorData.event_data }),
         });
       }
 
       // Send to Mixpanel if available
       if (typeof window.mixpanel !== 'undefined') {
-        window.mixpanel.track('page_view', visitorData);
+        window.mixpanel.track(visitorData.event_type || 'page_view', visitorData);
       }
 
-      // Log for development
       if (process.env.NODE_ENV === 'development') {
         console.log('Analytics Event:', visitorData);
       }
