@@ -52,12 +52,28 @@ class GeminiService:
                 chat_history = [{"role": "user", "parts": [file, config["prompt_text"]]}]
 
             logger.debug(f"Processing with chat history: {chat_history}")
-            chat_session = model.start_chat(history=chat_history)
-            response = chat_session.send_message("Process the audio and think deeply")
-            return extract_json_from_response(response.text)
+            
+            # Use async context manager for chat session
+            chat = model.start_chat(history=chat_history)
+            response = await self._send_message_async(chat, "Process the audio and think deeply")
+            
+            # Extract and return the JSON response
+            result = extract_json_from_response(response.text)
+            return result
 
         except HTTPException as he:
             raise he
         except Exception as e:
             logger.error(f"Unexpected error in process_audio: {e}")
-            raise HTTPException(status_code=500, detail="Gemini processing failed")
+            raise HTTPException(status_code=500, detail=f"Gemini processing failed: {str(e)}")
+
+    async def _send_message_async(self, chat, message: str):
+        """Helper method to handle async message sending"""
+        try:
+            # Use asyncio.to_thread if the operation is blocking
+            import asyncio
+            response = await asyncio.to_thread(chat.send_message, message)
+            return response
+        except Exception as e:
+            logger.error(f"Error sending message: {e}")
+            raise
