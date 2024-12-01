@@ -9,7 +9,7 @@ import ReactPlayer from "react-player";
 interface DemoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userIp: string;
+  userIp?: string;
 }
 
 export function DemoModal({ isOpen, onClose, userIp }: DemoModalProps) {

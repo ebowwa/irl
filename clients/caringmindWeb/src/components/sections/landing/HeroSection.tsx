@@ -3,11 +3,13 @@
 import { motion } from "framer-motion";
 import { Shield, TrendingUp } from "lucide-react";
 import { WaitlistDialog } from "@/components/sections/waitlist/WaitlistDialog";
+import { DemoModal } from "@/components/sections/DemoModal";
 import { useState } from "react";
 import { useLocation } from "@/hooks/use-location";
 
 export function HeroSection() {
   const [showWaitlist, setShowWaitlist] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
   const { location, isLoading } = useLocation();
 
   return (
@@ -70,10 +72,19 @@ export function HeroSection() {
             >
               Join Waitlist
             </button>
-            <button className="px-8 py-3 bg-white/80 backdrop-blur-sm border-2 border-purple-200 text-purple-600 rounded-full hover:bg-purple-50 transition-all">
+            <button
+              onClick={() => setShowDemo(true)}
+              className="px-8 py-3 bg-white/80 backdrop-blur-sm border-2 border-purple-200 text-purple-600 rounded-full hover:bg-purple-50 transition-all"
+            >
               See How It Works
             </button>
           </div>
+
+          {/* Demo Modal */}
+          <DemoModal 
+            isOpen={showDemo}
+            onClose={() => setShowDemo(false)}
+          />
 
           {/* Stats with gradient background */}
           <div className="relative">
