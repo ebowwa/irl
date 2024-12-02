@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-const GA_MEASUREMENT_ID = 'G-ZF2GEYRMSS';
+const GA_MEASUREMENT_ID = 'GTM-NLS753RN';
 
 const GoogleAnalytics = () => {
   useEffect(() => {

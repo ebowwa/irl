@@ -1,0 +1,33 @@
+# Environment variables
+.env
+
+# Xcode
+.DS_Store
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Tuist
+Derived/
+*.xcodeproj
+*.xcworkspace
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Build
+build/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM

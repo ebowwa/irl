@@ -1,0 +1,5 @@
+simulator:
+  platform: "iOS Simulator"
+  device: "iPhone 16"
+  id: "BC6E19BF-3E95-4E02-82D1-E07968F483E2"
+  os: "18.1"
