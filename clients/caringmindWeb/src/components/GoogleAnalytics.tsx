@@ -3,11 +3,11 @@
 import Script from 'next/script'
 import { useEffect } from 'react'
 
-// Declare gtag as a function
+// Declare gtag as a function with the correct type signature
 declare global {
   interface Window {
     dataLayer: any[]
-    gtag?: (...args: any[]) => void  // Make gtag optional with ?
+    gtag?: (command: string, action: string, params: any) => void
   }
 }
 
@@ -16,12 +16,12 @@ const GA_MEASUREMENT_ID = 'G-KMV4Y9H0SX'
 const GoogleAnalytics = () => {
   useEffect(() => {
     window.dataLayer = window.dataLayer || []
-    function gtag(...args: any[]) {
+    function gtag(command: string, action: string, params: any) {
       window.dataLayer.push(arguments)
     }
     window.gtag = gtag
-    window.gtag('js', new Date())
-    window.gtag('config', GA_MEASUREMENT_ID)
+    window.gtag('js', new Date().toString(), {})
+    window.gtag('config', GA_MEASUREMENT_ID, {})
   }, [])
 
   return (
@@ -36,10 +36,12 @@ const GoogleAnalytics = () => {
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+            function gtag(command, action, params){
+              dataLayer.push(arguments);
+            }
             window.gtag = gtag;
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
+            gtag('js', new Date().toString(), {});
+            gtag('config', '${GA_MEASUREMENT_ID}', {});
           `,
         }}
       />
