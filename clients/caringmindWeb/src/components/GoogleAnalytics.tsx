@@ -3,10 +3,11 @@
 import Script from 'next/script'
 import { useEffect } from 'react'
 
+// Declare gtag as a function
 declare global {
   interface Window {
     dataLayer: any[]
-    gtag: (...args: any[]) => void
+    gtag?: (...args: any[]) => void  // Make gtag optional with ?
   }
 }
 
@@ -15,9 +16,10 @@ const GA_MEASUREMENT_ID = 'G-KMV4Y9H0SX'
 const GoogleAnalytics = () => {
   useEffect(() => {
     window.dataLayer = window.dataLayer || []
-    window.gtag = function gtag() {
+    function gtag(...args: any[]) {
       window.dataLayer.push(arguments)
     }
+    window.gtag = gtag
     window.gtag('js', new Date())
     window.gtag('config', GA_MEASUREMENT_ID)
   }, [])
@@ -35,6 +37,7 @@ const GoogleAnalytics = () => {
           __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
             gtag('js', new Date());
             gtag('config', '${GA_MEASUREMENT_ID}');
           `,
