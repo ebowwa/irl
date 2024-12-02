@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from '@/components/Analytics';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 // 1.0.2 Configure the Inter font with Latin subset
 const inter = Inter({ subsets: ['latin'] });
@@ -111,6 +112,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   );
