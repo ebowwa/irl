@@ -1,0 +1,88 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ios-build",
+            "type": "shell",
+            "command": "xcodebuild",
+            "args": [
+                "-project",
+                "${workspaceFolder}/clients/app/irlapp/irlapp.xcodeproj",
+                "-scheme",
+                "CaringMind",
+                "-configuration",
+                "Debug",
+                "-destination",
+                "platform=iOS Simulator,id=BC6E19BF-3E95-4E02-82D1-E07968F483E2",
+                "-derivedDataPath",
+                "${workspaceFolder}/clients/app/irlapp/build",
+                "build"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "sweetpad",
+            "action": "build",
+            "problemMatcher": [
+                "$sweetpad-watch",
+                "$sweetpad-xcodebuild-default",
+                "$sweetpad-xcbeautify-errors",
+                "$sweetpad-xcbeautify-warnings"
+            ],
+            "label": "sweetpad: build",
+            "detail": "Build the app",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "silent",
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "sweetpad",
+            "action": "launch",
+            "problemMatcher": [
+                "$sweetpad-watch",
+                "$sweetpad-xcodebuild-default",
+                "$sweetpad-xcbeautify-errors",
+                "$sweetpad-xcbeautify-warnings"
+            ],
+            "label": "sweetpad: launch",
+            "detail": "Build and Launch the app",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "type": "sweetpad",
+            "action": "clean",
+            "problemMatcher": [
+                "$sweetpad-watch",
+                "$sweetpad-xcodebuild-default",
+                "$sweetpad-xcbeautify-errors",
+                "$sweetpad-xcbeautify-warnings"
+            ],
+            "label": "sweetpad: clean",
+            "detail": "Clean the app",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        }
+    ]
+}

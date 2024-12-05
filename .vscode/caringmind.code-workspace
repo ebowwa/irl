@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "caringmind",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"workbench.colorCustomizations": {},
+		"editor.quickSuggestions": {
+			"comments": "off",
+			"strings": "off",
+			"other": "off"
+		}
+	}
+}
