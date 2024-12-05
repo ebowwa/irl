@@ -13,7 +13,7 @@ xcodebuild clean -scheme "$SCHEME_NAME" -configuration "$CONFIGURATION" -quiet
 echo "🏗️  Building and installing app..."
 xcodebuild \
     -scheme "$SCHEME_NAME" \
-    -destination "platform=iOS Simulator,name=iPhone 16" \
+    -destination "platform=iOS Simulator,name=iPhone 15" \
     -configuration "$CONFIGURATION" \
     -allowProvisioningUpdates \
     build install

@@ -3,7 +3,7 @@ import Foundation
 enum AppConfig {
     // MARK: - Authentication
     enum Auth {
-        static let googleClientId = "YOUR_CLIENT_ID" // Replace with actual client ID
+        static let googleClientId = "YOUR_CLIENT_ID" // this should be dynamic not fuckign hardcoded
         static let keychainService = "com.caringmind.app"
         static let keychainAccount = "auth"
     }
