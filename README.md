@@ -1,8 +1,3 @@
----
-title: CaringMind
-description: Your Guide to Every Moment
----
-
 # CaringMind: Your Guide to Every Moment
 ![IRL](public/caringmind-logo/Fq7eDria1uY_EBXGLFGRE_image.webp)
 ## About
