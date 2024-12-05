@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# NOTE: OUR CODE BASE IS LARGE, it encompases a swift mobile app, a nextjs frontend client and a python backend
 # Function to display steps
 echo_step() {
     echo " $1"
