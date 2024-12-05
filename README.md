@@ -1,22 +1,20 @@
----
-
 # CaringMind: Your Guide to Every Moment
 
-![IRL](public/caringmind-logo/Fq7eDria1uY_EBXGLFGRE_image.webp)
+![caringmind watch](public/caringmind-logo/Fq7eDria1uY_EBXGLFGRE_image.webp)
 
 ## Core Features
 
-**🎮 Interactive Experiences**
+**Interactive Experiences**
 - Truth & Lie Game: Engaging social interaction game
 - Voice Analysis: Advanced audio processing for better understanding
 - Personalized Interactions: AI-driven conversations that adapt to you
 
-**🧠 Smart Memory & Organization**
+**Smart Memory & Organization**
 - Moment Capture: Save and organize important memories
 - Context-Aware Assistance: Intelligent help based on your situation
 - Customized Reminders: Gentle nudges when you need them
 
-**🤝 Social Connection**
+**Social Connection**
 - Family & Friend Integration
 - Shared Experiences
 - Community Features
@@ -48,41 +46,39 @@
 
 ## Getting Started
 
-Visit our [setup documentation](docs/SetupREADME.md) for detailed instructions on:
+Visit our setup documentation for detailed instructions on:
 - Backend deployment
 - Web client setup
 - Mobile app installation
 
 ## Developer Resources
-- [Backend Guide](docs/backend/main.md)
-- [App Guide](docs/app/main.md)
-- [API Documentation](docs/api/main.md)
+- Backend Guide
+- App Guide
+- API Documentation
 
 ## FAQ
-- [Supported Languages](docs/LanguageSupport.md)
-- [Privacy Policy](docs/Privacy.md)
-- [Feature Requests](https://forms.gle/XCSFmSuNRQ8sozgS8)
+- Supported Languages
+- Privacy Policy
+- Feature Requests
 
 ## Special Thanks to the Open-Source Community
 
 We extend our gratitude to the following projects and organizations that have significantly contributed to our journey:
 
-- **[Omi (formerly Friend)](https://omi.me)** - For innovative AI solutions
-- **[Ollama](https://ollama.com)** - For powerful AI tools
-- **[Meta Llama](https://ai.meta.com)** - For advancing AI research
-- **[Python](https://www.python.org/)** - Our backend foundation
-- **[Pydantic](https://github.com/pydantic/pydantic)** - For data validation
-- **[Fal AI](https://github.com/fal-ai)** - For AI capabilities
-- **[Stability AI](https://huggingface.co/stabilityai)** - For generative AI models
-- **[Ngrok](https://ngrok.com)** - For secure tunneling
-- **[Black Forest Labs](https://blackforestlabs.ai/)** - For AI research
-- **[Tailnet](https://tailscale.com/)** - For secure networking
-- **[Cerebral Valley](https://cerebralvalley.beehiiv.com/)** - For AI insights
-- **[Buildspace](https://buildspace.so)** - For builder community
-- **[Y Combinator](https://www.ycombinator.com/)** - For startup support
+- Omi (formerly Friend) - For innovative AI solutions
+- Ollama - For powerful AI tools
+- Meta Llama - For advancing AI research
+- Python - Our backend foundation
+- Pydantic - For data validation
+- Fal AI - For AI capabilities
+- Stability AI - For generative AI models
+- Ngrok - For secure tunneling
+- Black Forest Labs - For AI research
+- Tailnet - For secure networking
+- Cerebral Valley - For AI insights
+- Buildspace - For builder community
+- Y Combinator - For startup support
 
 ## Legal Notice
 
 Use at your own risk. Not available in EU regions.
-
----
