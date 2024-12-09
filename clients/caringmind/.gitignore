@@ -1,33 +1,50 @@
-# Environment variables
-.env
-
 # Xcode
-.DS_Store
+## User settings
 xcuserdata/
-*.xcodeproj/*
-!*.xcodeproj/project.pbxproj
-!*.xcodeproj/xcshareddata/
-!*.xcworkspace/contents.xcworkspacedata
-**/xcshareddata/WorkspaceSettings.xcsettings
+
+## Obj-C/Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
 
 # Swift Package Manager
 .build/
 .swiftpm/
 Package.resolved
 
-# Tuist
-Derived/
-*.xcodeproj
+# CocoaPods
+Pods/
 *.xcworkspace
+*.xcodeproj
 
-# IDE
-.idea/
-*.swp
-*.swo
-
-# Build
+# Build generated
 build/
 DerivedData/
-*.ipa
-*.dSYM.zip
-*.dSYM
+*.built
+*.deemed
+*.xcbuilddata/
+**/XCBuildData/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+injected_container.swift
+
+# Various macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Environment variables
+.env
+../.env

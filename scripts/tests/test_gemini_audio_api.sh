@@ -2,9 +2,8 @@
 
 # Configuration
 BASE_URL="http://localhost:9090/production/v1"
-TEST_AUDIO_FILE="/Users/ebowwa/caringmind/public/audio_file.ogg"
-INVALID_AUDIO_FILE="/nonexistent/file.ogg"
-LARGE_FILE="/tmp/large_audio.ogg"
+TEST_AUDIO_FILE="/Users/ebowwa/caringmind/tests/test_files/audio_file.ogg"
+
 
 # Colors for output
 GREEN='\033[0;32m'

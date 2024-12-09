@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# Text formatting
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-BOLD='\033[1m'
+# Source the colors utility
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../utils/colors.sh"
 
 # Initialize counters
 INSTALLED_COUNT=0
@@ -23,11 +20,11 @@ print_status() {
     local name=$1
     local exists=$2
     if [ "$exists" = true ]; then
-        echo -e "${GREEN}✓${NC} $name is installed"
+        print_success "$name is installed"
         INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
         INSTALLED_ITEMS+=("$name")
     else
-        echo -e "${RED}✗${NC} $name is not installed"
+        print_error "$name is not installed"
         MISSING_COUNT=$((MISSING_COUNT + 1))
         MISSING_ITEMS+=("$name")
     fi
@@ -51,7 +48,8 @@ check_python_version() {
 check_node_version() {
     if command_exists node; then
         local version=$(node -v | cut -d'v' -f2)
-        if [ "$(echo "$version >= 18.0.0" | bc)" -eq 1 ]; then
+        # Use awk for version comparison to handle floating point
+        if awk -v ver="$version" 'BEGIN { exit !(ver >= 18.0) }'; then
             print_status "Node.js ($version)" true
         else
             print_status "Node.js 18+" false
@@ -62,7 +60,10 @@ check_node_version() {
 }
 
 # Main script
-echo -e "${BOLD}Checking development dependencies...${NC}\n"
+print_header "Development Dependencies Check"
+
+print_info "Checking development tools..."
+echo
 
 # Check basic development tools
 command_exists git && print_status "Git" true || print_status "Git" false
@@ -72,10 +73,18 @@ check_node_version
 command_exists pnpm && print_status "pnpm" true || print_status "pnpm" false
 
 # Summary
-echo -e "\n${BOLD}Summary:${NC}"
-echo -e "${GREEN}✓ $INSTALLED_COUNT tools installed${NC}"
+echo
+print_header "Summary"
+
+if [ $INSTALLED_COUNT -gt 0 ]; then
+    echo -e "${GREEN}${BOLD}✓ Installed Tools (${INSTALLED_COUNT}):${NC}"
+    printf "${BLUE}  • %s${NC}\n" "${INSTALLED_ITEMS[@]}"
+fi
+
 if [ $MISSING_COUNT -gt 0 ]; then
-    echo -e "${RED}✗ $MISSING_COUNT tools missing${NC}"
-    echo -e "\nMissing tools:"
-    printf '%s\n' "${MISSING_ITEMS[@]/#/  - }"
+    echo
+    echo -e "${RED}${BOLD}✗ Missing Tools (${MISSING_COUNT}):${NC}"
+    printf "${RED}  • %s${NC}\n" "${MISSING_ITEMS[@]}"
+    echo
+    print_warning "Please install the missing tools before proceeding"
 fi

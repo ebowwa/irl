@@ -1,0 +1,78 @@
+name: caring
+options:
+  bundleIdPrefix: com.caring
+  deploymentTarget:
+    iOS: 18.0
+  xcodeVersion: 16.0
+
+packages:
+  TCA:
+    url: https://github.com/pointfreeco/swift-composable-architecture
+    majorVersion: 1.0.0
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: 7.0.0
+  ReSwift:
+    url: https://github.com/ReSwift/ReSwift
+    majorVersion: 6.1.0
+  SwiftyJSON:
+    url: https://github.com/SwiftyJSON/SwiftyJSON
+    majorVersion: 5.0.0
+
+targets:
+  caring:
+    type: application
+    platform: iOS
+    sources: 
+      - path: .
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.caring.app
+        INFOPLIST_FILE: Info.plist
+        DEVELOPMENT_TEAM: YOUR_TEAM_ID
+        TARGETED_DEVICE_FAMILY: 1
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_MACRO_TRUST_PERMISSIONS:
+          - ComposableArchitectureMacros
+          - DependenciesMacrosPlugin
+    info:
+      path: Info.plist
+      properties:
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        UILaunchStoryboardName: "LaunchScreen"
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: "Default Configuration"
+        NSCameraUsageDescription: "Camera access is needed to capture photos and videos for memory creation"
+        NSPhotoLibraryUsageDescription: "Photo library access is needed to save and access your memories"
+        NSMicrophoneUsageDescription: "Your microphone is needed to record audio for transcription and memory creation"
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - "com.googleusercontent.apps.799823995349-oucdmcqsvk8qcfuqvj9g8e9nniu2742v"
+        GIDClientID: "799823995349-oucdmcqsvk8qcfuqvj9g8e9nniu2742v.apps.googleusercontent.com"
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+          NSExceptionDomains:
+            "ngrok-free.app":
+              NSExceptionAllowsInsecureHTTPLoads: true
+              NSExceptionAllowsInsecureWebSocketLoads: true
+              NSExceptionRequiresForwardSecrecy: false
+              NSIncludesSubdomains: true
+    dependencies:
+      - sdk: SwiftUI.framework
+      - sdk: AVFoundation.framework
+      - package: TCA
+        product: ComposableArchitecture
+      - package: GoogleSignIn
+        product: GoogleSignIn
+      - package: GoogleSignIn
+        product: GoogleSignInSwift
+      - package: ReSwift
+        product: ReSwift
+      - package: SwiftyJSON
+        product: SwiftyJSON

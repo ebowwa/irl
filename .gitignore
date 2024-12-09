@@ -34,3 +34,21 @@ xcuserdata/
 
 # IDE
 # .vscode/
+# Environment variables
+.env
+../.env
+
+# Generated files
+*.generated.yml
+.DS_Store
+xcuserdata/
+*.xcodeproj/
+*.xcworkspace/
+Pods/
+DerivedData/
+
+# Build data
+**/build/
+**/XCBuildData/
+build/
+XCBuildData/

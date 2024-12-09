@@ -45,7 +45,9 @@ register_db_events(app)
 # Socket-based routes (ping, whisper-tts)
 
 from route.dev import socket_ping
+from route.dev.ngrok import ngrok_url
 app.include_router(socket_ping.router)  # Ping route for WebSocket health check
+app.include_router(ngrok_url.router, prefix="/dev/ngrok")
 # app.include_router(whisper_tts.router)  # Whisper TTS WebSocket route
 
 # Import and include Gemini routes
